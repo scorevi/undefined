@@ -1,9 +1,10 @@
 import React from 'react';
-import { FaBookOpen, FaSignOutAlt } from 'react-icons/fa';
+import { FaBookOpen } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import './navbar.css';
 
 export default function Navbar(props) {
+    const firstLetter = props.name[0];
   return (
     <nav className="navbar">
 
@@ -17,10 +18,10 @@ export default function Navbar(props) {
       </div>
 
       <div className="nav-right">
-        <div className="avatar">J</div>
+        <div className="avatar">{firstLetter}</div>
 
         <button className="logout-btn">
-            <FaSignOutAlt className="logout-icon" />
+            Log out
         </button>
 
     </div>

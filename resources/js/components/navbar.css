@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: space-between;
   background: white;
-  padding: 1rem 2rem;
+  padding: 1rem 7rem;
   border-bottom: 1px solid #ddd;
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
@@ -52,7 +52,3 @@
   cursor: pointer;
 }
 
-.logout-icon {
-  font-size: 1.2rem;
-  color: #333;
-}

@@ -4,7 +4,7 @@ import Navbar from './components/NavBar';
 
 const App = () => (
     <> 
-        <Navbar />
+        <Navbar name="John"/> {/* Placeholder name */}
         <h1>Hello from React in Laravel!</h1>
     </>
 );
