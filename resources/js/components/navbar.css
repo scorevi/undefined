@@ -1,3 +1,14 @@
+@font-face {
+    font-family: "Oi";
+    src: local("Oi"),
+    url("/resources/js/Typeface/Oi/Oi-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Nunito";
+    src: local("Nunito"),
+    url("/resources/js/Typeface/Nunito/Nunito-VariableFont_wght.ttf");
+}
 .navbar {
   display: flex;
   align-items: center;
@@ -10,6 +21,7 @@
 }
 
 .nav-left, .nav-center, .nav-right {
+  font-family: "Nunito";
   display: flex;
   align-items: center;
 }
@@ -20,11 +32,13 @@
 }
 
 .title {
-  font-weight: bold;
+  font-family: 'Oi';
   font-size: 1.2rem;
+  letter-spacing: 2px;
 }
 
 .nav-center {
+  font-weight: bolder;
   font-size: 1.1rem;
   font-weight: 500;
 }
