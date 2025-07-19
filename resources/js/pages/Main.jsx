@@ -17,6 +17,7 @@ const Main = () => {
   
   const firstLetter = name?.[0] || 'U';
 
+  // Mostly copied from one of my old projects :sob:
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -74,7 +75,7 @@ const Main = () => {
           </div>
         </div>
       </form>
-
+    <hr />
       {/* Carousel  */}
       <div className="featured-posts">
 
