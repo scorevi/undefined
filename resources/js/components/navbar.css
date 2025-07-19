@@ -7,7 +7,7 @@
 @font-face {
     font-family: "Nunito";
     src: local("Nunito"),
-    url("/resources/js/Typeface/Nunito/Nunito-VariableFont_wght.ttf");
+    url("/resources/js/Typeface/Nunito/static/Nunito-Bold.ttf");
 }
 .navbar {
   display: flex;

@@ -284,5 +284,6 @@
     </head>
     <body>
         <div id="react-root"></div>
+        <div id="react-featured-posts"></div>
     </body>
 </html>
