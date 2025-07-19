@@ -6,6 +6,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 
 import './main.css';
+import './featured.css';
 
 const Main = () => {
   // Placeholder value for carousel images
