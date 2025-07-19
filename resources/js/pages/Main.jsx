@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState} from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 
@@ -9,6 +9,42 @@ import './main.css';
 import './featured.css';
 
 const Main = () => {
+
+  // Post form
+  const name = "John";
+  const [content, setContent] = useState('');
+  const [image, setImage] = useState(null);
+  
+  const firstLetter = name?.[0] || 'U';
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append('content', content);
+    if (image) {
+      formData.append('image', image);
+    }}
+
+  //   try {
+  //     const response = await fetch('/api/posts', {
+  //       method: 'POST',
+  //       body: formData,
+  //     });
+
+  //     if (response.ok) {
+  //       alert('Post submitted!');
+  //       setContent('');
+  //       setImage(null);
+  //     } else {
+  //       alert('Failed to submit post');
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //     alert('Error submitting post');
+  //   }
+  // };
+
   // Placeholder value for carousel images
   const posts = [
     { id: 1, title: "Post 1", image: "https://picsum.photos/1000/400?random=1" },
@@ -20,9 +56,24 @@ const Main = () => {
 
     <div className="container">
 
-      <div className="post-field-cont">
-
-      </div>
+      <form className="post-form" onSubmit={handleSubmit}>
+        <div className="avatar">{firstLetter}</div>
+        <div className="post-input-section">
+          <textarea
+            placeholder="Share your thoughts!"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+          />
+          <div className="post-actions">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImage(e.target.files[0])}
+            />
+            <button type="submit">Post</button>
+          </div>
+        </div>
+      </form>
 
       {/* Carousel  */}
       <div className="featured-posts">
