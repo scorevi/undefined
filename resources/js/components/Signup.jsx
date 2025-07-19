@@ -5,14 +5,12 @@ const Signup = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log('Signup:', { name, email, password });
     };
-
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#FFE0B2] to-[#E1BEE7]">
+        <div className="min-h-screen flex items-center justify-center">
             <div className="auth-container">
                 <h2>Sign Up</h2>
                 <form onSubmit={handleSubmit} className="auth-form">
