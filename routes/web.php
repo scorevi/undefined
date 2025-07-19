@@ -52,3 +52,7 @@ Route::post('/logout', function () {
     Auth::logout();
     return redirect('/');
 })->name('logout');
+
+// Serve React app for auth routes
+Route::view('/login', 'welcome');
+Route::view('/signup', 'welcome');
