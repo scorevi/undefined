@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaHeart, FaComment, FaSort, FaChevronRight } from 'react-icons/fa';
-
+import './posts.css'
 
 const Posts = () => {
 
@@ -39,8 +39,10 @@ const Posts = () => {
     <div className="posts-section">
 
       <div className="recent-posts">
+
         <div className="section-header">
           <h2>Recent Posts</h2>
+          
           <button className="sort-btn">
             <FaSort /> Sort
           </button>

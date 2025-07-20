@@ -8,7 +8,7 @@ import 'swiper/css/navigation';
 
 import './main.css';
 import './featured.css';
-import Posts from './Posts';
+import Posts from '../components/Posts';
 
 const Main = () => {
 

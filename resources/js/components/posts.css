@@ -1,0 +1,108 @@
+@font-face {
+    font-family: "Nunito";
+    src: local("Nunito"),
+    url("/resources/js/Typeface/Nunito/Nunito-VariableFont_wght.ttf");
+}
+
+@font-face {
+    font-family: "Nunito Bold";
+    src: local("Nunito Bold"),
+    url("/resources/js/Typeface/Nunito/static/Nunito-Bold.ttf");
+}
+
+h2 {
+  font-family: "Nunito Bold";
+  font-size: 1.5rem;
+}
+
+span {
+  font-family: "Nunito";
+}
+
+.posts-section {
+  display: flex;
+  gap: 2rem;
+  margin: 2rem 0;
+  padding: 1rem;
+}
+
+.recent-posts {
+  flex: 3;
+}
+
+.trending-posts {
+  flex: 1;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sort-btn {
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.recent-post-card {
+  display: flex;
+  background: #f9f0ff;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.post-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-right: 1rem;
+}
+
+.post-details h3 {
+  margin: 0;
+}
+
+.post-details small {
+  color: #666;
+}
+
+.engagement {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.trending-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f9f0ff;
+  padding: 0.8rem;
+  margin-top: 0.7rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.trend-content h4 {
+  margin: 0;
+}
+
+.trend-content p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #555;
+}
+
+.chevron {
+  color: #555;
+}
