@@ -15,7 +15,7 @@ h2 {
   font-size: 1.5rem;
 }
 
-span {
+span, p{
   font-family: "Nunito";
 }
 
@@ -63,10 +63,11 @@ span {
   height: 100px;
   border-radius: 8px;
   object-fit: cover;
-  margin-right: 1rem;
+  margin-right: 1.5rem;
 }
 
 .post-details h3 {
+  font-family: "Nunito Bold";
   margin: 0;
 }
 
@@ -94,6 +95,7 @@ span {
 }
 
 .trend-content h4 {
+  font-family: "Nunito Bold";
   margin: 0;
 }
 
