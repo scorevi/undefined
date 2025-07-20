@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaHeart, FaComment, FaSort } from 'react-icons/fa';
+import { FaHeart, FaComment, FaSort, FaChevronRight } from 'react-icons/fa';
 
 
 const Posts = () => {
@@ -8,13 +8,31 @@ const Posts = () => {
   {
     id: 1,
     title: "Recent Post 1",
-    date: "7-12-25", // Published date hereee
+    date: "7-20-25", // Published date hereee
     content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt...",
     image: "https://picsum.photos/1000/400?random=4",
     likes: 24,
     comments: 12,
   },
 ];
+
+  const trending = [
+    {
+      id: 1,
+      title: 'Post 1',
+      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
+    },
+    {
+      id: 2,
+      title: 'Post 2',
+      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
+    },
+    {
+      id: 3,
+      title: 'Post 3',
+      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
+    },
+  ];
 
   return (
 
@@ -46,7 +64,24 @@ const Posts = () => {
             </div>
           </div>
         ))}
-        
+
+      </div>
+
+      <div className="trending-posts">
+
+        <h2>Trending</h2>
+
+        {trending.map((item) => (
+          <div className="trending-card" key={item.id}>
+            <div className="trend-content">
+              <h4>{item.title}</h4>
+              <p>{item.text}</p>
+
+            </div>
+            <FaChevronRight className="chevron" />
+          </div>
+        ))}
+
       </div>
     </div>
 
