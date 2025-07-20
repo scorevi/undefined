@@ -4,28 +4,16 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\DashboardController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-// Authentication Routes
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
-
-Route::post('/login', function () {
+// API Routes for Authentication
+Route::post('/api/login', function () {
     $credentials = request()->only(['email', 'password']);
     if (Auth::attempt($credentials)) {
-        return redirect()->intended('/dashboard');
+        return response()->json(['success' => true, 'redirect' => '/dashboard']);
     }
-    return back()->withErrors(['email' => 'Invalid credentials']);
+    return response()->json(['success' => false, 'message' => 'Invalid credentials'], 401);
 })->name('login.post');
 
-Route::get('/register', function () {
-    return view('auth.register');
-})->name('register');
-
-Route::post('/register', function () {
+Route::post('/api/register', function () {
     $validated = request()->validate([
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255|unique:users',
@@ -39,21 +27,42 @@ Route::post('/register', function () {
     ]);
 
     Auth::login($user);
-    return redirect('/dashboard');
+    return response()->json(['success' => true, 'redirect' => '/dashboard']);
 })->name('register.post');
 
-// Dashboard routes (protected by auth middleware)
+// Dashboard API route (protected by auth middleware)
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/api/dashboard', function () {
+        $user = Auth::user();
+        
+        // Mock data for dashboard - replace with actual data from your models
+        $stats = [
+            'total_posts' => 25,
+            'published_posts' => 20,
+            'draft_posts' => 5,
+            'total_views' => 15420,
+            'total_comments' => 89,
+            'recent_posts' => [
+                ['title' => 'Getting Started with Laravel', 'views' => 1250, 'status' => 'published'],
+                ['title' => 'Advanced PHP Techniques', 'views' => 890, 'status' => 'published'],
+                ['title' => 'Web Development Best Practices', 'views' => 650, 'status' => 'draft'],
+            ]
+        ];
+
+        return response()->json([
+            'user' => $user,
+            'stats' => $stats
+        ]);
+    });
 });
 
-// Logout route
-Route::post('/logout', function () {
+// Logout API route
+Route::post('/api/logout', function () {
     Auth::logout();
-    return redirect('/');
+    return response()->json(['success' => true, 'redirect' => '/']);
 })->name('logout');
 
-// Catch-all route for React app (for SPA routing)
-Route::get('/{any}', function () {
+// Serve React app for ALL routes (SPA)
+Route::get('/{any?}', function () {
     return view('welcome');
 })->where('any', '.*');

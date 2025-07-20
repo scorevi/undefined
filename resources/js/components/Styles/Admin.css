@@ -1,7 +1,20 @@
-body {
-  background: linear-gradient(80deg, rgb(236, 204, 236), rgb(240, 236, 186));
+html, body {
+  background: linear-gradient(80deg, rgb(236, 204, 236), rgb(240, 236, 186)) !important;
   min-height: 100vh;
   margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: linear-gradient(80deg, rgb(236, 204, 236), rgb(240, 236, 186)) !important;
+  min-height: 100vh;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+#root {
+  background: linear-gradient(80deg, rgb(236, 204, 236), rgb(240, 236, 186)) !important;
+  min-height: 100vh;
 }
 
 .auth-container {
@@ -48,4 +61,17 @@ body {
 }
 .auth-form button:hover {
   background-color: #7B1FA2; /* Darker purple */
+}
+.auth-form button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #ffcdd2;
+  border-radius: 4px;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  text-align: center;
 }
