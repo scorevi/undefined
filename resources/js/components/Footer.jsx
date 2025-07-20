@@ -5,11 +5,14 @@ import './footer.css';
 const Footer = () => {
   return (
     <footer className="footer">
-      <div className="footer-brand">
+
+      <div className="footer-name">
         <FaBookOpen className="footer-icon" />
         <span className="brand-name">Blog Site</span>
       </div>
+
       <div className="social-links">
+
         <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
           <FaInstagram />
         </a>
@@ -19,6 +22,7 @@ const Footer = () => {
         <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
           <FaLinkedinIn />
         </a>
+        
       </div>
     </footer>
   )
