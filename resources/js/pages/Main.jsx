@@ -1,16 +1,18 @@
 import { useState} from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
+import { FaHeart, FaComment, FaSort, FaChevronRight } from 'react-icons/fa'
 
 import 'swiper/css';
 import 'swiper/css/navigation';
 
 import './main.css';
 import './featured.css';
+import Posts from './Posts';
 
 const Main = () => {
 
-  // Post form
+  // Post form ============================
   const name = "John";
   const [content, setContent] = useState('');
   const [image, setImage] = useState(null);
@@ -46,8 +48,8 @@ const Main = () => {
   //   }
   // };
 
-  // Placeholder value for carousel images
-  const posts = [
+  // Placeholder value for carousel images ====================================
+  const posts = [                     // Why is picsum not working sometimes :c
     { id: 1, title: "Post 1", image: "https://picsum.photos/1000/400?random=1" },
     { id: 2, title: "Post 2", image: "https://picsum.photos/1000/400?random=2" },
     { id: 3, title: "Post 3", image: "https://picsum.photos/1000/400?random=3" },
@@ -56,7 +58,7 @@ const Main = () => {
   return (
 
     <div className="container">
-
+      {/* Post something, text field, or something to be able to post */}
       <form className="post-form" onSubmit={handleSubmit}>
         <div className="avatar">{firstLetter}</div>
         <div className="post-input-section">
@@ -75,7 +77,9 @@ const Main = () => {
           </div>
         </div>
       </form>
+
     <hr />
+
       {/* Carousel  */}
       <div className="featured-posts">
 
@@ -103,7 +107,14 @@ const Main = () => {
           ))}
 
         </Swiper>
+
       </div>
+
+      <hr />
+      
+      <Posts />
+      
+
     </div>
   );
 };
