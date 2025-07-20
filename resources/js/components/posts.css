@@ -21,13 +21,15 @@ span, p{
 
 .posts-section {
   display: flex;
-  gap: 2rem;
+  gap: 1rem;
   margin: 2rem 0;
   padding: 1rem;
 }
 
 .recent-posts {
   flex: 3;
+  padding-right: 1rem;
+  border-right: solid rgba(28, 4, 59, 0.219);
 }
 
 .trending-posts {
@@ -82,6 +84,11 @@ span, p{
   font-size: 0.85rem;
   color: #666;
 }
+
+/* .trending-posts {
+  background-color: red;
+  padding-left: 1rem;
+} */
 
 .trending-card {
   display: flex;

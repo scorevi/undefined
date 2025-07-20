@@ -10,7 +10,7 @@ const Posts = () => {
     title: "Recent Post 1",
     date: "7-20-25", // Published date hereee
     content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt...",
-    image: "https://picsum.photos/1000/400?random=4",
+    image: "https://picsum.photos/400?random=5",
     likes: 24,
     comments: 12,
   },
@@ -42,7 +42,7 @@ const Posts = () => {
 
         <div className="section-header">
           <h2>Recent Posts</h2>
-          
+
           <button className="sort-btn">
             <FaSort /> Sort
           </button>
