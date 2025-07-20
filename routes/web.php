@@ -53,6 +53,7 @@ Route::post('/logout', function () {
     return redirect('/');
 })->name('logout');
 
-// Serve React app for auth routes
-Route::view('/login', 'welcome');
-Route::view('/signup', 'welcome');
+// Catch-all route for React app (for SPA routing)
+Route::get('/{any}', function () {
+    return view('welcome');
+})->where('any', '.*');
