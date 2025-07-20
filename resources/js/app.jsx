@@ -2,11 +2,13 @@ import './bootstrap';
 import ReactDOM from 'react-dom/client';
 import Navbar from './components/NavBar';
 import Main from './pages/Main';
+import Footer from './components/Footer';
 
 const App = () => (
     <> 
         <Navbar name="John"/> {/* Placeholder name */}
         <Main />
+        <Footer />
     </>
 );
 
