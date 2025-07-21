@@ -51,7 +51,7 @@ const UserDashboard = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
                     <p className="mt-4 text-gray-600">Loading your dashboard...</p>
@@ -61,9 +61,9 @@ const UserDashboard = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
             {/* Navigation */}
-            <nav className="bg-white shadow-sm border-b">
+            <nav className="bg-white/80 backdrop-blur-sm shadow-sm border-b">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         <div className="flex items-center">
@@ -73,7 +73,7 @@ const UserDashboard = () => {
                             <span className="text-sm text-gray-700">Welcome, {user?.name}</span>
                             <button
                                 onClick={handleLogout}
-                                className="text-sm text-red-600 hover:text-red-800"
+                                className="text-sm text-red-600 hover:text-red-800 font-medium"
                             >
                                 Logout
                             </button>
