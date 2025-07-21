@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 
@@ -111,9 +112,10 @@ const Main = () => {
           slidesPerView={1}
           className="mySwiper"
         >
-
+          
           {posts.map((post) => (
             <SwiperSlide key={post.id}>
+              <Link to="userpost">
               <div className="slide-card">
                 <img src={post.image} alt={post.title} className="slide-image" />
 
@@ -123,6 +125,7 @@ const Main = () => {
                 </div>
 
               </div>
+              </Link>
             </SwiperSlide>
           ))}
 

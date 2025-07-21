@@ -94,7 +94,7 @@ const Posts = () => {
         {trending.map((item) => (
           <div className="trending-card" key={item.id}>
             <div className="trend-content">
-              <h4>{item.title}</h4>
+              <Link to="userpost"><h4>{item.title}</h4></Link>
               <p>{item.text}</p>
 
               <div className="trend-engagement">
