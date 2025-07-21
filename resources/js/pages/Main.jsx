@@ -50,9 +50,24 @@ const Main = () => {
 
   // Placeholder value for carousel images ====================================
   const posts = [                     // Why is picsum not working sometimes :c
-    { id: 1, title: "Post 1", image: "https://picsum.photos/1000/400?random=1" },
-    { id: 2, title: "Post 2", image: "https://picsum.photos/1000/400?random=2" },
-    { id: 3, title: "Post 3", image: "https://picsum.photos/1000/400?random=3" },
+    { 
+      id: 1, 
+      title: "Post 1", 
+      descriptionOverview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ",
+      image: "https://picsum.photos/1000/400?random=1" 
+    },
+    { 
+      id: 2, 
+      title: "Post 2", 
+      descriptionOverview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ",
+      image: "https://picsum.photos/1000/400?random=2" 
+    },
+    { 
+      id: 3, 
+      title: "Post 3",
+      descriptionOverview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ",
+      image: "https://picsum.photos/1000/400?random=3" 
+    },
   ];
 
   return (
@@ -100,6 +115,7 @@ const Main = () => {
 
                 <div className="slide-overlay">
                   <h3 className="slide-title">{post.title}</h3>
+                  <p>{post.descriptionOverview}</p>
                 </div>
 
               </div>
@@ -109,9 +125,7 @@ const Main = () => {
         </Swiper>
 
       </div>
-
       <hr />
-      
       <Posts />
       
 

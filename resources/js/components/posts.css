@@ -54,7 +54,7 @@ span, p{
 
 .recent-post-card {
   display: flex;
-  background: #f9f0ff;
+  border: solid 1px #c0c0c0;
   border-radius: 12px;
   padding: 1rem;
   margin-top: 1rem;
@@ -85,11 +85,6 @@ span, p{
   color: #666;
 }
 
-/* .trending-posts {
-  background-color: red;
-  padding-left: 1rem;
-} */
-
 .trending-card {
   display: flex;
   justify-content: space-between;
@@ -110,6 +105,13 @@ span, p{
   margin: 0;
   font-size: 0.8rem;
   color: #555;
+}
+
+.trend-engagement {
+  display: flex;
+  align-items: center;
+  color: #555;
+  gap: 1rem;
 }
 
 .chevron {
