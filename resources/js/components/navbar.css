@@ -48,8 +48,16 @@
 }
 
 .logout-btn {
-  background: none;
+  color: white;
+  background-color: red;
+  padding: .5rem;
+  border-radius: 10px;
   border: none;
   cursor: pointer;
 }
 
+.logout-btn:active {
+  color: red;
+  background-color: white;
+  border: red 1px;
+}

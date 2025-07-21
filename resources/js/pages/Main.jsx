@@ -77,7 +77,7 @@ const Main = () => {
 
         <img
           src="https://i.pravatar.cc/300"
-          alt="Author"
+          alt="Avatar"
           className="avatar" />
 
         <div className="post-input-section">
