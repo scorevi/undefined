@@ -1,0 +1,63 @@
+@font-face {
+    font-family: "Oi";
+    src: local("Oi"),
+    url("/resources/js/Typeface/Oi/Oi-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Nunito";
+    src: local("Nunito"),
+    url("/resources/js/Typeface/Nunito/static/Nunito-Bold.ttf");
+}
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  padding: 1rem 7rem;
+  border-bottom: 1px solid #ddd;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.nav-left, .nav-center, .nav-right {
+  font-family: "Nunito";
+  display: flex;
+  align-items: center;
+}
+
+.nav-left .icon {
+  font-size: 1.5rem;
+  margin-right: 8px;
+}
+
+.title {
+  font-family: 'Oi';
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+}
+
+.nav-center {
+  font-weight: bolder;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.nav-right {
+  gap: 10px;
+}
+
+.logout-btn {
+  color: white;
+  background-color: red;
+  padding: .5rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.logout-btn:active {
+  color: red;
+  background-color: white;
+  border: red 1px;
+}

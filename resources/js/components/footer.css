@@ -1,0 +1,51 @@
+@font-face {
+    font-family: "Oi";
+    src: local("Oi"),
+    url("/resources/js/Typeface/Oi/Oi-Regular.ttf");
+}
+
+.footer {
+  background-color: #f2f2f2;
+  padding: 2rem 7rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #ddd;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  margin-top: 2rem;
+}
+
+.footer-name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.footer-icon {
+  font-size: 1.3rem;
+}
+
+.brand-name {
+  font-family: "Oi";
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+}
+
+.social-links {
+  display: flex;
+}
+
+.social-links a {
+  font-family: "Oi";
+  margin-left: 1rem;
+  font-size: 1.2rem;
+  color: #555;
+  transition: color 0.3s;
+}
+
+.social-links a:hover {
+  color: #6a1b9a;
+}

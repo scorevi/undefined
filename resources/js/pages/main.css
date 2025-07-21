@@ -1,0 +1,93 @@
+@font-face {
+    font-family: "Nunito";
+    src: local("Nunito"),
+    url("/resources/js/Typeface/Nunito/Nunito-VariableFont_wght.ttf");
+}
+
+body {
+  background: 
+    linear-gradient(80deg,
+    rgb(236, 204, 236), 
+    rgb(240, 236, 186));
+}
+
+.container {
+  margin-top: 3rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: 90%;
+  padding: 1rem 1.5rem;
+  border-radius: 25px;
+  background-color: white;
+  box-shadow: .3rem .3rem 8px #b7b5c9;
+}
+
+hr {
+  border-color: rgba(28, 4, 59, 0.219);
+  border-width: 1px;
+}
+
+/* Post text field css */
+.post-form {
+  display: flex;
+  align-items: flex-start;
+  padding: 1rem;
+  border-radius: 25px;
+  margin-bottom: 1rem;
+  
+}
+
+.avatar {
+  width: 60px;
+  height: 60px;
+  margin-right: 1rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.post-input-section {
+  flex: 1;
+}
+
+textarea {
+  font-family: "Nunito";
+  font-size: 1rem;
+  width: 100%;
+  background: #f0e7f8;
+  padding: 0.8rem 2rem;
+  border-radius: 12px;
+  resize: none;
+  min-height: 50px;
+  margin-bottom: 0.5rem;
+  box-shadow: .3rem .3rem 8px #b7b5c9;
+}
+
+textarea:focus {
+  outline: none;
+}
+
+.post-actions {
+  display: flex;
+  float: right;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.post-actions input[type="file"] {
+  font-family: "Nunito";
+  font-size: 0.9rem;
+}
+
+.post-actions input:hover{
+  cursor: pointer;
+}
+
+.post-actions button {
+  font-family: "Nunito";
+  background-color: #6a1b9a;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}

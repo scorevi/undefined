@@ -1,0 +1,85 @@
+@font-face {
+    font-family: "Nunito";
+    src: local("Nunito"),
+    url("/resources/js/Typeface/Nunito/Nunito-VariableFont_wght.ttf");
+}
+
+.blog-container {
+  margin-top: 3rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: 90%;
+  background: white;
+  border-radius: 12px;
+  box-shadow: .3rem .3rem 8px #b7b5c9;
+  overflow: hidden;
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+}
+
+.blog-image {
+  width: 100%;
+  height: 500px;
+  object-fit: cover;
+}
+
+.blog-content {
+  padding: 2rem;
+}
+
+.post-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.author-section {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.author-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.author-name {
+  font-weight: bold;
+  margin: 0;
+}
+
+.post-date {
+  font-size: 0.85rem;
+  color: #777;
+  margin: 0;
+}
+
+.post-body {
+  font-size: 1rem;
+  line-height: 1.7;
+  margin-top: 1.5rem;
+}
+
+.link {
+  color: #7b2cbf;
+  text-decoration: underline;
+}
+
+.engagement-footer {
+  margin-top: 2rem;
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
+  display: flex;
+  gap: 2rem;
+  font-size: 0.95rem;
+  color: #666;
+}
+.engagement-footer span {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
