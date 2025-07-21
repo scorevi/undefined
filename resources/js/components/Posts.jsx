@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { FaHeart, FaComment, FaSort, FaChevronRight } from 'react-icons/fa';
 import './posts.css'
+import UserPost from '../pages/UserPost';
 
 const Posts = () => {
 
@@ -70,7 +72,7 @@ const Posts = () => {
             <img src={post.image} alt="post" className="post-img" />
 
             <div className="post-details">
-              <h3>{post.title}</h3>
+              <Link to="userpost"><h3>{post.title}</h3></Link>
               <small>{post.date}</small>
               <p>{post.content}</p>
 

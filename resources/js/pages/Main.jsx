@@ -11,7 +11,7 @@ import Posts from '../components/Posts';
 import Navbar from '../components/NavBar';
 
 const Main = () => {
-
+  document.title = "Home";
   // Post form ============================
   const [content, setContent] = useState('');
   const [image, setImage] = useState(null);

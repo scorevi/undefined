@@ -1,4 +1,5 @@
 import { FaHeart, FaComment } from 'react-icons/fa';
+import Navbar from '../components/NavBar';
 import './userpost.css';
 
 const UserPost = () => {
@@ -13,8 +14,10 @@ const UserPost = () => {
     likeCount: 10,
     commentCount: 2,
   }]
+  document.title = post[0].title;
   return (
     <>
+    <Navbar />
       {post.map((content) => (
       <div className="blog-container" key={content.id}>
         <img
