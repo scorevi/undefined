@@ -6,7 +6,6 @@ import UserPost from '../pages/UserPost';
 
 const Posts = () => {
 
-  
   const samplePosts = [
   {
     id: 1,
