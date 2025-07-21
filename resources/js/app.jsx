@@ -8,8 +8,8 @@ import Footer from './components/Footer';
 const App = () => (
     <> 
         <Navbar name="John"/> {/* Placeholder name */}
-        {/* <Main /> */}
-        <UserPost />
+        <Main />
+        {/* <UserPost /> */}
         <Footer />
     </>
 );

@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import './navbar.css';
 
 export default function Navbar(props) {
-    const firstLetter = props.name[0];
   return (
     <nav className="navbar">
 
@@ -18,7 +17,6 @@ export default function Navbar(props) {
       </div>
 
       <div className="nav-right">
-        <div className="avatar">{firstLetter}</div>
 
         <button className="logout-btn">
             Log out

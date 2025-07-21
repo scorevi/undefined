@@ -13,11 +13,8 @@ import Posts from '../components/Posts';
 const Main = () => {
 
   // Post form ============================
-  const name = "John";
   const [content, setContent] = useState('');
   const [image, setImage] = useState(null);
-  
-  const firstLetter = name?.[0] || 'U';
 
   // Mostly copied from one of my old projects :sob:
   const handleSubmit = async (e) => {
@@ -75,7 +72,12 @@ const Main = () => {
     <div className="container">
       {/* Post something, text field, or something to be able to post */}
       <form className="post-form" onSubmit={handleSubmit}>
-        <div className="avatar">{firstLetter}</div>
+
+        <img
+          src="https://i.pravatar.cc/300"
+          alt="Author"
+          className="avatar" />
+
         <div className="post-input-section">
           <textarea
             placeholder="Share your thoughts!"
