@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './styles/Admin.css';
 
-const Dashboard = () => {
+const AdminDashboard = () => {
     const [user, setUser] = useState(null);
     const [stats, setStats] = useState({
         total_posts: 25,
@@ -70,7 +70,7 @@ const Dashboard = () => {
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600">Loading dashboard...</p>
+                    <p className="mt-4 text-gray-600">Loading admin dashboard...</p>
                 </div>
             </div>
         );
@@ -84,12 +84,12 @@ const Dashboard = () => {
                     <div className="flex justify-between h-16">
                         <div className="flex items-center">
                             <Link to="/" className="text-xl font-semibold text-gray-900">
-                                Blog Dashboard
+                                Admin Dashboard
                             </Link>
                         </div>
                         <div className="flex items-center space-x-4">
                             <span className="text-sm text-gray-700">
-                                Welcome, {user?.name || 'User'}
+                                Welcome, {user?.name || 'Admin'}
                             </span>
                             <button
                                 onClick={handleLogout}
@@ -106,7 +106,7 @@ const Dashboard = () => {
             <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 {/* Page Header */}
                 <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-gray-900">Dashboard Overview</h2>
+                    <h2 className="text-2xl font-bold text-gray-900">Admin Dashboard Overview</h2>
                     <p className="mt-1 text-sm text-gray-600">Manage your blog content and track performance</p>
                 </div>
 
@@ -184,7 +184,7 @@ const Dashboard = () => {
                 {/* Quick Actions */}
                 <div className="bg-white/90 backdrop-blur-sm shadow rounded-lg mb-8">
                     <div className="px-4 py-5 sm:p-6">
-                        <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">Quick Actions</h3>
+                        <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">Admin Quick Actions</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             <a href="#" className="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50">
                                 <i className="fas fa-plus text-blue-600 mr-3"></i>
@@ -200,7 +200,7 @@ const Dashboard = () => {
                             </a>
                             <a href="#" className="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50">
                                 <i className="fas fa-cog text-gray-600 mr-3"></i>
-                                <span className="text-sm font-medium text-gray-900">Settings</span>
+                                <span className="text-sm font-medium text-gray-900">Admin Settings</span>
                             </a>
                         </div>
                     </div>
@@ -254,4 +254,4 @@ const Dashboard = () => {
     );
 };
 
-export default Dashboard; 
+export default AdminDashboard; 

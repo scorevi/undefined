@@ -40,7 +40,7 @@ const Signup = () => {
             const data = await response.json();
 
             if (data.success) {
-                navigate('/dashboard');
+                navigate('/admin');
             } else {
                 setError(data.message || 'Registration failed');
             }
@@ -54,7 +54,7 @@ const Signup = () => {
     return (
         <div className="min-h-screen flex items-center justify-center">
             <div className="auth-container">
-                <h2>Sign Up</h2>
+                <h2>Admin Registration</h2>
                 {error && <div className="error-message">{error}</div>}
                 <form onSubmit={handleSubmit} className="auth-form">
                     <input
@@ -90,7 +90,7 @@ const Signup = () => {
                         disabled={loading}
                     />
                     <button type="submit" disabled={loading}>
-                        {loading ? 'Signing up...' : 'Sign Up'}
+                        {loading ? 'Creating account...' : 'Create Admin Account'}
                     </button>
                 </form>
             </div>

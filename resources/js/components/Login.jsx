@@ -27,7 +27,7 @@ const Login = () => {
             const data = await response.json();
 
             if (data.success) {
-                navigate('/dashboard');
+                navigate('/admin');
             } else {
                 setError(data.message || 'Login failed');
             }
@@ -41,7 +41,7 @@ const Login = () => {
     return (
         <div className="min-h-screen flex items-center justify-center">
             <div className="auth-container">
-                <h2>Login</h2>
+                <h2>Admin Login</h2>
                 {error && <div className="error-message">{error}</div>}
                 <form onSubmit={handleSubmit} className="auth-form">
                     <input
@@ -61,7 +61,7 @@ const Login = () => {
                         disabled={loading}
                     />
                     <button type="submit" disabled={loading}>
-                        {loading ? 'Logging in...' : 'Login'}
+                        {loading ? 'Logging in...' : 'Login to Admin'}
                     </button>
                 </form>
             </div>

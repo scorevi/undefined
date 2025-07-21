@@ -1,10 +1,14 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import Login from './components/Login';
 import Signup from './components/Signup';
-import Dashboard from './components/Dashboard';
-import './components/styles/Admin.css'; // Import the CSS file for gradient
+import AdminDashboard from './components/AdminDashboard';
+import UserLogin from './components/UserLogin';
+import UserRegister from './components/UserRegister';
+import UserDashboard from './components/UserDashboard';
+import HiddenAdminAccess from './components/HiddenAdminAccess';
+import './components/styles/Admin.css';
 
 // Home component
 const Home = () => {
@@ -21,10 +25,10 @@ const Home = () => {
                         </div>
                         <div className="flex items-center space-x-4">
                             <Link to="/login" className="text-sm text-gray-700 hover:text-gray-900">
-                                Login
+                                Sign In
                             </Link>
-                            <Link to="/signup" className="text-sm text-blue-600 hover:text-blue-800">
-                                Register
+                            <Link to="/register" className="text-sm text-blue-600 hover:text-blue-800">
+                                Sign Up
                             </Link>
                         </div>
                     </div>
@@ -42,11 +46,11 @@ const Home = () => {
                                     <span className="block text-blue-600 xl:inline">Laravel Blog</span>
                                 </h1>
                                 <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                                    A modern blogging platform for writers and readers.
+                                    A modern blogging platform for everyone.
                                 </p>
                                 <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
                                     <div className="rounded-md shadow">
-                                        <Link to="/signup" className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10">
+                                        <Link to="/register" className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10">
                                             Get Started
                                         </Link>
                                     </div>
@@ -72,22 +76,32 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Root element:', rootElement);
 
     if (rootElement) {
-        const root = ReactDOM.createRoot(rootElement);
-        console.log('Root created, rendering React app...');
-        
-        root.render(
-            <React.StrictMode>
-                <BrowserRouter>
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/signup" element={<Signup />} />
-                        <Route path="/dashboard" element={<Dashboard />} />
-                    </Routes>
-                </BrowserRouter>
-            </React.StrictMode>
-        );
-        console.log('React app rendered successfully!');
+        try {
+            const root = createRoot(rootElement);
+            console.log('Root created, rendering React app...');
+            
+            root.render(
+                <React.StrictMode>
+                    <BrowserRouter>
+                        <Routes>
+                            <Route path="/" element={<Home />} />
+                            <Route path="/login" element={<UserLogin />} />
+                            <Route path="/register" element={<UserRegister />} />
+                            <Route path="/dashboard" element={<UserDashboard />} />
+                            
+                            {/* Hidden Admin Routes - Access via direct URL */}
+                            <Route path="/admin/login" element={<Login />} />
+                            <Route path="/admin/signup" element={<Signup />} />
+                            <Route path="/admin" element={<AdminDashboard />} />
+                            <Route path="/system" element={<HiddenAdminAccess />} />
+                        </Routes>
+                    </BrowserRouter>
+                </React.StrictMode>
+            );
+            console.log('React app rendered successfully!');
+        } catch (error) {
+            console.error('Error rendering React app:', error);
+        }
     } else {
         console.error('Root element not found!');
     }

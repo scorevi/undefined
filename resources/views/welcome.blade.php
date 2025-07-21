@@ -5,11 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'Laravel') }} - Blog</title>
-    <script src="{{ asset('build/assets/app-DEwp7xs2.js') }}"></script>
-    <link href="{{ asset('build/assets/app-BsyOp821.css') }}" rel="stylesheet">
-    <link href="{{ asset('build/assets/app-CKTEba4u.css') }}" rel="stylesheet">
+    @viteReactRefresh
+    @vite(['resources/css/app.css', 'resources/js/app.jsx'])
 </head>
 <body>
-    <div id="root"></div>
+    <div id="root">
+        <h1 style="color: red; padding: 20px;">HTML is working!</h1>
+        <p>If you can see this, the page is loading but React might not be.</p>
+    </div>
+    
+    <script>
+        console.log('HTML script running...');
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded in HTML script');
+        });
+    </script>
 </body>
 </html>
