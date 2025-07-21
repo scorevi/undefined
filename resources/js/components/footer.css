@@ -6,12 +6,14 @@
 
 .footer {
   background-color: #f2f2f2;
-  padding: 2rem 6rem;
+  padding: 2rem 7rem;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   border-top: 1px solid #ddd;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
   margin-top: 2rem;
 }
 
