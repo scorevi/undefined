@@ -1,7 +1,6 @@
-import { useState} from 'react';
+import { useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
-import { FaHeart, FaComment, FaSort, FaChevronRight } from 'react-icons/fa'
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -9,6 +8,7 @@ import 'swiper/css/navigation';
 import './main.css';
 import './featured.css';
 import Posts from '../components/Posts';
+import Navbar from '../components/NavBar';
 
 const Main = () => {
 
@@ -16,7 +16,7 @@ const Main = () => {
   const [content, setContent] = useState('');
   const [image, setImage] = useState(null);
 
-  // Mostly copied from one of my old projects :sob:
+  // Mostly copied from one of my old projects :sob: Feel free to change/remove it bcs it does nothing
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -46,12 +46,12 @@ const Main = () => {
   // };
 
   // Placeholder value for carousel images ====================================
-  const posts = [                     // Why is picsum not working sometimes :c
+  const posts = [
     { 
       id: 1, 
       title: "Post 1", 
       descriptionOverview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ",
-      image: "https://picsum.photos/1000/400?random=1" 
+      image: "https://picsum.photos/1000/400?random=1" // Why is picsum not working sometimes :c
     },
     { 
       id: 2, 
@@ -68,8 +68,10 @@ const Main = () => {
   ];
 
   return (
-
+    <> 
+    <Navbar name="John"/> 
     <div className="container">
+      
       {/* Post something, text field, or something to be able to post */}
       <form className="post-form" onSubmit={handleSubmit}>
 
@@ -132,6 +134,7 @@ const Main = () => {
       
 
     </div>
+    </>
   );
 };
 
