@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaBookOpen } from 'react-icons/fa';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../app.jsx';
+import { useAuth } from '../authContext';
 import './navbar.css';
 
 export default function Navbar() {

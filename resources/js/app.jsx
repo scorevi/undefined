@@ -1,7 +1,7 @@
 import './bootstrap';
-import { BrowserRouter, Routes, Route, Navigate, Link } from "react-router-dom";
 import React, { createContext, useContext, useState } from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter, Routes, Route, Navigate, Link } from "react-router-dom";
 import Main from './pages/Main';
 import UserPost from './pages/UserPost';
 import Footer from './components/Footer';
@@ -10,6 +10,7 @@ import Register from './components/UserRegister';
 import AdminLogin from './components/Login';
 import AdminSignup from './components/Signup';
 import AdminDashboard from './components/AdminDashboard';
+import { AuthProvider, useAuth } from './authContext';
 // Removed: import UserDashboard from './components/UserDashboard';
 
 // Custom Welcome Page
@@ -29,60 +30,48 @@ const Welcome = () => (
   </div>
 );
 
-// Simple Auth Context (replace with real auth in production)
-const AuthContext = createContext();
-export const useAuth = () => useContext(AuthContext);
-
-const AuthProvider = ({ children }) => {
-  // For demo: use localStorage or default to not logged in
-  const [user, setUser] = useState(() => {
-    const u = localStorage.getItem('user');
-    return u ? JSON.parse(u) : null;
-  });
-  const login = (userData) => {
-    setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
-  };
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('user');
-  };
-  return (
-    <AuthContext.Provider value={{ user, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
-// Protected Route Wrapper
+// Protected Route Wrapper for regular users
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user || user.role !== 'user') return <Navigate to="/login" replace />;
+  return children;
+};
+
+// Admin Route Wrapper
+const AdminRoute = ({ children }) => {
+  const { user } = useAuth();
+  if (!user || user.role !== 'admin') return <Navigate to="/admin/login" replace />;
   return children;
 };
 
 const App = () => (
   <AuthProvider>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Welcome />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/blog" element={<ProtectedRoute><Main /></ProtectedRoute>} />
-        <Route path="/userpost" element={<ProtectedRoute><UserPost /></ProtectedRoute>} />
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin/signup" element={<AdminSignup />} />
-        <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-        {/* fallback */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-      <Footer />
-    </BrowserRouter>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <BrowserRouter>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <Routes>
+            <Route path="/" element={<Welcome />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/blog" element={<ProtectedRoute><Main /></ProtectedRoute>} />
+            <Route path="/userpost" element={<ProtectedRoute><UserPost /></ProtectedRoute>} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/signup" element={<AdminSignup />} />
+            <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+            {/* fallback */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </div>
+        <Footer />
+      </BrowserRouter>
+    </div>
   </AuthProvider>
 );
 
 const root = document.getElementById('react-root');
 
 if (root) {
-  ReactDOM.createRoot(root).render(<App />);
+  ReactDOM.createRoot(root).render(
+    <App />
+  );
 }

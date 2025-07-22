@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../app.jsx';
+import { useAuth } from '../authContext';
 import './styles/User.css';
 
 const UserRegister = () => {
@@ -15,10 +15,10 @@ const UserRegister = () => {
 
     // Redirect if already logged in
     React.useEffect(() => {
-        if (user) {
+        if (user && !loading) {
             navigate('/blog', { replace: true });
         }
-    }, [user, navigate]);
+    }, [user, loading, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -134,9 +134,7 @@ const UserRegister = () => {
                             </p>
                         </div>
                     </form>
-                    <button type="button" style={{marginTop: '1rem', background: '#f3f4f6', color: '#222', border: 'none', borderRadius: 6, padding: '10px 0', width: '100%', fontWeight: 500, cursor: 'pointer'}} onClick={() => navigate(-1)}>
-                        ← Back
-                    </button>
+                    <button type="button" style={{marginTop: '1rem', background: '#f3f4f6', color: '#222', border: 'none', borderRadius: 6, padding: '10px 0', width: '100%', fontWeight: 500, cursor: 'pointer'}} onClick={() => navigate('/')}>← Back</button>
                 </div>
             </div>
         </div>

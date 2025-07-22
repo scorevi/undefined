@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Footer from './Footer';
 import './styles/Admin.css';
+import { useAuth } from '../authContext';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -9,6 +10,7 @@ const Login = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -27,8 +29,13 @@ const Login = () => {
 
             const data = await response.json();
 
-            if (data.success) {
-                navigate('/admin');
+            if (data.success && data.user) {
+                if (data.user.role === 'admin') {
+                    login(data.user); // Set user context
+                    navigate('/admin');
+                } else {
+                    setError('You do not have admin access.');
+                }
             } else {
                 setError(data.message || 'Login failed');
             }
@@ -66,9 +73,7 @@ const Login = () => {
                             {loading ? 'Logging in...' : 'Login to Admin'}
                         </button>
                     </form>
-                    <button type="button" style={{marginTop: '1rem', background: '#f3f4f6', color: '#222', border: 'none', borderRadius: 6, padding: '10px 0', width: '100%', fontWeight: 500, cursor: 'pointer'}} onClick={() => navigate(-1)}>
-                        ← Back
-                    </button>
+                    <button type="button" style={{marginTop: '1rem', background: '#f3f4f6', color: '#222', border: 'none', borderRadius: 6, padding: '10px 0', width: '100%', fontWeight: 500, cursor: 'pointer'}} onClick={() => navigate('/')}>← Back</button>
                 </div>
             </div>
             <Footer />

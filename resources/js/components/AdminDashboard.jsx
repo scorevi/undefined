@@ -27,6 +27,7 @@ const AdminDashboard = () => {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
             },
+            credentials: 'include', // Ensure cookies are sent
         })
         .then(response => {
             if (response.ok) {
@@ -54,6 +55,7 @@ const AdminDashboard = () => {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
                 },
+                credentials: 'include', // Ensure cookies are sent
             });
 
             const data = await response.json();

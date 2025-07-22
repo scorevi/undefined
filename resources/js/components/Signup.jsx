@@ -34,7 +34,8 @@ const Signup = () => {
                     name, 
                     email, 
                     password, 
-                    password_confirmation: passwordConfirmation 
+                    password_confirmation: passwordConfirmation,
+                    role: 'admin',
                 }),
             });
 
@@ -95,9 +96,7 @@ const Signup = () => {
                             {loading ? 'Creating account...' : 'Create Admin Account'}
                         </button>
                     </form>
-                    <button type="button" style={{marginTop: '1rem', background: '#f3f4f6', color: '#222', border: 'none', borderRadius: 6, padding: '10px 0', width: '100%', fontWeight: 500, cursor: 'pointer'}} onClick={() => navigate(-1)}>
-                        ← Back
-                    </button>
+                    <button type="button" style={{marginTop: '1rem', background: '#f3f4f6', color: '#222', border: 'none', borderRadius: 6, padding: '10px 0', width: '100%', fontWeight: 500, cursor: 'pointer'}} onClick={() => navigate('/')}>← Back</button>
                 </div>
             </div>
             <Footer />
