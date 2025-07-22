@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../authContext';
 import './styles/User.css';
 
@@ -11,14 +11,15 @@ const UserRegister = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
     const { user, login } = useAuth();
 
     // Redirect if already logged in
     React.useEffect(() => {
-        if (user && !loading) {
+        if (user && user.role === 'user' && !loading && location.pathname !== '/blog') {
             navigate('/blog', { replace: true });
         }
-    }, [user, loading, navigate]);
+    }, [user, loading, navigate, location.pathname]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

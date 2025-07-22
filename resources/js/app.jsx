@@ -33,7 +33,8 @@ const Welcome = () => (
 // Protected Route Wrapper for regular users
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
-  if (!user || user.role !== 'user') return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== 'user') return <Navigate to="/" replace />;
   return children;
 };
 
