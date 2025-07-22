@@ -170,3 +170,20 @@
         padding: 1.5rem;
     }
 } 
+
+.user-auth-bg {
+    min-height: 100vh;
+    width: 100vw;
+    background: linear-gradient(120deg, #f8cdda 0%, #f9f9b5 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-auth-outer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    width: 100vw;
+} 

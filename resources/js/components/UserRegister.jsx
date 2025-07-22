@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../app.jsx';
 import './styles/User.css';
 
 const UserRegister = () => {
@@ -10,6 +11,14 @@ const UserRegister = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { user, login } = useAuth();
+
+    // Redirect if already logged in
+    React.useEffect(() => {
+        if (user) {
+            navigate('/blog', { replace: true });
+        }
+    }, [user, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -23,23 +32,22 @@ const UserRegister = () => {
         }
 
         try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
             const response = await fetch('/api/user/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
                 },
-                body: JSON.stringify({ 
-                    name, 
-                    email, 
-                    password, 
-                    password_confirmation: passwordConfirmation 
-                }),
+                credentials: 'include',
+                body: JSON.stringify({ name, email, password, password_confirmation: passwordConfirmation }),
             });
 
             const data = await response.json();
 
-            if (data.success) {
+            if (data.success && data.user) {
+                login(data.user);
                 navigate('/dashboard');
             } else {
                 setError(data.message || 'Registration failed');
@@ -52,112 +60,84 @@ const UserRegister = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8">
-                <div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                        Create Your Account
-                    </h2>
-                    <p className="mt-2 text-center text-sm text-gray-600">
-                        Join our community today
-                    </p>
-                </div>
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                    {error && (
-                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
-                            {error}
-                        </div>
-                    )}
-                    <div className="space-y-4">
-                        <div>
-                            <label htmlFor="name" className="sr-only">
-                                Full Name
-                            </label>
-                            <input
-                                id="name"
-                                name="name"
-                                type="text"
-                                autoComplete="name"
-                                required
-                                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                                placeholder="Full Name"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                disabled={loading}
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="email" className="sr-only">
-                                Email address
-                            </label>
-                            <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                autoComplete="email"
-                                required
-                                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                                placeholder="Email address"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                disabled={loading}
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="password" className="sr-only">
-                                Password
-                            </label>
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                autoComplete="new-password"
-                                required
-                                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                                placeholder="Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                disabled={loading}
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="password_confirmation" className="sr-only">
-                                Confirm Password
-                            </label>
-                            <input
-                                id="password_confirmation"
-                                name="password_confirmation"
-                                type="password"
-                                autoComplete="new-password"
-                                required
-                                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                                placeholder="Confirm Password"
-                                value={passwordConfirmation}
-                                onChange={(e) => setPasswordConfirmation(e.target.value)}
-                                disabled={loading}
-                            />
-                        </div>
+        <div className="user-auth-bg">
+            <div className="user-auth-outer">
+                <div className="user-auth-container">
+                    <div className="text-center mb-6">
+                        <h1 className="text-3xl font-bold mb-2" style={{color:'#22c55e'}}>Blog Platform</h1>
+                        <h2 className="text-xl font-semibold mb-1">User Registration</h2>
+                        <p className="text-gray-600">Join our community today</p>
                     </div>
-
-                    <div>
+                    <form className="user-auth-form" onSubmit={handleSubmit}>
+                        {error && (
+                            <div className="user-error-message">{error}</div>
+                        )}
+                        <input
+                            className="user-auth-input"
+                            id="name"
+                            name="name"
+                            type="text"
+                            autoComplete="name"
+                            required
+                            placeholder="Full Name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            disabled={loading}
+                        />
+                        <input
+                            className="user-auth-input"
+                            id="email"
+                            name="email"
+                            type="email"
+                            autoComplete="email"
+                            required
+                            placeholder="Email address"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            disabled={loading}
+                        />
+                        <input
+                            className="user-auth-input"
+                            id="password"
+                            name="password"
+                            type="password"
+                            autoComplete="new-password"
+                            required
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            disabled={loading}
+                        />
+                        <input
+                            className="user-auth-input"
+                            id="password_confirmation"
+                            name="password_confirmation"
+                            type="password"
+                            autoComplete="new-password"
+                            required
+                            placeholder="Confirm Password"
+                            value={passwordConfirmation}
+                            onChange={(e) => setPasswordConfirmation(e.target.value)}
+                            disabled={loading}
+                        />
                         <button
                             type="submit"
                             disabled={loading}
-                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="user-auth-button"
                         >
                             {loading ? 'Creating account...' : 'Create Account'}
                         </button>
-                    </div>
-
-                    <div className="text-center">
-                        <p className="text-sm text-gray-600">
-                            Already have an account?{' '}
-                            <a href="/login" className="font-medium text-green-600 hover:text-green-500">
-                                Sign in here
-                            </a>
-                        </p>
-                    </div>
-                </form>
+                        <div className="text-center mt-2">
+                            <p className="text-sm text-gray-600">
+                                Already have an account?{' '}
+                                <a href="/login" className="font-medium" style={{color:'#22c55e'}}>Sign in here</a>
+                            </p>
+                        </div>
+                    </form>
+                    <button type="button" style={{marginTop: '1rem', background: '#f3f4f6', color: '#222', border: 'none', borderRadius: 6, padding: '10px 0', width: '100%', fontWeight: 500, cursor: 'pointer'}} onClick={() => navigate(-1)}>
+                        ← Back
+                    </button>
+                </div>
             </div>
         </div>
     );

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './styles/Admin.css'; // Import the CSS file
+import Footer from './Footer';
+import './styles/Admin.css';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -39,32 +40,38 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center">
-            <div className="auth-container">
-                <h2>Admin Login</h2>
-                {error && <div className="error-message">{error}</div>}
-                <form onSubmit={handleSubmit} className="auth-form">
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        disabled={loading}
-                    />
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        disabled={loading}
-                    />
-                    <button type="submit" disabled={loading}>
-                        {loading ? 'Logging in...' : 'Login to Admin'}
+        <div className="admin-auth-bg" style={{minHeight:'100vh',display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
+            <div className="admin-auth-outer" style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                <div className="auth-container">
+                    <h2 style={{fontSize:'2rem',fontWeight:700,marginBottom:'1.5rem',textAlign:'center'}}>Admin Login</h2>
+                    {error && <div className="error-message">{error}</div>}
+                    <form onSubmit={handleSubmit} className="auth-form">
+                        <input
+                            type="email"
+                            placeholder="Email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            disabled={loading}
+                        />
+                        <input
+                            type="password"
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            disabled={loading}
+                        />
+                        <button type="submit" disabled={loading}>
+                            {loading ? 'Logging in...' : 'Login to Admin'}
+                        </button>
+                    </form>
+                    <button type="button" style={{marginTop: '1rem', background: '#f3f4f6', color: '#222', border: 'none', borderRadius: 6, padding: '10px 0', width: '100%', fontWeight: 500, cursor: 'pointer'}} onClick={() => navigate(-1)}>
+                        ← Back
                     </button>
-                </form>
+                </div>
             </div>
+            <Footer />
         </div>
     );
 };

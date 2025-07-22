@@ -8,7 +8,8 @@ use App\Http\Controllers\DashboardController;
 Route::post('/api/user/login', function () {
     $credentials = request()->only(['email', 'password']);
     if (Auth::attempt($credentials)) {
-        return response()->json(['success' => true, 'redirect' => '/dashboard']);
+        $user = Auth::user();
+        return response()->json(['success' => true, 'user' => $user, 'redirect' => '/dashboard']);
     }
     return response()->json(['success' => false, 'message' => 'Invalid credentials'], 401);
 })->name('user.login.post');
@@ -120,6 +121,6 @@ Route::post('/api/logout', function () {
 })->name('logout');
 
 // Serve React app for ALL routes (SPA)
-Route::get('/{any?}', function () {
+Route::get('/{any}', function () {
     return view('welcome');
 })->where('any', '.*');
