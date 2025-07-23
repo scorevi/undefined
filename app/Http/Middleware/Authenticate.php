@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 class Authenticate extends Middleware
 {
@@ -12,6 +13,14 @@ class Authenticate extends Middleware
      */
     protected function redirectTo(Request $request): ?string
     {
-        return $request->expectsJson() ? null : route('login');
+        // For API requests, do not redirect, just return null
+        if ($request->expectsJson() || $request->is('api/*')) {
+            return null;
+        }
+        // Only try to redirect for web requests if the route exists
+        if (Route::has('login')) {
+            return Route::route('login');
+        }
+        return '/'; // Or any default page
     }
 } 

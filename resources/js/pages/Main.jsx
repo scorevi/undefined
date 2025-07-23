@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
+import { useAuth } from '../authContext';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -13,71 +14,98 @@ import Navbar from '../components/NavBar';
 
 const Main = () => {
   document.title = "Home";
-  // Post form ============================
+  const { user } = useAuth();
   const [content, setContent] = useState('');
   const [image, setImage] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [featuredPosts, setFeaturedPosts] = useState([]);
+  const [refreshPosts, setRefreshPosts] = useState(0);
 
-  // Mostly copied from one of my old projects :sob: Feel free to change/remove it bcs it does nothing
+  useEffect(() => {
+    // Fetch top 3 most recent posts for the featured carousel
+    const fetchFeatured = async () => {
+      try {
+        const response = await fetch('/api/posts');
+        if (!response.ok) throw new Error('Failed to fetch posts');
+        const data = await response.json();
+        setFeaturedPosts(data.slice(0, 3));
+      } catch (err) {
+        setFeaturedPosts([]);
+      }
+    };
+    fetchFeatured();
+  }, []);
+
+  useEffect(() => {
+    // Fetch top 3 most recent posts for the featured carousel
+    const fetchFeatured = async () => {
+      try {
+        const response = await fetch('/api/posts');
+        if (!response.ok) throw new Error('Failed to fetch posts');
+        const data = await response.json();
+        setFeaturedPosts(data.slice(0, 3));
+      } catch (err) {
+        setFeaturedPosts([]);
+      }
+    };
+    fetchFeatured();
+  }, [refreshPosts]); // depend on refreshPosts
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const formData = new FormData();
-    formData.append('content', content);
-    if (image) {
-      formData.append('image', image);
-    }}
-
-  //   try {
-  //     const response = await fetch('/api/posts', {
-  //       method: 'POST',
-  //       body: formData,
-  //     });
-
-  //     if (response.ok) {
-  //       alert('Post submitted!');
-  //       setContent('');
-  //       setImage(null);
-  //     } else {
-  //       alert('Failed to submit post');
-  //     }
-  //   } catch (err) {
-  //     console.error(err);
-  //     alert('Error submitting post');
-  //   }
-  // };
-
-  // Placeholder value for carousel images ====================================
-  const posts = [
-    { 
-      id: 1, 
-      title: "Post 1", 
-      descriptionOverview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ",
-      image: "https://picsum.photos/1000/400?random=1" // Why is picsum not working sometimes :c
-    },
-    { 
-      id: 2, 
-      title: "Post 2", 
-      descriptionOverview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ",
-      image: "https://picsum.photos/1000/400?random=2" 
-    },
-    { 
-      id: 3, 
-      title: "Post 3",
-      descriptionOverview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ",
-      image: "https://picsum.photos/1000/400?random=3" 
-    },
-  ];
+    setLoading(true);
+    setError('');
+    setSuccess('');
+    if (!content.trim()) {
+      setError('Content cannot be empty.');
+      setLoading(false);
+      return;
+    }
+    try {
+      const formData = new FormData();
+      formData.append('title', content.slice(0, 40) + (content.length > 40 ? '...' : ''));
+      formData.append('content', content);
+      if (image) {
+        formData.append('image', image);
+      }
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      const response = await fetch('/api/posts', {
+        method: 'POST',
+        headers: {
+          'X-CSRF-TOKEN': csrfToken,
+        },
+        credentials: 'include',
+        body: formData,
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        setError(data.error || data.message || 'Failed to submit post');
+      } else {
+        setSuccess('Post submitted!');
+        setContent('');
+        setImage(null);
+        setRefreshPosts(r => r + 1); // trigger posts refresh
+      }
+    } catch (err) {
+      setError('Error submitting post');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <> 
-    <Navbar name="John"/> 
+    <Navbar name={user?.name || user?.email || 'John'}/> 
     <div className="container">
       
       {/* Post something, text field, or something to be able to post */}
       <form className="post-form" onSubmit={handleSubmit}>
 
         <img
-          src="https://i.pravatar.cc/300"
+          src={user?.avatar || 'https://i.pravatar.cc/300'}
           alt="Avatar"
           className="avatar" />
 
@@ -86,15 +114,19 @@ const Main = () => {
             placeholder="Share your thoughts!"
             value={content}
             onChange={(e) => setContent(e.target.value)}
+            disabled={loading}
           />
           <div className="post-actions">
             <input
               type="file"
               accept="image/*"
               onChange={(e) => setImage(e.target.files[0])}
+              disabled={loading}
             />
-            <button type="submit">Post</button>
+            <button type="submit" disabled={loading}>{loading ? 'Posting...' : 'Post'}</button>
           </div>
+          {error && <div className="user-error-message">{error}</div>}
+          {success && <div className="user-success-message" style={{color:'#22c55e',marginTop:8}}>{success}</div>}
         </div>
       </form>
 
@@ -113,18 +145,16 @@ const Main = () => {
           className="mySwiper"
         >
           
-          {posts.map((post) => (
+          {featuredPosts.map((post) => (
             <SwiperSlide key={post.id}>
-              <Link to="userpost">
-              <div className="slide-card">
-                <img src={post.image} alt={post.title} className="slide-image" />
-
-                <div className="slide-overlay">
-                  <h3 className="slide-title">{post.title}</h3>
-                  <p>{post.descriptionOverview}</p>
+              <Link to={`/blog/post/${post.id}`}>
+                <div className="slide-card">
+                  <img src={post.image ? `/storage/${post.image}` : 'https://picsum.photos/1000/400?random=1'} alt={post.title} className="slide-image" />
+                  <div className="slide-overlay">
+                    <h3 className="slide-title">{post.title}</h3>
+                    <p>{post.content.length > 120 ? post.content.slice(0, 120) + '...' : post.content}</p>
+                  </div>
                 </div>
-
-              </div>
               </Link>
             </SwiperSlide>
           ))}
@@ -133,7 +163,7 @@ const Main = () => {
 
       </div>
       <hr />
-      <Posts />
+      <Posts refresh={refreshPosts} />
       
 
     </div>

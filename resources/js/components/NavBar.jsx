@@ -26,7 +26,7 @@ export default function Navbar() {
       <nav className="navbar">
         <div className="nav-left">
           <FaBookOpen className="icon" />
-          <Link to="/" className="title">Blog Site</Link>
+          <Link to={user ? "/blog" : "/"} className="title">Blog Site</Link>
         </div>
         <div className="nav-center">
           {user ? `Welcome, ${user.name || user.email}!` : 'Welcome!'}

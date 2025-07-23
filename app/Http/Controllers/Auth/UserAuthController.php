@@ -32,6 +32,7 @@ class UserAuthController extends Controller
     {
         $credentials = $request->only(['email', 'password']);
         if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
             $user = Auth::user();
             if ($user->role !== 'user') {
                 Auth::logout();

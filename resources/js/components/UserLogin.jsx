@@ -25,13 +25,22 @@ const UserLogin = () => {
         setError('');
 
         try {
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-            const response = await fetch('/api/user/login', {
+            // Step 1: Get CSRF cookie from Sanctum
+            await fetch('/sanctum/csrf-cookie', {
+                credentials: 'include',
+            });
+            // Step 2: Login
+            // Get XSRF-TOKEN from cookie and set X-XSRF-TOKEN header
+            const xsrfToken = (() => {
+                const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+                return match ? decodeURIComponent(match[1]) : '';
+            })();
+            const response = await fetch('/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
                     'Accept': 'application/json',
+                    'X-XSRF-TOKEN': xsrfToken,
                 },
                 credentials: 'include',
                 body: JSON.stringify({ email, password }),
@@ -47,9 +56,7 @@ const UserLogin = () => {
             }
 
             if (!response.ok) {
-                // Show server error message if available
                 setError(data.message || `Login failed (status ${response.status})`);
-                console.error('Login error response:', data);
                 setLoading(false);
                 return;
             }
@@ -59,11 +66,9 @@ const UserLogin = () => {
                 navigate('/blog');
             } else {
                 setError(data.message || 'Login failed');
-                console.error('Login error data:', data);
             }
         } catch (err) {
             setError('An error occurred. Please try again.');
-            console.error('Login exception:', err);
         } finally {
             setLoading(false);
         }
