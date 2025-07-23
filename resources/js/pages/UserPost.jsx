@@ -325,66 +325,80 @@ const UserPost = () => {
   return (
     <>
       <Navbar />
-      <div className="blog-container" key={post?.id} style={{maxWidth: '700px', margin: '2rem auto', background: 'white', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.08)', padding: 0, overflow: 'hidden'}}>
+      <div className="blog-container" key={post?.id}>
         <img
           src={post.image ? `/storage/${post.image}` : 'https://picsum.photos/1000/400?random=1'}
           alt="Post cover"
           className="blog-image"
-          style={{width: '100%', maxHeight: 300, objectFit: 'cover', borderTopLeftRadius: 16, borderTopRightRadius: 16, marginBottom: 0}}
           onError={e => { e.target.onerror = null; e.target.src = 'https://picsum.photos/1000/400?random=1'; }}
         />
-        <div className="blog-content" style={{padding: '2rem 2.5rem 1.5rem 2.5rem'}}>
+
+        <div className="blog-content">
           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
-            <h1 className="post-title" style={{fontSize: '2rem', fontWeight: 700, margin: '0 0 0.5rem 0'}}>{editing ? 'Edit Post' : post.title}</h1>
+            <h1 className="post-title">{editing ? 'Edit Post' : post.title}</h1>
             {canEdit && !editing && (
               <div style={{display:'flex',gap:8}}>
-                <button onClick={startEdit} style={{background:'#f3f4f6',color:'#222',border:'none',borderRadius:6,padding:'8px 18px',fontWeight:500,cursor:'pointer',transition:'background 0.2s',boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>Edit</button>
-                <button onClick={handleDelete} style={{background:'#fee2e2',color:'#dc2626',border:'none',borderRadius:6,padding:'8px 18px',fontWeight:500,cursor:'pointer',transition:'background 0.2s',boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>Delete</button>
+                {/* Will change these to icons instead */}
+                <button className="edit-btn" onClick={startEdit}>Edit</button>
+                <button className="delete-btn" onClick={handleDelete}>Delete</button>
               </div>
             )}
           </div>
-          <div className="author-section" style={{display: 'flex', alignItems: 'center', gap: '0.8rem', marginBottom: '1.2rem'}}>
+
+          <div className="author-section">
             <img
               src={post.user?.avatar || 'https://i.pravatar.cc/300'}
               alt="Author"
               className="author-img"
-              style={{width: 36, height: 36, borderRadius: '50%', objectFit: 'cover'}}
             />
             <div style={{display: 'flex', flexDirection: 'column'}}>
-              <span className="author-name" style={{fontWeight: 600, fontSize: '1rem', margin: 0}}>{post.user?.name || post.user?.email || 'Unknown'}</span>
-              <span className="post-date" style={{fontSize: '0.95rem', color: '#888', margin: 0}}>{new Date(post.created_at).toLocaleDateString()}</span>
+              <span className="author-name">{post.user?.name || post.user?.email || 'Unknown'}</span>
+              <span className="post-date">Posted at {new Date(post.created_at).toLocaleDateString()}</span>
             </div>
           </div>
-          <hr style={{margin: '1.2rem 0'}} />
+
+          <hr />
+          
           {editing ? (
-            <div style={{display:'flex',flexDirection:'column',gap:16}}>
-              <input type="text" value={editTitle} onChange={e=>setEditTitle(e.target.value)} required style={{fontSize:'1.1rem',padding:'8px',borderRadius:6,border:'1px solid #ccc'}} />
-              <textarea value={editContent} onChange={e=>setEditContent(e.target.value)} required rows={6} style={{fontSize:'1.1rem',padding:'8px',borderRadius:6,border:'1px solid #ccc'}} />
-              <input type="file" accept="image/*" onChange={e=>setEditImage(e.target.files[0])} />
+            <div className="edit-container">
+              <input className="edit-title" type="text" value={editTitle} onChange={e=>setEditTitle(e.target.value)} required/>
+
+              <textarea className="edit-content" value={editContent} onChange={e=>setEditContent(e.target.value)} required rows={6} />
+              
+              <input className="edit-file" type="file" accept="image/*" onChange={e=>setEditImage(e.target.files[0])} />
               {editError && <div className="user-error-message">{editError}</div>}
-              <div style={{display:'flex',gap:12}}>
-                <button type="button" onClick={handleEditSave} disabled={editLoading} style={{background:'#2563eb',color:'white',border:'none',borderRadius:6,padding:'8px 18px',fontWeight:500,cursor:'pointer'}}>{editLoading ? 'Saving...' : 'Save'}</button>
-                <button type="button" onClick={cancelEdit} style={{background:'#f3f4f6',color:'#222',border:'none',borderRadius:6,padding:'8px 18px',fontWeight:500,cursor:'pointer'}}>Cancel</button>
+              
+              <div className="edit-btns">
+                <button className="save-btn" type="button" onClick={handleEditSave} disabled={editLoading}>{editLoading ? 'Saving...' : 'Save'}</button>
+                <button className="cancel-btn" type="button" onClick={cancelEdit}>Cancel</button>
               </div>
             </div>
           ) : (
-            <div className="post-body" style={{fontSize: '1.13rem', lineHeight: 1.7, marginBottom: '2rem', color: '#333'}}>{post.content}</div>
+            <div className="post-body">{post.content}</div>
           )}
-          <div className="engagement-footer" style={{marginTop: '1.5rem', borderTop: '1px solid #eee', paddingTop: '1rem', display: 'flex', gap: '2rem', fontSize: '0.95rem', color: '#666', alignItems:'center'}}>
-            <span style={{cursor: user ? 'pointer' : 'not-allowed', color: likeStatus.liked ? '#e11d48' : '#666', display: 'flex', alignItems: 'center', transition:'color 0.2s'}} onClick={handleLike} title={user ? (likeStatus.liked ? 'Unlike' : 'Like') : 'Login to like'}>
-              <FaHeart style={{marginRight: 4, fill: likeStatus.liked ? '#e11d48' : 'none', stroke: '#e11d48', strokeWidth: 30, transition:'fill 0.2s'}} /> {likeStatus.like_count}
+
+          <div className="engagement-footer">
+            <span className="likes" style={{cursor: user ? 'pointer' : 'not-allowed', color: likeStatus.liked ? '#e11d48' : '#666', transition:'color 0.2s'}} onClick={handleLike} title={user ? (likeStatus.liked ? 'Unlike' : 'Like') : 'Login to like'}>
+              <FaHeart className="like-icon" style={{fill: likeStatus.liked ? '#e11d48' : 'none', transition:'fill 0.2s'}} /> {likeStatus.like_count}
             </span>
-            <span style={{display:'flex',alignItems:'center'}}><FaComment style={{marginRight:4}}/> {commentsTotal}</span>
+
+            <span className="comments">
+              <FaComment className='comment-icon' style={{marginRight:4}}/> {commentsTotal}</span>
             {post.views !== undefined && (
               <span style={{marginLeft: 'auto', color: '#aaa', fontSize: '0.95rem'}}>{post.views} views</span>
             )}
           </div>
+          <hr />
+        </div>
+
           {/* Comments Section */}
-          <hr style={{margin: '2rem 0 1.5rem 0'}} />
-          <h3 style={{fontSize:'1.2rem',fontWeight:600,marginBottom:12}}>Comments ({commentsTotal})</h3>
+          
+        <div className="comments-container">
+          <h3 className="comments-header">Comments ({commentsTotal})</h3>
           {commentError && <div className="user-error-message">{commentError}</div>}
+
           {user ? (
-            <form onSubmit={handleCommentSubmit} style={{marginBottom:24,display:'flex',gap:8}}>
+            <form className="comment-form" onSubmit={handleCommentSubmit}>
               <input
                 type="text"
                 value={commentContent}
@@ -392,33 +406,32 @@ const UserPost = () => {
                 placeholder="Write a comment..."
                 required
                 disabled={commentLoading}
-                style={{flex:1,padding:'8px',borderRadius:6,border:'1px solid #ccc'}}
+                className='comment-field'
               />
-              <button type="submit" disabled={commentLoading || !commentContent.trim()} style={{background:'#2563eb',color:'white',border:'none',borderRadius:6,padding:'8px 18px',fontWeight:500,cursor:'pointer'}}>
+              <button className="submit-comment" type="submit" disabled={commentLoading || !commentContent.trim()}>
                 {commentLoading ? 'Posting...' : 'Post'}
               </button>
             </form>
           ) : (
             <div style={{marginBottom:24,color:'#888'}}>Log in to comment.</div>
           )}
-          <div>
+
+          <div className='comment-section'>
             {comments.length === 0 && <div style={{color:'#aaa'}}>No comments yet.</div>}
+
             {comments.map((comment) => (
-              <div key={comment.id} style={{marginBottom:18,padding:'10px 14px',background:'#f8fafc',borderRadius:8,display:'flex',alignItems:'flex-start',gap:12,boxShadow:'0 1px 4px rgba(0,0,0,0.03)'}}>
+              <div className="comment-content" key={comment.id}>
                 <img
+                  className='comment-avatar'
                   src={comment.user?.avatar || 'https://i.pravatar.cc/100'}
                   alt="User"
-                  style={{width:32,height:32,borderRadius:'50%',objectFit:'cover',boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}
                 />
                 <div style={{flex:1}}>
-                  <div style={{fontWeight:600,fontSize:'1rem',display:'flex',alignItems:'center',gap:8}}>
-                    {comment.user?.name || comment.user?.email || 'Anonymous'}
-                    {(user && (user.id === comment.user_id || user.role === 'admin')) && editingCommentId !== comment.id && (
-                      <div style={{display:'flex',gap:4,marginLeft:8}}>
-                        <button onClick={() => handleEditComment(comment)} style={{background:'none',color:'#2563eb',border:'none',fontWeight:600,cursor:'pointer',padding:0,transition:'color 0.2s'}}>Edit</button>
-                        <button onClick={() => handleDeleteComment(comment.id)} style={{background:'none',color:'#e11d48',border:'none',fontWeight:600,cursor:'pointer',padding:0,transition:'color 0.2s'}}>Delete</button>
-                      </div>
-                    )}
+                  <div className="comment-top">
+
+                    <span className='comment-name'>{comment.user?.name || comment.user?.email || 'Anonymous'}</span>
+                    <div style={{fontSize:'0.92rem',color:'#888'}}>At {new Date(comment.created_at).toLocaleString()}</div>
+                    
                   </div>
                   {editingCommentId === comment.id ? (
                     <form onSubmit={e => handleEditCommentSubmit(e, comment.id)} style={{display:'flex',gap:8,margin:'6px 0'}}>
@@ -436,7 +449,13 @@ const UserPost = () => {
                   ) : (
                     <div style={{fontSize:'0.97rem',color:'#333',margin:'2px 0 4px 0'}}>{comment.content}</div>
                   )}
-                  <div style={{fontSize:'0.92rem',color:'#888'}}>{new Date(comment.created_at).toLocaleString()}</div>
+                  {(user && (user.id === comment.user_id || user.role === 'admin')) && editingCommentId !== comment.id && (
+                      <div style={{display:'flex',gap:4,marginLeft:8}}>
+                        <button onClick={() => handleEditComment(comment)} style={{background:'none',color:'#2563eb',border:'none',fontWeight:600,cursor:'pointer',padding:0,transition:'color 0.2s'}}>Edit</button>
+                        <button onClick={() => handleDeleteComment(comment.id)} style={{background:'none',color:'#e11d48',border:'none',fontWeight:600,cursor:'pointer',padding:0,transition:'color 0.2s'}}>Delete</button>
+                      </div>
+                  )}
+                  
                 </div>
               </div>
             ))}
