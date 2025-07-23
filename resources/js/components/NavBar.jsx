@@ -9,16 +9,37 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    // Optionally call backend logout endpoint here
-    await fetch('/api/user/logout', {
-      method: 'POST',
-      headers: {
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-      },
-      credentials: 'include',
-    });
-    logout();
+    let logoutSuccess = false;
+    try {
+      // Try user logout endpoint first
+      let response = await fetch('/api/user/logout', {
+        method: 'POST',
+        headers: {
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+          'Accept': 'application/json',
+        },
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        // Try fallback logout endpoint
+        response = await fetch('/api/logout', {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+            'Accept': 'application/json',
+          },
+          credentials: 'include',
+        });
+      }
+      logoutSuccess = response.ok;
+    } catch (err) {
+      logoutSuccess = false;
+    }
+    logout(); // Always clear local user state
     navigate('/');
+    if (!logoutSuccess) {
+      alert('Logout may not have completed cleanly. Please refresh or clear cookies if you encounter issues.');
+    }
   };
 
   return (
