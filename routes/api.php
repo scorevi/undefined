@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\AdminDashboardController;
 use App\Http\Controllers\Api\UserDashboardController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\LikeController;
+use App\Http\Controllers\Api\CommentController;
 
 // Regular User API Routes
 Route::middleware(['web'])->group(function () {
@@ -53,3 +54,10 @@ Route::post('/logout', function (\Illuminate\Http\Request $request) {
 Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/{id}', [PostController::class, 'show']);
 Route::get('/posts/{post}/like-status', [LikeController::class, 'status']); 
+Route::get('/posts/trending', [PostController::class, 'trending']); 
+
+// Comments API
+Route::get('/posts/{post}/comments', [CommentController::class, 'index']);
+Route::post('/posts/{post}/comments', [CommentController::class, 'store'])->middleware(['web', 'auth']);
+Route::delete('/posts/{post}/comments/{comment}', [CommentController::class, 'destroy'])->middleware(['web', 'auth']); 
+Route::patch('/posts/{post}/comments/{comment}', [CommentController::class, 'update'])->middleware(['web', 'auth']); 

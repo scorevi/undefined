@@ -7,14 +7,23 @@ use Illuminate\Http\Request;
 use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
     // List all posts
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::with('user')->orderBy('created_at', 'desc')->get();
-        return response()->json($posts);
+        $perPage = (int) $request->query('per_page', 10);
+        $posts = Post::with('user')
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage);
+        return response()->json([
+            'data' => $posts->items(),
+            'current_page' => $posts->currentPage(),
+            'last_page' => $posts->lastPage(),
+            'total' => $posts->total(),
+        ]);
     }
 
     // Show a single post
@@ -24,12 +33,12 @@ class PostController extends Controller
         if (!$post) {
             return response()->json(['error' => 'Post not found'], 404);
         }
-        // Unique view tracking by IP in session
+        // Unique view tracking by IP in the database
         $ip = $request->ip();
-        $viewedKey = 'viewed_post_' . $id . '_' . $ip;
-        if (!session()->has($viewedKey)) {
+        $viewExists = DB::table('post_views')->where('post_id', $id)->where('ip', $ip)->exists();
+        if (!$viewExists) {
             $post->increment('views');
-            session([$viewedKey => true]);
+            DB::table('post_views')->insert(['post_id' => $id, 'ip' => $ip, 'created_at' => now(), 'updated_at' => now()]);
         }
         return response()->json($post);
     }
@@ -103,5 +112,17 @@ class PostController extends Controller
         }
         $post->delete();
         return response()->json(['success' => true]);
+    }
+
+    // Trending posts by most likes, then views
+    public function trending()
+    {
+        $posts = Post::with('user')
+            ->withCount('likes')
+            ->orderByDesc('likes_count')
+            ->orderByDesc('views')
+            ->take(5)
+            ->get();
+        return response()->json($posts);
     }
 }

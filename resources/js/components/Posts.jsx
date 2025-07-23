@@ -8,55 +8,90 @@ const Posts = ({ refresh }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [trending, setTrending] = useState([]);
+  const [postsPage, setPostsPage] = useState(1);
+  const [postsLastPage, setPostsLastPage] = useState(1);
+  const [postsTotal, setPostsTotal] = useState(0);
+  const [postsLoadingMore, setPostsLoadingMore] = useState(false);
 
+  // Fetch posts (paginated)
   useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchPosts = async (page = 1, append = false) => {
       setLoading(true);
       setError('');
       try {
-        const response = await fetch('/api/posts');
+        const response = await fetch(`/api/posts?page=${page}&per_page=10`);
         if (!response.ok) throw new Error('Failed to fetch posts');
         const data = await response.json();
-        setPosts(data);
+        if (append) {
+          setPosts((prev) => [...prev, ...data.data]);
+        } else {
+          setPosts(data.data);
+        }
+        setPostsPage(data.current_page);
+        setPostsLastPage(data.last_page);
+        setPostsTotal(data.total);
       } catch (err) {
         setError('Could not load posts.');
+        if (!append) setPosts([]);
       } finally {
         setLoading(false);
       }
     };
-    fetchPosts();
+    fetchPosts(1, false);
   }, [refresh]);
 
-  // Trending section is still static for now
-  const trending = [
-    {
-      id: 1,
-      title: 'Post 1',
-      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
-      likes: 675,
-      commentCount: 459,
-    },
-    {
-      id: 2,
-      title: 'Post 2',
-      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
-      likes: 345,
-      commentCount: 243,
-    },
-    {
-      id: 3,
-      title: 'Post 3',
-      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
-      likes: 238,
-      commentCount: 185,
-    },
-  ];
+  // Load more posts
+  const loadMorePosts = async () => {
+    if (postsPage >= postsLastPage) return;
+    setPostsLoadingMore(true);
+    try {
+      const nextPage = postsPage + 1;
+      const response = await fetch(`/api/posts?page=${nextPage}&per_page=10`);
+      if (!response.ok) throw new Error('Failed to fetch posts');
+      const data = await response.json();
+      setPosts((prev) => [...prev, ...data.data]);
+      setPostsPage(data.current_page);
+      setPostsLastPage(data.last_page);
+      setPostsTotal(data.total);
+    } catch (err) {}
+    setPostsLoadingMore(false);
+  };
+
+  // Infinite scroll for posts
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >= document.body.offsetHeight - 200 &&
+        !postsLoadingMore &&
+        postsPage < postsLastPage
+      ) {
+        loadMorePosts();
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [postsLoadingMore, postsPage, postsLastPage]);
+
+  useEffect(() => {
+    const fetchTrending = async () => {
+      try {
+        const response = await fetch('/api/posts/trending');
+        if (!response.ok) throw new Error('Failed to fetch trending posts');
+        const data = await response.json();
+        setTrending(data);
+      } catch (err) {
+        setTrending([]);
+      }
+    };
+    fetchTrending();
+  }, [refresh]);
 
   return (
     <div className="posts-section">
       <div className="recent-posts">
         <div className="section-header">
-          <h2>Recent Posts</h2>
+          <h2>Recent Posts ({postsTotal})</h2>
           <button className="sort-btn">
             <FaSort /> Sort
           </button>
@@ -68,7 +103,9 @@ const Posts = ({ refresh }) => {
         )}
         {posts.map((post) => (
           <div className="recent-post-card" key={post.id} style={{alignItems:'center',padding:'0.7rem 1rem',minHeight:0}}>
-            <img src={post.image ? `/storage/${post.image}` : 'https://picsum.photos/400?random=5'} alt="post" className="post-img" style={{width:70,height:70,marginRight:16}} />
+            <img src={post.image ? `/storage/${post.image}` : 'https://picsum.photos/400?random=5'} alt="post" className="post-img" style={{width:70,height:70,marginRight:16}} 
+              onError={e => { e.target.onerror = null; e.target.src = 'https://picsum.photos/400?random=5'; }}
+            />
             <div className="post-details" style={{flex:1,minWidth:0}}>
               <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:2}}>
                 <Link to={`/blog/post/${post.id}`} style={{fontWeight:600,fontSize:'1.05rem',color:'#222',textDecoration:'none',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',maxWidth:'60%'}}>{post.title}</Link>
@@ -86,17 +123,24 @@ const Posts = ({ refresh }) => {
             </div>
           </div>
         ))}
+        {postsPage < postsLastPage && (
+          <button onClick={loadMorePosts} disabled={postsLoadingMore} style={{margin:'16px auto',display:'block',background:'#f3f4f6',color:'#222',border:'none',borderRadius:6,padding:'10px 24px',fontWeight:500,cursor:'pointer'}}>
+            {postsLoadingMore ? 'Loading...' : 'Load more posts'}
+          </button>
+        )}
       </div>
       <div className="trending-posts">
         <h2>Trending</h2>
+        {trending.length === 0 && <div style={{color:'#888'}}>No trending posts yet.</div>}
         {trending.map((item) => (
           <div className="trending-card" key={item.id}>
             <div className="trend-content">
               <Link to={`/blog/post/${item.id}`}><h4>{item.title}</h4></Link>
-              <p>{item.text}</p>
+              <p>{item.content.length > 80 ? item.content.slice(0, 80) + '...' : item.content}</p>
               <div className="trend-engagement">
-                <span className="likes"><FaHeart />{item.likes}</span>
-                <span><FaComment />{item.commentCount}</span>
+                <span className="likes"><FaHeart />{item.likes_count}</span>
+                <span style={{marginLeft:8}}><FaComment />0</span>
+                <span style={{marginLeft:8, color:'#bbb', fontSize:'0.95rem'}}>{item.views} views</span>
               </div>
             </div>
             <FaChevronRight className="chevron" />

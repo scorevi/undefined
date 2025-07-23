@@ -19,6 +19,16 @@ const UserPost = () => {
   const [editImage, setEditImage] = useState(null);
   const [editError, setEditError] = useState('');
   const [editLoading, setEditLoading] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [commentsPage, setCommentsPage] = useState(1);
+  const [commentsLastPage, setCommentsLastPage] = useState(1);
+  const [commentsTotal, setCommentsTotal] = useState(0);
+  const [commentsLoadingMore, setCommentsLoadingMore] = useState(false);
+  const [commentContent, setCommentContent] = useState('');
+  const [commentError, setCommentError] = useState('');
+  const [commentLoading, setCommentLoading] = useState(false);
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editingCommentContent, setEditingCommentContent] = useState('');
 
   const canEdit = user && post && (user.id === post.user_id || user.role === 'admin');
   const navigate = useNavigate();
@@ -154,6 +164,160 @@ const UserPost = () => {
     setLikeLoading(false);
   };
 
+  // Fetch comments (paginated)
+  useEffect(() => {
+    const fetchComments = async (page = 1, append = false) => {
+      try {
+        const response = await fetch(`/api/posts/${id}/comments?page=${page}&per_page=10`);
+        if (!response.ok) throw new Error('Failed to fetch comments');
+        const data = await response.json();
+        if (append) {
+          setComments((prev) => [...prev, ...data.data]);
+        } else {
+          setComments(data.data);
+        }
+        setCommentsPage(data.current_page);
+        setCommentsLastPage(data.last_page);
+        setCommentsTotal(data.total);
+      } catch {
+        if (!append) setComments([]);
+      }
+    };
+    fetchComments(1, false);
+  }, [id]);
+
+  // Load more comments
+  const loadMoreComments = async () => {
+    if (commentsPage >= commentsLastPage) return;
+    setCommentsLoadingMore(true);
+    try {
+      const nextPage = commentsPage + 1;
+      const response = await fetch(`/api/posts/${id}/comments?page=${nextPage}&per_page=10`);
+      if (!response.ok) throw new Error('Failed to fetch comments');
+      const data = await response.json();
+      setComments((prev) => [...prev, ...data.data]);
+      setCommentsPage(data.current_page);
+      setCommentsLastPage(data.last_page);
+      setCommentsTotal(data.total);
+    } catch {}
+    setCommentsLoadingMore(false);
+  };
+
+  // Infinite scroll for comments
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >= document.body.offsetHeight - 200 &&
+        !commentsLoadingMore &&
+        commentsPage < commentsLastPage
+      ) {
+        loadMoreComments();
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [commentsLoadingMore, commentsPage, commentsLastPage]);
+
+  // Submit comment
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+    setCommentError('');
+    setCommentLoading(true);
+    try {
+      const xsrfToken = (() => {
+        const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+        return match ? decodeURIComponent(match[1]) : '';
+      })();
+      const response = await fetch(`/api/posts/${id}/comments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-XSRF-TOKEN': xsrfToken,
+        },
+        credentials: 'include',
+        body: JSON.stringify({ content: commentContent }),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        setCommentError(data.error || data.message || 'Failed to submit comment');
+      } else {
+        setComments((prev) => [...prev, data.comment]);
+        setCommentContent('');
+      }
+    } catch {
+      setCommentError('Error submitting comment');
+    }
+    setCommentLoading(false);
+  };
+
+  // Delete comment
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm('Delete this comment?')) return;
+    setCommentError('');
+    try {
+      const xsrfToken = (() => {
+        const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+        return match ? decodeURIComponent(match[1]) : '';
+      })();
+      const response = await fetch(`/api/posts/${id}/comments/${commentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Accept': 'application/json',
+          'X-XSRF-TOKEN': xsrfToken,
+        },
+        credentials: 'include',
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        setCommentError(data.error || data.message || 'Failed to delete comment');
+      } else {
+        setComments((prev) => prev.filter((c) => c.id !== commentId));
+      }
+    } catch {
+      setCommentError('Error deleting comment');
+    }
+  };
+
+  // Edit comment
+  const handleEditComment = (comment) => {
+    setEditingCommentId(comment.id);
+    setEditingCommentContent(comment.content);
+  };
+
+  const handleEditCommentSubmit = async (e, commentId) => {
+    e.preventDefault();
+    setCommentError('');
+    setCommentLoading(true);
+    try {
+      const xsrfToken = (() => {
+        const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+        return match ? decodeURIComponent(match[1]) : '';
+      })();
+      const response = await fetch(`/api/posts/${id}/comments/${commentId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-XSRF-TOKEN': xsrfToken,
+        },
+        credentials: 'include',
+        body: JSON.stringify({ content: editingCommentContent }),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        setCommentError(data.error || data.message || 'Failed to update comment');
+      } else {
+        setComments((prev) => prev.map((c) => c.id === commentId ? data.comment : c));
+        setEditingCommentId(null);
+        setEditingCommentContent('');
+      }
+    } catch {
+      setCommentError('Error updating comment');
+    }
+    setCommentLoading(false);
+  };
+
   if (loading) return <div className="user-loading">Loading post...</div>;
   if (error) return <div className="user-error-message">{error}</div>;
   if (!post) return null;
@@ -161,21 +325,22 @@ const UserPost = () => {
   return (
     <>
       <Navbar />
-      <div className="blog-container" key={post.id} style={{maxWidth: '700px', margin: '2rem auto', background: 'white', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.08)', padding: 0, overflow: 'hidden'}}>
+      <div className="blog-container" key={post?.id} style={{maxWidth: '700px', margin: '2rem auto', background: 'white', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.08)', padding: 0, overflow: 'hidden'}}>
         <img
           src={post.image ? `/storage/${post.image}` : 'https://picsum.photos/1000/400?random=1'}
           alt="Post cover"
           className="blog-image"
           style={{width: '100%', maxHeight: 300, objectFit: 'cover', borderTopLeftRadius: 16, borderTopRightRadius: 16, marginBottom: 0}}
+          onError={e => { e.target.onerror = null; e.target.src = 'https://picsum.photos/1000/400?random=1'; }}
         />
         <div className="blog-content" style={{padding: '2rem 2.5rem 1.5rem 2.5rem'}}>
           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
             <h1 className="post-title" style={{fontSize: '2rem', fontWeight: 700, margin: '0 0 0.5rem 0'}}>{editing ? 'Edit Post' : post.title}</h1>
             {canEdit && !editing && (
-              <>
-                <button onClick={startEdit} style={{background:'#f3f4f6',color:'#222',border:'none',borderRadius:6,padding:'8px 18px',fontWeight:500,cursor:'pointer',marginRight:8}}>Edit</button>
-                <button onClick={handleDelete} style={{background:'#fee2e2',color:'#dc2626',border:'none',borderRadius:6,padding:'8px 18px',fontWeight:500,cursor:'pointer'}}>Delete</button>
-              </>
+              <div style={{display:'flex',gap:8}}>
+                <button onClick={startEdit} style={{background:'#f3f4f6',color:'#222',border:'none',borderRadius:6,padding:'8px 18px',fontWeight:500,cursor:'pointer',transition:'background 0.2s',boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>Edit</button>
+                <button onClick={handleDelete} style={{background:'#fee2e2',color:'#dc2626',border:'none',borderRadius:6,padding:'8px 18px',fontWeight:500,cursor:'pointer',transition:'background 0.2s',boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>Delete</button>
+              </div>
             )}
           </div>
           <div className="author-section" style={{display: 'flex', alignItems: 'center', gap: '0.8rem', marginBottom: '1.2rem'}}>
@@ -205,13 +370,80 @@ const UserPost = () => {
           ) : (
             <div className="post-body" style={{fontSize: '1.13rem', lineHeight: 1.7, marginBottom: '2rem', color: '#333'}}>{post.content}</div>
           )}
-          <div className="engagement-footer" style={{marginTop: '1.5rem', borderTop: '1px solid #eee', paddingTop: '1rem', display: 'flex', gap: '2rem', fontSize: '0.95rem', color: '#666'}}>
-            <span style={{cursor: user ? 'pointer' : 'not-allowed', color: likeStatus.liked ? '#e11d48' : '#666', display: 'flex', alignItems: 'center'}} onClick={handleLike} title={user ? (likeStatus.liked ? 'Unlike' : 'Like') : 'Login to like'}>
-              <FaHeart style={{marginRight: 4, fill: likeStatus.liked ? '#e11d48' : 'none', stroke: '#e11d48', strokeWidth: 30}} /> {likeStatus.like_count}
+          <div className="engagement-footer" style={{marginTop: '1.5rem', borderTop: '1px solid #eee', paddingTop: '1rem', display: 'flex', gap: '2rem', fontSize: '0.95rem', color: '#666', alignItems:'center'}}>
+            <span style={{cursor: user ? 'pointer' : 'not-allowed', color: likeStatus.liked ? '#e11d48' : '#666', display: 'flex', alignItems: 'center', transition:'color 0.2s'}} onClick={handleLike} title={user ? (likeStatus.liked ? 'Unlike' : 'Like') : 'Login to like'}>
+              <FaHeart style={{marginRight: 4, fill: likeStatus.liked ? '#e11d48' : 'none', stroke: '#e11d48', strokeWidth: 30, transition:'fill 0.2s'}} /> {likeStatus.like_count}
             </span>
-            <span><FaComment /> 0</span>
+            <span style={{display:'flex',alignItems:'center'}}><FaComment style={{marginRight:4}}/> {commentsTotal}</span>
             {post.views !== undefined && (
               <span style={{marginLeft: 'auto', color: '#aaa', fontSize: '0.95rem'}}>{post.views} views</span>
+            )}
+          </div>
+          {/* Comments Section */}
+          <hr style={{margin: '2rem 0 1.5rem 0'}} />
+          <h3 style={{fontSize:'1.2rem',fontWeight:600,marginBottom:12}}>Comments ({commentsTotal})</h3>
+          {commentError && <div className="user-error-message">{commentError}</div>}
+          {user ? (
+            <form onSubmit={handleCommentSubmit} style={{marginBottom:24,display:'flex',gap:8}}>
+              <input
+                type="text"
+                value={commentContent}
+                onChange={e => setCommentContent(e.target.value)}
+                placeholder="Write a comment..."
+                required
+                disabled={commentLoading}
+                style={{flex:1,padding:'8px',borderRadius:6,border:'1px solid #ccc'}}
+              />
+              <button type="submit" disabled={commentLoading || !commentContent.trim()} style={{background:'#2563eb',color:'white',border:'none',borderRadius:6,padding:'8px 18px',fontWeight:500,cursor:'pointer'}}>
+                {commentLoading ? 'Posting...' : 'Post'}
+              </button>
+            </form>
+          ) : (
+            <div style={{marginBottom:24,color:'#888'}}>Log in to comment.</div>
+          )}
+          <div>
+            {comments.length === 0 && <div style={{color:'#aaa'}}>No comments yet.</div>}
+            {comments.map((comment) => (
+              <div key={comment.id} style={{marginBottom:18,padding:'10px 14px',background:'#f8fafc',borderRadius:8,display:'flex',alignItems:'flex-start',gap:12,boxShadow:'0 1px 4px rgba(0,0,0,0.03)'}}>
+                <img
+                  src={comment.user?.avatar || 'https://i.pravatar.cc/100'}
+                  alt="User"
+                  style={{width:32,height:32,borderRadius:'50%',objectFit:'cover',boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}
+                />
+                <div style={{flex:1}}>
+                  <div style={{fontWeight:600,fontSize:'1rem',display:'flex',alignItems:'center',gap:8}}>
+                    {comment.user?.name || comment.user?.email || 'Anonymous'}
+                    {(user && (user.id === comment.user_id || user.role === 'admin')) && editingCommentId !== comment.id && (
+                      <div style={{display:'flex',gap:4,marginLeft:8}}>
+                        <button onClick={() => handleEditComment(comment)} style={{background:'none',color:'#2563eb',border:'none',fontWeight:600,cursor:'pointer',padding:0,transition:'color 0.2s'}}>Edit</button>
+                        <button onClick={() => handleDeleteComment(comment.id)} style={{background:'none',color:'#e11d48',border:'none',fontWeight:600,cursor:'pointer',padding:0,transition:'color 0.2s'}}>Delete</button>
+                      </div>
+                    )}
+                  </div>
+                  {editingCommentId === comment.id ? (
+                    <form onSubmit={e => handleEditCommentSubmit(e, comment.id)} style={{display:'flex',gap:8,margin:'6px 0'}}>
+                      <input
+                        type="text"
+                        value={editingCommentContent}
+                        onChange={e => setEditingCommentContent(e.target.value)}
+                        required
+                        style={{flex:1,padding:'6px',borderRadius:6,border:'1px solid #bbb'}}
+                        disabled={commentLoading}
+                      />
+                      <button type="submit" disabled={commentLoading || !editingCommentContent.trim()} style={{background:'#22c55e',color:'white',border:'none',borderRadius:6,padding:'6px 14px',fontWeight:500,cursor:'pointer'}}>Save</button>
+                      <button type="button" onClick={() => {setEditingCommentId(null);setEditingCommentContent('');}} style={{background:'#f3f4f6',color:'#222',border:'none',borderRadius:6,padding:'6px 14px',fontWeight:500,cursor:'pointer'}}>Cancel</button>
+                    </form>
+                  ) : (
+                    <div style={{fontSize:'0.97rem',color:'#333',margin:'2px 0 4px 0'}}>{comment.content}</div>
+                  )}
+                  <div style={{fontSize:'0.92rem',color:'#888'}}>{new Date(comment.created_at).toLocaleString()}</div>
+                </div>
+              </div>
+            ))}
+            {commentsPage < commentsLastPage && (
+              <button onClick={loadMoreComments} disabled={commentsLoadingMore} style={{margin:'16px auto',display:'block',background:'#f3f4f6',color:'#222',border:'none',borderRadius:6,padding:'10px 24px',fontWeight:500,cursor:'pointer',boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
+                {commentsLoadingMore ? 'Loading...' : 'Load more comments'}
+              </button>
             )}
           </div>
         </div>

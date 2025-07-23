@@ -16,6 +16,11 @@ Route::post('/logout', function (\Illuminate\Http\Request $request) {
 
 // Only web routes and SPA fallback remain here
 
+// Add this above the SPA fallback
+Route::get('/login', function () {
+    return view('welcome');
+})->name('login');
+
 // Serve React app for ALL routes (SPA)
 Route::get('/{any}', function () {
     return view('welcome');
