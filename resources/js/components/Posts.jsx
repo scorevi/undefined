@@ -98,9 +98,18 @@ const Posts = ({ refresh }) => {
       <div className="recent-posts">
         <div className="section-header">
           <h2>Recent Posts ({postsTotal})</h2>
-          <button className="sort-btn">
-            <FaSort /> Sort
-          </button>
+          
+          <div className="sort-section">
+            <button className="sort-btn"><FaSort /> Sort </button>
+
+            <div className="dropdown"> {/* feel free to add, remove, or change*/}
+              <span className='latest'>Latest</span>
+              <span className='oldest'>Oldest</span>
+              <span className='most-views'>Most viewed</span>
+              <span className='author'>Author</span>
+            </div>
+
+          </div>
         </div>
         {loading && <div className="user-loading">Loading posts...</div>}
         {error && <div className="user-error-message">{error}</div>}

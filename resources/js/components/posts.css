@@ -42,7 +42,15 @@ span, p{
   align-items: center;
 }
 
+/* Sort button using dropdown */
+.sort-section {
+  position: relative;
+  display: inline-block;
+  text-align: center;
+}
+
 .sort-btn {
+  margin-right: 1rem;
   background: none;
   border: none;
   font-size: 0.9rem;
@@ -52,6 +60,37 @@ span, p{
   gap: 5px;
 }
 
+.dropdown {
+  display: none;
+  padding: .3rem;
+  border-radius: .3rem;
+  border: solid #691b9a8c;
+  background-color: white;
+  position: absolute;
+  z-index: 1;
+  box-shadow: -.3rem .3rem 8px #b7b5c9;
+  /* To center it to .sort-btn, remove if preferred aligned with .sort-btn */
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.dropdown span {
+  padding: 1rem;
+  border-radius: .3rem;
+  display: block;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.dropdown span:hover {
+  background-color: #fbf3ff;
+}
+
+.sort-section:hover .dropdown {
+  display: block;
+}
+
+/* Posts start here */
 .recent-post-card {
   display: flex;
   align-items: stretch;
