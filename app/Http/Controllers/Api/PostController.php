@@ -53,12 +53,18 @@ class PostController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'image' => 'nullable|image|max:2048',
+            'image' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp|mimetypes:image/jpeg,image/png,image/gif,image/webp|max:51200', // 50MB
         ]);
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('posts', 'public');
+            $file = $request->file('image');
+            // Double-check MIME type server-side
+            $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!in_array($file->getMimeType(), $allowedMimes)) {
+                return response()->json(['error' => 'Only JPEG, PNG, GIF, or WEBP images are allowed.'], 422);
+            }
+            $imagePath = $file->store('posts', 'public');
         }
 
         $post = Post::create([

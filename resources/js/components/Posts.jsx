@@ -4,6 +4,12 @@ import { FaHeart, FaComment, FaSort, FaChevronRight } from 'react-icons/fa';
 import './posts.css';
 // import UserPost from '../pages/UserPost';
 
+function getPostImageUrl(image) {
+  if (!image) return 'https://picsum.photos/400?random=5';
+  if (image.startsWith('http://') || image.startsWith('https://')) return image;
+  return `/storage/${image}`;
+}
+
 const Posts = ({ refresh }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,9 +30,9 @@ const Posts = ({ refresh }) => {
         if (!response.ok) throw new Error('Failed to fetch posts');
         const data = await response.json();
         if (append) {
-          setPosts((prev) => [...prev, ...data.data]);
+          setPosts((prev) => [...prev, ...(Array.isArray(data.data) ? data.data : [])]);
         } else {
-          setPosts(data.data);
+          setPosts(Array.isArray(data.data) ? data.data : []);
         }
         setPostsPage(data.current_page);
         setPostsLastPage(data.last_page);
@@ -101,11 +107,13 @@ const Posts = ({ refresh }) => {
         {!loading && !error && posts.length === 0 && (
           <div style={{margin:'1rem 0', color:'#888'}}>No posts yet.</div>
         )}
-        {posts.map((post) => (
+        {Array.isArray(posts) && posts.map((post) => (
           <div className="recent-post-card" key={post.id} style={{alignItems:'center',padding:'0.7rem 1rem',minHeight:0}}>
-            <img src={post.image ? `/storage/${post.image}` : 'https://picsum.photos/400?random=5'} alt="post" className="post-img" style={{width:70,height:70,marginRight:16}} 
-              onError={e => { e.target.onerror = null; e.target.src = 'https://picsum.photos/400?random=5'; }}
-            />
+            {post.image && (
+              <img src={getPostImageUrl(post.image)} alt="post" className="post-img" style={{width:70,height:70,marginRight:16}} 
+                onError={e => { e.target.onerror = null; e.target.src = 'https://picsum.photos/400?random=5'; }}
+              />
+            )}
             <div className="post-details" style={{flex:1,minWidth:0}}>
               <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:2}}>
                 <Link to={`/blog/post/${post.id}`} style={{fontWeight:600,fontSize:'1.05rem',color:'#222',textDecoration:'none',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',maxWidth:'60%'}}>{post.title}</Link>
@@ -132,7 +140,7 @@ const Posts = ({ refresh }) => {
       <div className="trending-posts">
         <h2>Trending</h2>
         {trending.length === 0 && <div style={{color:'#888'}}>No trending posts yet.</div>}
-        {trending.map((item) => (
+        {Array.isArray(trending) && trending.map((item) => (
           <div className="trending-card" key={item.id}>
             <div className="trend-content">
               <Link to={`/blog/post/${item.id}`}><h4>{item.title}</h4></Link>

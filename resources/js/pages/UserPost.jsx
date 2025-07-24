@@ -5,6 +5,12 @@ import Navbar from '../components/NavBar';
 import { useAuth } from '../authContext';
 import './userpost.css';
 
+function getPostImageUrl(image) {
+  if (!image) return 'https://picsum.photos/1000/400?random=1';
+  if (image.startsWith('http://') || image.startsWith('https://')) return image;
+  return `/storage/${image}`;
+}
+
 const UserPost = () => {
   const { id } = useParams();
   const { user } = useAuth();
@@ -326,12 +332,14 @@ const UserPost = () => {
     <>
       <Navbar />
       <div className="blog-container" key={post?.id}>
-        <img
-          src={post.image ? `/storage/${post.image}` : 'https://picsum.photos/1000/400?random=1'}
-          alt="Post cover"
-          className="blog-image"
-          onError={e => { e.target.onerror = null; e.target.src = 'https://picsum.photos/1000/400?random=1'; }}
-        />
+        {post.image && (
+          <img
+            src={getPostImageUrl(post.image)}
+            alt="Post cover"
+            className="blog-image"
+            onError={e => { e.target.onerror = null; e.target.src = 'https://picsum.photos/1000/400?random=1'; }}
+          />
+        )}
 
         <div className="blog-content">
           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>

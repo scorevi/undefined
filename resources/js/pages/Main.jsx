@@ -12,11 +12,18 @@ import './featured.css';
 import Posts from '../components/Posts';
 import Navbar from '../components/NavBar';
 
+function getPostImageUrl(image) {
+  if (!image) return 'https://picsum.photos/1000/400?random=1';
+  if (image.startsWith('http://') || image.startsWith('https://')) return image;
+  return `/storage/${image}`;
+}
+
 const Main = () => {
   document.title = "Home";
   const { user } = useAuth();
   const [content, setContent] = useState('');
   const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -30,7 +37,7 @@ const Main = () => {
         const response = await fetch('/api/posts');
         if (!response.ok) throw new Error('Failed to fetch posts');
         const data = await response.json();
-        setFeaturedPosts(data.slice(0, 3));
+        setFeaturedPosts((data.data || []).slice(0, 3));
       } catch (err) {
         setFeaturedPosts([]);
       }
@@ -45,13 +52,37 @@ const Main = () => {
         const response = await fetch('/api/posts');
         if (!response.ok) throw new Error('Failed to fetch posts');
         const data = await response.json();
-        setFeaturedPosts(data.slice(0, 3));
+        setFeaturedPosts((data.data || []).slice(0, 3));
       } catch (err) {
         setFeaturedPosts([]);
       }
     };
     fetchFeatured();
   }, [refreshPosts]); // depend on refreshPosts
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      setImage(null);
+      setImagePreview(null);
+      return;
+    }
+    if (!file.type.startsWith('image/')) {
+      setError('Only image files are allowed.');
+      setImage(null);
+      setImagePreview(null);
+      return;
+    }
+    if (file.size > 50 * 1024 * 1024) { // 50MB limit
+      setError('Image size must be less than 50MB.');
+      setImage(null);
+      setImagePreview(null);
+      return;
+    }
+    setError('');
+    setImage(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,6 +91,16 @@ const Main = () => {
     setSuccess('');
     if (!content.trim()) {
       setError('Content cannot be empty.');
+      setLoading(false);
+      return;
+    }
+    if (image && !image.type.startsWith('image/')) {
+      setError('Only image files are allowed.');
+      setLoading(false);
+      return;
+    }
+    if (image && image.size > 50 * 1024 * 1024) {
+      setError('Image size must be less than 50MB.');
       setLoading(false);
       return;
     }
@@ -86,6 +127,7 @@ const Main = () => {
         setSuccess('Post submitted!');
         setContent('');
         setImage(null);
+        setImagePreview(null);
         setRefreshPosts(r => r + 1); // trigger posts refresh
       }
     } catch (err) {
@@ -117,14 +159,27 @@ const Main = () => {
             disabled={loading}
           />
           <div className="post-actions">
+            <label htmlFor="image-upload" className="custom-upload-btn">
+              📷 Upload Image
+            </label>
             <input
+              id="image-upload"
               type="file"
               accept="image/*"
-              onChange={(e) => setImage(e.target.files[0])}
+              style={{ display: 'none' }}
+              onChange={handleImageChange}
               disabled={loading}
             />
+            <span className="file-name">
+              {image ? image.name : "No file chosen"}
+            </span>
             <button type="submit" disabled={loading}>{loading ? 'Posting...' : 'Post'}</button>
           </div>
+          {imagePreview && (
+            <div style={{marginTop:8}}>
+              <img src={imagePreview} alt="Preview" style={{maxWidth:200, maxHeight:200, borderRadius:8, boxShadow:'0 2px 8px #ccc'}} />
+            </div>
+          )}
           {error && <div className="user-error-message">{error}</div>}
           {success && <div className="user-success-message" style={{color:'#22c55e',marginTop:8}}>{success}</div>}
         </div>
@@ -149,7 +204,7 @@ const Main = () => {
             <SwiperSlide key={post.id}>
               <Link to={`/blog/post/${post.id}`}>
                 <div className="slide-card">
-                  <img src={post.image ? `/storage/${post.image}` : 'https://picsum.photos/1000/400?random=1'} alt={post.title} className="slide-image" />
+                  <img src={getPostImageUrl(post.image)} alt={post.title} className="slide-image" />
                   <div className="slide-overlay">
                     <h3 className="slide-title">{post.title}</h3>
                     <p>{post.content.length > 120 ? post.content.slice(0, 120) + '...' : post.content}</p>
