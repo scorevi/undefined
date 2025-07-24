@@ -133,9 +133,9 @@ const Posts = ({ refresh }) => {
           <div style={{margin:'1rem 0', color:'#888'}}>No posts yet.</div>
         )}
         {Array.isArray(posts) && posts.map((post) => (
-          <div className="recent-post-card" key={post.id} style={{alignItems:'center',padding:'0.7rem 1rem',minHeight:0}}>
+          <div className="recent-post-card" key={post.id}>
             {post.image && (
-              <img src={getPostImageUrl(post.image)} alt="post" className="post-img" style={{width:70,height:70,marginRight:16}} 
+              <img src={getPostImageUrl(post.image)} alt="post" className="post-img"
               onError={e => { e.target.onerror = null; e.target.src = 'https://picsum.photos/400?random=5'; }}
             />
             )}

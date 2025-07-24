@@ -20,6 +20,8 @@ span, p{
 }
 
 .posts-section {
+  /* background-color: rgb(255, 253, 224);
+  border-radius: 1rem; */
   font-family: "Nunito";
   display: flex;
   gap: 1rem;
@@ -32,13 +34,15 @@ span, p{
   border-right: solid rgba(28, 4, 59, 0.219);
 }
 
-.category-cont li {
-  text-decoration: underline;
-  font-size: 1.2rem;
-  line-height: 2rem;
+.categories {
+  display: inline-block;
 }
 
-.category-cont li:hover {
+.category-cont li {
+  text-decoration: underline;
+  list-style: none;
+  font-size: 1.2rem;
+  line-height: 2rem;
   cursor: pointer;
 }
 
@@ -112,21 +116,24 @@ span, p{
 
 /* Posts start here */
 .recent-post-card {
+  min-height: 0;
   display: flex;
-  align-items: stretch;
+  align-items: center;
   border: solid 1px #c0c0c0;
   border-radius: 12px;
-  padding: 1rem;
+  padding: 0.7rem 1rem;
   margin-top: 1rem;
+  margin-bottom: 1.5rem;
   box-shadow: .3rem .3rem 8px #b7b5c9;
   background: #fff;
-  gap: 1.2rem;
+  /* gap: 1.2rem; */
   min-height: 110px;
 }
 
 .post-img {
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
+  margin-right: 1rem;
   border-radius: 8px;
   object-fit: cover;
   flex-shrink: 0;
