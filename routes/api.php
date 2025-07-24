@@ -61,3 +61,10 @@ Route::get('/posts/{post}/comments', [CommentController::class, 'index']);
 Route::post('/posts/{post}/comments', [CommentController::class, 'store'])->middleware(['web', 'auth']);
 Route::delete('/posts/{post}/comments/{comment}', [CommentController::class, 'destroy'])->middleware(['web', 'auth']); 
 Route::patch('/posts/{post}/comments/{comment}', [CommentController::class, 'update'])->middleware(['web', 'auth']); 
+// Admin comments management
+Route::middleware(['web', 'auth'])->get('/comments', [CommentController::class, 'adminIndex']); 
+
+// Admin settings endpoints
+Route::middleware(['web', 'auth'])->post('/admin/email', [App\Http\Controllers\Api\AdminController::class, 'updateEmail']);
+Route::middleware(['web', 'auth'])->post('/admin/password', [App\Http\Controllers\Api\AdminController::class, 'updatePassword']);
+Route::middleware(['web', 'auth'])->post('/admin/site-settings', [App\Http\Controllers\Api\AdminController::class, 'updateSiteSettings']); 

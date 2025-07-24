@@ -124,9 +124,9 @@ const Posts = ({ refresh }) => {
                 )}
               </div>
               <p style={{margin:'2px 0 0 0',fontSize:'0.97rem',color:'#444',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',maxWidth:'100%'}}>{post.content.length > 80 ? post.content.slice(0, 80) + '...' : post.content}</p>
-              <div className="engagement" style={{marginTop:4}}>
-                <span className="likes"><FaHeart /> 0</span>
-                <span><FaComment /> 0</span>
+              <div className="engagement">
+                <span className="likes"><FaHeart /> {post.likes_count ?? 0}</span>
+                <span className="comments"><FaComment /> {post.comments_count ?? 0}</span>
               </div>
             </div>
           </div>

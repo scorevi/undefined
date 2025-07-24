@@ -188,22 +188,22 @@ const AdminDashboard = () => {
                     <div className="px-4 py-5 sm:p-6">
                         <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">Admin Quick Actions</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <a href="#" className="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50">
+                            <Link to="/admin/posts/new" className="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50">
                                 <i className="fas fa-plus text-blue-600 mr-3"></i>
                                 <span className="text-sm font-medium text-gray-900">New Post</span>
-                            </a>
-                            <a href="#" className="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50">
+                            </Link>
+                            <Link to="/admin/posts" className="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50">
                                 <i className="fas fa-edit text-green-600 mr-3"></i>
                                 <span className="text-sm font-medium text-gray-900">Edit Posts</span>
-                            </a>
-                            <a href="#" className="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50">
+                            </Link>
+                            <Link to="/admin/comments" className="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50">
                                 <i className="fas fa-comment text-purple-600 mr-3"></i>
                                 <span className="text-sm font-medium text-gray-900">Manage Comments</span>
-                            </a>
-                            <a href="#" className="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50">
+                            </Link>
+                            <Link to="/admin/settings" className="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50">
                                 <i className="fas fa-cog text-gray-600 mr-3"></i>
                                 <span className="text-sm font-medium text-gray-900">Admin Settings</span>
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -218,7 +218,7 @@ const AdminDashboard = () => {
                                     <tr>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Views</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
@@ -232,13 +232,7 @@ const AdminDashboard = () => {
                                                 <div className="text-sm text-gray-900">{post.views.toLocaleString()}</div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                                    post.status === 'published' 
-                                                        ? 'bg-green-100 text-green-800' 
-                                                        : 'bg-yellow-100 text-yellow-800'
-                                                }`}>
-                                                    {post.status.charAt(0).toUpperCase() + post.status.slice(1)}
-                                                </span>
+                                                <div className="text-sm text-gray-900">{post.created_at ? new Date(post.created_at).toLocaleDateString() : 'N/A'}</div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <a href="#" className="text-blue-600 hover:text-blue-900 mr-3">Edit</a>

@@ -70,4 +70,19 @@ class CommentController extends Controller
         $comment->load('user');
         return response()->json(['success' => true, 'comment' => $comment]);
     }
+
+    // List all comments for admin
+    public function adminIndex(Request $request)
+    {
+        $perPage = (int) $request->query('per_page', 20);
+        $comments = Comment::with(['user', 'post'])
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage);
+        return response()->json([
+            'data' => $comments->items(),
+            'current_page' => $comments->currentPage(),
+            'last_page' => $comments->lastPage(),
+            'total' => $comments->total(),
+        ]);
+    }
 } 

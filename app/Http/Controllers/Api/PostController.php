@@ -16,10 +16,13 @@ class PostController extends Controller
     {
         $perPage = (int) $request->query('per_page', 10);
         $posts = Post::with('user')
+            ->withCount('likes')
+            ->withCount('comments')
             ->orderBy('created_at', 'desc')
             ->paginate($perPage);
+        $postsArr = $posts->items();
         return response()->json([
-            'data' => $posts->items(),
+            'data' => $postsArr,
             'current_page' => $posts->currentPage(),
             'last_page' => $posts->lastPage(),
             'total' => $posts->total(),
