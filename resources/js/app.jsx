@@ -1,7 +1,7 @@
 import './bootstrap';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useParams } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import Main from './pages/Main';
 import UserPost from './pages/UserPost';
 import Footer from './components/Footer';
@@ -11,28 +11,84 @@ import AdminLogin from './components/Login';
 import AdminSignup from './components/Signup';
 import AdminDashboard from './components/AdminDashboard';
 import { AuthProvider, useAuth } from './authContext';
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
 // Removed: import UserDashboard from './components/UserDashboard';
 
 // Custom Welcome Page
 const Welcome = () => (
   <div style={{
-    minHeight: '80vh',
+    minHeight: '100vh',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     background: 'linear-gradient(120deg, #f0f4ff 0%, #e0ffe8 100%)'
   }}>
-    <div style={{ maxWidth: 900, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ flex: 1 }}>
-        <h1 style={{ fontSize: 38, fontWeight: 700, color: '#2563eb', marginBottom: 8 }}>Blog Platform</h1>
-        <h2 style={{ fontSize: 24, fontWeight: 600, color: '#222', marginBottom: 16 }}>Welcome!</h2>
-      <p style={{ color: '#555', marginBottom: 32 }}>Sign in or register to get started.</p>
+    <div style={{
+      width: '100%',
+      maxWidth: 900,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 40
+    }}>
+      <div style={{ textAlign: 'center' }}>
+        <h1 style={{ fontSize: 48, fontWeight: 800, color: '#2563eb', marginBottom: 8, letterSpacing: 1 }}>Blog Platform</h1>
+        <h2 style={{ fontSize: 28, fontWeight: 700, color: '#222', marginBottom: 16 }}>Welcome!</h2>
+        <p style={{ color: '#555', marginBottom: 32, fontSize: 18 }}>Sign in or register to get started.</p>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <Link to="/login" style={{ background: '#3b82f6', color: 'white', borderRadius: 8, padding: '14px 0', fontWeight: 700, textDecoration: 'none', fontSize: 18, textAlign: 'center' }}>User Login</Link>
-        <Link to="/register" style={{ background: '#22c55e', color: 'white', borderRadius: 8, padding: '14px 0', fontWeight: 700, textDecoration: 'none', fontSize: 18, textAlign: 'center' }}>User Register</Link>
-        <Link to="/admin/login" style={{ background: '#fbbf24', color: 'white', borderRadius: 8, padding: '14px 0', fontWeight: 700, textDecoration: 'none', fontSize: 18, textAlign: 'center' }}>Admin Login</Link>
-        <Link to="/admin/signup" style={{ background: 'linear-gradient(90deg, #e11d48 0%, #f472b6 100%)', color: 'white', borderRadius: 8, padding: '14px 0', fontWeight: 700, textDecoration: 'none', fontSize: 18, textAlign: 'center' }}>Admin Register</Link>
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 20,
+        width: 320,
+        alignItems: 'stretch'
+      }}>
+        <Link to="/login" style={{
+          background: '#3b82f6',
+          color: 'white',
+          borderRadius: 10,
+          padding: '18px 0',
+          fontWeight: 700,
+          textDecoration: 'none',
+          fontSize: 20,
+          textAlign: 'center',
+          boxShadow: '0 2px 8px rgba(37,99,235,0.08)'
+        }}>User Login</Link>
+        <Link to="/register" style={{
+          background: '#22c55e',
+          color: 'white',
+          borderRadius: 10,
+          padding: '18px 0',
+          fontWeight: 700,
+          textDecoration: 'none',
+          fontSize: 20,
+          textAlign: 'center',
+          boxShadow: '0 2px 8px rgba(34,197,94,0.08)'
+        }}>User Register</Link>
+        <Link to="/admin/login" style={{
+          background: '#fbbf24',
+          color: 'white',
+          borderRadius: 10,
+          padding: '18px 0',
+          fontWeight: 700,
+          textDecoration: 'none',
+          fontSize: 20,
+          textAlign: 'center',
+          boxShadow: '0 2px 8px rgba(251,191,36,0.08)'
+        }}>Admin Login</Link>
+        <Link to="/admin/signup" style={{
+          background: 'linear-gradient(90deg, #e11d48 0%, #f472b6 100%)',
+          color: 'white',
+          borderRadius: 10,
+          padding: '18px 0',
+          fontWeight: 700,
+          textDecoration: 'none',
+          fontSize: 20,
+          textAlign: 'center',
+          boxShadow: '0 2px 8px rgba(225,29,72,0.08)'
+        }}>Admin Register</Link>
       </div>
     </div>
   </div>
@@ -677,9 +733,13 @@ const AdminEditPostPage = () => {
 };
 
 const App = () => {
+  const { user } = useAuth();
   const [siteMeta, setSiteMeta] = useState({ name: '', description: '' });
+  const location = useLocation();
 
   useEffect(() => {
+    if (!user) return; // Only fetch if user is logged in
+    NProgress.start();
     fetch('/api/dashboard', { credentials: 'include' })
       .then(res => res.json())
       .then(data => {
@@ -694,43 +754,45 @@ const App = () => {
           document.head.appendChild(meta);
         }
         meta.content = desc;
-      });
-  }, []);
+        NProgress.done();
+      })
+      .catch(() => NProgress.done());
+  }, [location, user]);
 
   return (
-  <AuthProvider>
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <BrowserRouter>
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <Routes>
-              <Route path="/" element={<PublicRoute><Welcome /></PublicRoute>} />
-              <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-              <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
-              <Route path="/admin/login" element={<PublicRoute><AdminLogin /></PublicRoute>} />
-              <Route path="/admin/signup" element={<PublicRoute><AdminSignup /></PublicRoute>} />
-            <Route path="/blog" element={<ProtectedRoute><Main /></ProtectedRoute>} />
-            <Route path="/blog/post/:id" element={<ProtectedRoute><UserPost /></ProtectedRoute>} />
-            <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-              <Route path="/admin/posts/new" element={<AdminRoute><AdminNewPost /></AdminRoute>} />
-              <Route path="/admin/posts" element={<AdminRoute><AdminEditPosts /></AdminRoute>} />
-              <Route path="/admin/posts/:id/edit" element={<AdminRoute><AdminEditPostPage /></AdminRoute>} />
-              <Route path="/admin/comments" element={<AdminRoute><AdminComments /></AdminRoute>} />
-              <Route path="/admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
-            {/* fallback */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </div>
-        <Footer />
-      </BrowserRouter>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <Routes>
+            <Route path="/" element={<PublicRoute><Welcome /></PublicRoute>} />
+            <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+            <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+            <Route path="/admin/login" element={<PublicRoute><AdminLogin /></PublicRoute>} />
+            <Route path="/admin/signup" element={<PublicRoute><AdminSignup /></PublicRoute>} />
+          <Route path="/blog" element={<ProtectedRoute><Main /></ProtectedRoute>} />
+          <Route path="/blog/post/:id" element={<ProtectedRoute><UserPost /></ProtectedRoute>} />
+          <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+            <Route path="/admin/posts/new" element={<AdminRoute><AdminNewPost /></AdminRoute>} />
+            <Route path="/admin/posts" element={<AdminRoute><AdminEditPosts /></AdminRoute>} />
+            <Route path="/admin/posts/:id/edit" element={<AdminRoute><AdminEditPostPage /></AdminRoute>} />
+            <Route path="/admin/comments" element={<AdminRoute><AdminComments /></AdminRoute>} />
+            <Route path="/admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
+          {/* fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </div>
+      <Footer />
     </div>
-  </AuthProvider>
-);
+  );
 };
 
 const root = document.getElementById('react-root');
 
 if (root) {
   ReactDOM.createRoot(root).render(
-    <App />
+    <AuthProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
