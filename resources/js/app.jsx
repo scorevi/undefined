@@ -34,8 +34,8 @@ const Welcome = () => (
       gap: 40
     }}>
       <div style={{ textAlign: 'center' }}>
-        <h1 style={{ fontSize: 48, fontWeight: 800, color: '#2563eb', marginBottom: 8, letterSpacing: 1 }}>Blog Platform</h1>
-        <h2 style={{ fontSize: 28, fontWeight: 700, color: '#222', marginBottom: 16 }}>Welcome!</h2>
+        <h1 style={{ fontSize: 48, fontWeight: 800, color: '#2563eb', marginBottom: 8, letterSpacing: 1 }}>Erikanoelvi's Blog</h1>
+        <h2 style={{ fontSize: 28, fontWeight: 700, color: '#222', marginBottom: 16 }}>A modern blog platform for the DWP Subject.</h2>
         <p style={{ color: '#555', marginBottom: 32, fontSize: 18 }}>Sign in or register to get started.</p>
       </div>
       <div style={{
@@ -743,8 +743,8 @@ const App = () => {
     fetch('/api/dashboard', { credentials: 'include' })
       .then(res => res.json())
       .then(data => {
-        const name = data.stats?.site_name || 'Blog Platform';
-        const desc = (data.stats?.site_description || 'A modern blog platform.').slice(0, 120);
+        const name = data.stats?.site_name || 'Erikanoelvi\'s Blog';
+        const desc = (data.stats?.site_description || 'A modern blog platform for the DWP Subject.').slice(0, 120);
         setSiteMeta({ name, description: desc });
         document.title = name;
         let meta = document.querySelector('meta[name="description"]');
