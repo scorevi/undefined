@@ -400,6 +400,7 @@ const AdminSettings = () => {
         headers: {
           'X-CSRF-TOKEN': csrfToken,
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({ email }),
@@ -431,6 +432,7 @@ const AdminSettings = () => {
         headers: {
           'X-CSRF-TOKEN': csrfToken,
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
@@ -460,6 +462,7 @@ const AdminSettings = () => {
         headers: {
           'X-CSRF-TOKEN': csrfToken,
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({ site_name: siteName, site_description: siteDescription }),

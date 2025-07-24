@@ -136,23 +136,6 @@ const AdminDashboard = () => {
                         </div>
                     </div>
 
-                    {/* Published Posts */}
-                    <div className="bg-white/90 backdrop-blur-sm overflow-hidden shadow rounded-lg">
-                        <div className="p-5">
-                            <div className="flex items-center">
-                                <div className="flex-shrink-0">
-                                    <i className="fas fa-check-circle text-green-600 text-2xl"></i>
-                                </div>
-                                <div className="ml-5 w-0 flex-1">
-                                    <dl>
-                                        <dt className="text-sm font-medium text-gray-500 truncate">Published</dt>
-                                        <dd className="text-lg font-medium text-gray-900">{stats.published_posts}</dd>
-                                    </dl>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     {/* Total Views */}
                     <div className="bg-white/90 backdrop-blur-sm overflow-hidden shadow rounded-lg">
                         <div className="p-5">
@@ -222,6 +205,7 @@ const AdminDashboard = () => {
                                 <thead className="bg-gray-50">
                                     <tr>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Likes</th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Views</th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -232,6 +216,9 @@ const AdminDashboard = () => {
                                         <tr key={index}>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="text-sm font-medium text-gray-900">{post.title}</div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="text-sm text-gray-900">{post.likes_count ?? 0}</div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="text-sm text-gray-900">{post.views.toLocaleString()}</div>
