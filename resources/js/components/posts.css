@@ -42,7 +42,7 @@ span, p{
   align-items: center;
 }
 
-/* Sort button using dropdown */
+/* Sort button using dropdown starts here */
 .sort-section {
   position: relative;
   display: inline-block;
@@ -62,16 +62,19 @@ span, p{
 
 .dropdown {
   display: none;
+  text-align: left;
   padding: .3rem;
   border-radius: .3rem;
-  border: solid #691b9a8c;
+  border-right: .3rem solid #691b9a54;
+  border-bottom: .3rem solid #691b9a54;
   background-color: white;
   position: absolute;
+  overflow: hidden;
   z-index: 1;
-  box-shadow: -.3rem .3rem 8px #b7b5c9;
-  /* To center it to .sort-btn, remove if preferred aligned with .sort-btn */
-  left: 50%;
-  transform: translateX(-50%);
+  box-shadow: .3rem .3rem 8px #b7b5c9;
+  /* uncomment if preferred centered with .sort-btn */
+  /* left: 50%;
+  transform: translateX(-50%); */
 }
 
 .dropdown span {
@@ -88,6 +91,7 @@ span, p{
 
 .sort-section:hover .dropdown {
   display: block;
+  transition: 1s;
 }
 
 /* Posts start here */
