@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import { useAuth } from '../authContext';
+import { FaCamera } from 'react-icons/fa';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -158,9 +159,10 @@ const Main = () => {
             onChange={(e) => setContent(e.target.value)}
             disabled={loading}
           />
+          
           <div className="post-actions">
             <label htmlFor="image-upload" className="custom-upload-btn">
-              📷 Upload Image
+              <FaCamera /> Upload Image
             </label>
             <input
               id="image-upload"
@@ -171,10 +173,11 @@ const Main = () => {
               disabled={loading}
             />
             <span className="file-name">
-              {image ? image.name : "No file chosen"}
+              {image ? image.name : ""}
             </span>
             <button type="submit" disabled={loading}>{loading ? 'Posting...' : 'Post'}</button>
           </div>
+
           {imagePreview && (
             <div style={{marginTop:8}}>
               <img src={imagePreview} alt="Preview" style={{maxWidth:200, maxHeight:200, borderRadius:8, boxShadow:'0 2px 8px #ccc'}} />

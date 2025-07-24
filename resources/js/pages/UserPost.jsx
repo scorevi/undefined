@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaHeart, FaComment } from 'react-icons/fa';
+import { FaPencil, FaTrash } from 'react-icons/fa6';
 import Navbar from '../components/NavBar';
 import { useAuth } from '../authContext';
 import './userpost.css';
@@ -332,14 +333,16 @@ const UserPost = () => {
     <>
       <Navbar />
       <div className="blog-container" key={post?.id}>
-        {post.image && (
-        <img
-            src={getPostImageUrl(post.image)}
-          alt="Post cover"
-          className="blog-image"
-          onError={e => { e.target.onerror = null; e.target.src = 'https://picsum.photos/1000/400?random=1'; }}
-        />
-        )}
+        <div className="img-cont">
+          {post.image && (
+          <img
+              src={getPostImageUrl(post.image)}
+            alt="Post cover"
+            className="blog-image"
+            onError={e => { e.target.onerror = null; e.target.src = 'https://picsum.photos/1000/400?random=1'; }}
+          />
+          )}
+        </div>
 
         <div className="blog-content">
           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
@@ -347,8 +350,8 @@ const UserPost = () => {
             {canEdit && !editing && (
               <div style={{display:'flex',gap:8}}>
                 {/* Will change these to icons instead */}
-                <button className="edit-btn" onClick={startEdit}>Edit</button>
-                <button className="delete-btn" onClick={handleDelete}>Delete</button>
+                <button className="edit-btn" onClick={startEdit}><FaPencil /></button>
+                <button className="delete-btn" onClick={handleDelete}><FaTrash /></button>
               </div>
             )}
           </div>

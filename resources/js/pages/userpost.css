@@ -40,36 +40,34 @@
 }
 
 .edit-btn {
-  background: #bb6feb3b;
   color: #222;
   border: none; 
   border-radius: .3rem;
   padding: .5rem 1rem;
   font-weight: 500;
   cursor: pointer;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
 
 .edit-btn:hover {
   background-color: #6a1b9a;
   color: #fbf3ff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
   transition: 0.2s;
 }
 
 .delete-btn {
-  background: #fee2e2;
   color: #dc2626;
   border: none; 
   border-radius: .3rem;
   padding: .5rem 1rem;
   font-weight: 500;
   cursor: pointer;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
 
 .delete-btn:hover {
   background-color: #dc2626;
   color: #fee2e2;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
   transition: 0.2s;
 }
 
@@ -175,11 +173,6 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-}
-
-.likes, .comments {
-  display: flex;
-  align-items: center;
 }
 
 .like-icon {

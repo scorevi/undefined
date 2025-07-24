@@ -100,12 +100,16 @@ textarea:focus {
   cursor: pointer;
   font-weight: 600;
   margin-right: 12px;
-  transition: background 0.2s;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
 }
+
 .custom-upload-btn:hover {
   background: #7c3aed;
+  transition: 0.2s;
 }
+
 .file-name {
   color: #444;
   font-size: 0.98rem;
