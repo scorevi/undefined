@@ -111,8 +111,8 @@ const Posts = ({ refresh }) => {
           <div className="recent-post-card" key={post.id} style={{alignItems:'center',padding:'0.7rem 1rem',minHeight:0}}>
             {post.image && (
               <img src={getPostImageUrl(post.image)} alt="post" className="post-img" style={{width:70,height:70,marginRight:16}} 
-                onError={e => { e.target.onerror = null; e.target.src = 'https://picsum.photos/400?random=5'; }}
-              />
+              onError={e => { e.target.onerror = null; e.target.src = 'https://picsum.photos/400?random=5'; }}
+            />
             )}
             <div className="post-details" style={{flex:1,minWidth:0}}>
               <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:2}}>

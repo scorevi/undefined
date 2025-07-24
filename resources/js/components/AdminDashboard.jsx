@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../authContext';
 import './styles/Admin.css';
 
 const AdminDashboard = () => {
@@ -18,6 +19,7 @@ const AdminDashboard = () => {
     });
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    const { logout } = useAuth();
 
     useEffect(() => {
         // Check if user is authenticated
@@ -48,6 +50,7 @@ const AdminDashboard = () => {
     }, [navigate]);
 
     const handleLogout = async () => {
+        console.log('Admin Logout clicked');
         try {
             const response = await fetch('/api/logout', {
                 method: 'POST',
@@ -60,10 +63,11 @@ const AdminDashboard = () => {
 
             const data = await response.json();
             if (data.success) {
-                navigate('/');
+                logout();
+                window.location.href = '/';
             }
         } catch (error) {
-            console.error('Logout error:', error);
+            console.error('Admin Logout error:', error);
         }
     };
 
@@ -89,13 +93,14 @@ const AdminDashboard = () => {
                                 Admin Dashboard
                             </Link>
                         </div>
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-4" style={{zIndex:2, position:'relative'}}>
                             <span className="text-sm text-gray-700">
                                 Welcome, {user?.name || 'Admin'}
                             </span>
                             <button
                                 onClick={handleLogout}
                                 className="text-sm text-red-600 hover:text-red-800"
+                                style={{cursor:'pointer', background:'none', border:'none', padding:0, margin:0, font:'inherit', zIndex:99, position:'relative'}}
                             >
                                 Logout
                             </button>

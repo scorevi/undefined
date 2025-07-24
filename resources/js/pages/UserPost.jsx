@@ -333,12 +333,12 @@ const UserPost = () => {
       <Navbar />
       <div className="blog-container" key={post?.id}>
         {post.image && (
-          <img
+        <img
             src={getPostImageUrl(post.image)}
-            alt="Post cover"
-            className="blog-image"
-            onError={e => { e.target.onerror = null; e.target.src = 'https://picsum.photos/1000/400?random=1'; }}
-          />
+          alt="Post cover"
+          className="blog-image"
+          onError={e => { e.target.onerror = null; e.target.src = 'https://picsum.photos/1000/400?random=1'; }}
+        />
         )}
 
         <div className="blog-content">

@@ -30,6 +30,7 @@ class UserAuthController extends Controller
 
     public function login(Request $request)
     {
+        Auth::logout(); // Always clear any existing session first
         $credentials = $request->only(['email', 'password']);
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();

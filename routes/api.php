@@ -44,9 +44,13 @@ Route::middleware(['web'])->group(function () {
 
 // Logout API route
 Route::post('/logout', function (\Illuminate\Http\Request $request) {
-    Auth::logout();
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
+    try {
+        \Illuminate\Support\Facades\Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+    } catch (\Throwable $e) {
+        // Ignore errors, always return JSON
+    }
     return response()->json(['success' => true, 'redirect' => '/']);
 })->name('logout');
 

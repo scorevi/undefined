@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Post;
 use App\Models\Comment;
+use Illuminate\Support\Facades\DB;
 
 class AdminDashboardController extends Controller
 {
@@ -21,6 +22,8 @@ class AdminDashboardController extends Controller
             'total_views' => Post::sum('views'),
             'total_comments' => Comment::count(),
             'recent_posts' => Post::orderBy('created_at', 'desc')->take(5)->get(['title', 'views', 'created_at']),
+            'site_name' => DB::table('settings')->where('key', 'site_name')->value('value') ?? '',
+            'site_description' => DB::table('settings')->where('key', 'site_description')->value('value') ?? '',
         ];
         return response()->json([
             'user' => $user,

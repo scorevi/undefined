@@ -15,16 +15,24 @@ import { AuthProvider, useAuth } from './authContext';
 
 // Custom Welcome Page
 const Welcome = () => (
-  <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(120deg, #f0f4ff 0%, #e0ffe8 100%)' }}>
-    <div style={{ maxWidth: 400, width: '100%', background: 'white', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.08)', padding: 40, textAlign: 'center' }}>
-      <h1 style={{ fontSize: 32, fontWeight: 700, color: '#2563eb', marginBottom: 8 }}>Blog Platform</h1>
-      <h2 style={{ fontSize: 22, fontWeight: 600, color: '#222', marginBottom: 16 }}>Welcome!</h2>
+  <div style={{
+    minHeight: '80vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'linear-gradient(120deg, #f0f4ff 0%, #e0ffe8 100%)'
+  }}>
+    <div style={{ maxWidth: 900, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ flex: 1 }}>
+        <h1 style={{ fontSize: 38, fontWeight: 700, color: '#2563eb', marginBottom: 8 }}>Blog Platform</h1>
+        <h2 style={{ fontSize: 24, fontWeight: 600, color: '#222', marginBottom: 16 }}>Welcome!</h2>
       <p style={{ color: '#555', marginBottom: 32 }}>Sign in or register to get started.</p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <Link to="/login" style={{ background: 'linear-gradient(90deg, #2563eb 0%, #60a5fa 100%)', color: 'white', borderRadius: 8, padding: '12px 0', fontWeight: 600, textDecoration: 'none', fontSize: 16, boxShadow: '0 2px 8px rgba(37,99,235,0.08)' }}>User Login</Link>
-        <Link to="/register" style={{ background: 'linear-gradient(90deg, #22c55e 0%, #86efac 100%)', color: 'white', borderRadius: 8, padding: '12px 0', fontWeight: 600, textDecoration: 'none', fontSize: 16, boxShadow: '0 2px 8px rgba(34,197,94,0.08)' }}>User Register</Link>
-        <Link to="/admin/login" style={{ background: 'linear-gradient(90deg, #f59e42 0%, #fbbf24 100%)', color: 'white', borderRadius: 8, padding: '12px 0', fontWeight: 600, textDecoration: 'none', fontSize: 16, boxShadow: '0 2px 8px rgba(251,191,36,0.08)' }}>Admin Login</Link>
-        <Link to="/admin/signup" style={{ background: 'linear-gradient(90deg, #e11d48 0%, #f472b6 100%)', color: 'white', borderRadius: 8, padding: '12px 0', fontWeight: 600, textDecoration: 'none', fontSize: 16, boxShadow: '0 2px 8px rgba(225,29,72,0.08)' }}>Admin Register</Link>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <Link to="/login" style={{ background: '#3b82f6', color: 'white', borderRadius: 8, padding: '14px 0', fontWeight: 700, textDecoration: 'none', fontSize: 18, textAlign: 'center' }}>User Login</Link>
+        <Link to="/register" style={{ background: '#22c55e', color: 'white', borderRadius: 8, padding: '14px 0', fontWeight: 700, textDecoration: 'none', fontSize: 18, textAlign: 'center' }}>User Register</Link>
+        <Link to="/admin/login" style={{ background: '#fbbf24', color: 'white', borderRadius: 8, padding: '14px 0', fontWeight: 700, textDecoration: 'none', fontSize: 18, textAlign: 'center' }}>Admin Login</Link>
+        <Link to="/admin/signup" style={{ background: 'linear-gradient(90deg, #e11d48 0%, #f472b6 100%)', color: 'white', borderRadius: 8, padding: '14px 0', fontWeight: 700, textDecoration: 'none', fontSize: 18, textAlign: 'center' }}>Admin Register</Link>
       </div>
     </div>
   </div>
@@ -42,6 +50,17 @@ const ProtectedRoute = ({ children }) => {
 const AdminRoute = ({ children }) => {
   const { user } = useAuth();
   if (!user || user.role !== 'admin') return <Navigate to="/admin/login" replace />;
+  return children;
+};
+
+// Public Route Wrapper
+const PublicRoute = ({ children }) => {
+  const { user } = useAuth();
+  console.log('PublicRoute user:', user);
+  if (user) {
+    if (user.role === 'admin') return <Navigate to="/admin" replace />;
+    if (user.role === 'user') return <Navigate to="/blog" replace />;
+  }
   return children;
 };
 
@@ -654,25 +673,46 @@ const AdminEditPostPage = () => {
   );
 };
 
-const App = () => (
+const App = () => {
+  const [siteMeta, setSiteMeta] = useState({ name: '', description: '' });
+
+  useEffect(() => {
+    fetch('/api/dashboard', { credentials: 'include' })
+      .then(res => res.json())
+      .then(data => {
+        const name = data.stats?.site_name || 'Blog Platform';
+        const desc = (data.stats?.site_description || 'A modern blog platform.').slice(0, 120);
+        setSiteMeta({ name, description: desc });
+        document.title = name;
+        let meta = document.querySelector('meta[name="description"]');
+        if (!meta) {
+          meta = document.createElement('meta');
+          meta.name = 'description';
+          document.head.appendChild(meta);
+        }
+        meta.content = desc;
+      });
+  }, []);
+
+  return (
   <AuthProvider>
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <BrowserRouter>
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           <Routes>
-            <Route path="/" element={<Welcome />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+              <Route path="/" element={<PublicRoute><Welcome /></PublicRoute>} />
+              <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+              <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+              <Route path="/admin/login" element={<PublicRoute><AdminLogin /></PublicRoute>} />
+              <Route path="/admin/signup" element={<PublicRoute><AdminSignup /></PublicRoute>} />
             <Route path="/blog" element={<ProtectedRoute><Main /></ProtectedRoute>} />
             <Route path="/blog/post/:id" element={<ProtectedRoute><UserPost /></ProtectedRoute>} />
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin/signup" element={<AdminSignup />} />
             <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-            <Route path="/admin/posts/new" element={<AdminRoute><AdminNewPost /></AdminRoute>} />
-            <Route path="/admin/posts" element={<AdminRoute><AdminEditPosts /></AdminRoute>} />
-            <Route path="/admin/posts/:id/edit" element={<AdminRoute><AdminEditPostPage /></AdminRoute>} />
-            <Route path="/admin/comments" element={<AdminRoute><AdminComments /></AdminRoute>} />
-            <Route path="/admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
+              <Route path="/admin/posts/new" element={<AdminRoute><AdminNewPost /></AdminRoute>} />
+              <Route path="/admin/posts" element={<AdminRoute><AdminEditPosts /></AdminRoute>} />
+              <Route path="/admin/posts/:id/edit" element={<AdminRoute><AdminEditPostPage /></AdminRoute>} />
+              <Route path="/admin/comments" element={<AdminRoute><AdminComments /></AdminRoute>} />
+              <Route path="/admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
             {/* fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
@@ -682,6 +722,7 @@ const App = () => (
     </div>
   </AuthProvider>
 );
+};
 
 const root = document.getElementById('react-root');
 

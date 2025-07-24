@@ -36,7 +36,7 @@ export default function Navbar() {
       logoutSuccess = false;
     }
     logout(); // Always clear local user state
-    navigate('/');
+    window.location.href = '/';
     if (!logoutSuccess) {
       alert('Logout may not have completed cleanly. Please refresh or clear cookies if you encounter issues.');
     }
