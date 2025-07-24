@@ -95,6 +95,22 @@ const Posts = ({ refresh }) => {
 
   return (
     <div className="posts-section">
+
+      <div className="category-cont">
+        <h2>Post Categories</h2>
+
+        <div className="post-categories">
+          <ul className='categories'>
+            <li>News</li>
+            <li>Review</li>
+            <li>Podcast</li>
+            <li>Opinion</li>
+            <li>Lifestyle</li>
+          </ul>
+        </div>
+
+      </div>
+
       <div className="recent-posts">
         <div className="section-header">
           <h2>Recent Posts ({postsTotal})</h2>
@@ -146,9 +162,12 @@ const Posts = ({ refresh }) => {
           </button>
         )}
       </div>
+
       <div className="trending-posts">
         <h2>Trending</h2>
+
         {trending.length === 0 && <div style={{color:'#888'}}>No trending posts yet.</div>}
+
         {Array.isArray(trending) && trending.map((item) => (
           <div className="trending-card" key={item.id}>
             <div className="trend-content">

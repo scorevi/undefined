@@ -20,10 +20,26 @@ span, p{
 }
 
 .posts-section {
+  font-family: "Nunito";
   display: flex;
   gap: 1rem;
   margin: 2rem 0;
   padding: 1rem;
+}
+
+.category-cont {
+  padding-right: 1rem;
+  border-right: solid rgba(28, 4, 59, 0.219);
+}
+
+.category-cont li {
+  text-decoration: underline;
+  font-size: 1.2rem;
+  line-height: 2rem;
+}
+
+.category-cont li:hover {
+  cursor: pointer;
 }
 
 .recent-posts {
