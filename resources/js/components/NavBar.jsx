@@ -2,7 +2,7 @@ import React from 'react';
 import { FaBookOpen } from 'react-icons/fa';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../authContext';
-import './navbar.css';
+import './styles/navbar.css';
 
 export default function Navbar() {
   const { user, logout } = useAuth();

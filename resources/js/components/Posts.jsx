@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaHeart, FaComment, FaSort, FaChevronRight } from 'react-icons/fa';
-import './posts.css';
+import './styles/posts.css';
 // import UserPost from '../pages/UserPost';
 
 function getPostImageUrl(image) {
