@@ -4,7 +4,7 @@ import { FaHeart, FaComment } from 'react-icons/fa';
 import { FaPencil, FaTrash } from 'react-icons/fa6';
 import Navbar from '../components/NavBar';
 import { useAuth } from '../authContext';
-import './userpost.css';
+import './styles/userpost.css';
 
 function getPostImageUrl(image) {
   if (!image) return 'https://picsum.photos/1000/400?random=1';

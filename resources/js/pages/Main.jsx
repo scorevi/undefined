@@ -8,8 +8,8 @@ import { FaCamera } from 'react-icons/fa';
 import 'swiper/css';
 import 'swiper/css/navigation';
 
-import './main.css';
-import './featured.css';
+import './styles/main.css';
+import './styles/featured.css';
 import Posts from '../components/Posts';
 import Navbar from '../components/NavBar';
 
