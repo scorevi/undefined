@@ -47,7 +47,7 @@ const AdminDashboard = () => {
             console.error('Authentication error:', error);
             navigate('/login');
         });
-    }, [navigate]);
+    }, []); // Removed navigate from dependency array
 
     const handleLogout = async () => {
         console.log('Admin Logout clicked');
