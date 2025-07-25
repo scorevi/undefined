@@ -1,0 +1,85 @@
+@font-face {
+    font-family: "Nunito Bold";
+    src: local("Nunito Bold"),
+    url("/resources/js/Typeface/Nunito/static/Nunito-Bold.ttf");
+}
+
+@font-face {
+  font-family: "Nunito";
+  src: local("Nunito"),
+  url("resources/js/Typeface/Nunito/Nunito-VariableFont_wght.ttf");
+}
+
+.container {
+  font-family: "Nunito";
+  margin: 3rem auto;
+  padding: 1rem 2rem; 
+  background-color: #fff;
+  border-radius: 12;
+  box-shadow: 0 2px 12px #e0e0e0;
+}
+
+.back-btn {
+  color: blue;
+  cursor: pointer;
+}
+
+.back-btn:hover {
+  text-decoration: underline;
+}
+
+.container h2 {
+  margin: 1rem;
+}
+
+.loading {
+  font-family: "Nunito Bold";
+  font-size: larger;
+  text-align: center;
+  padding: 7rem 0;
+  height: 400px;
+}
+
+.table-cont {
+  overflow: hidden;
+  width: 100%;
+}
+
+.table-cont table {
+  min-width: 100%;
+  border-collapse: collapse;
+}
+
+.table-cont thead {
+  background-color: #6a1b9a;
+}
+
+.table-cont th {
+  font-family: "Nunito Bold";
+  color: white;
+  padding: .75rem 1.5rem;
+  text-align: center;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.table-cont tbody tr{
+  border-top: 1px solid #e5e7eb;
+}
+
+.table-cont tbody tr:hover {
+  background-color: #e2d4803d;
+  transition: .2s;
+}
+
+.table-cont .row-title, .table-cont .row-author {
+  text-align: left;
+}
+
+.table-cont td {
+  padding: 1rem 1.5rem;
+  color: #111827;
+  text-align: center;
+}
+
