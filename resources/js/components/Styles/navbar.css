@@ -5,9 +5,9 @@
 }
 
 @font-face {
-    font-family: "Nunito";
-    src: local("Nunito"),
-    url("/resources/js/Typeface/Nunito/static/Nunito-Bold.ttf");
+    font-family: "Nunito Bold";
+    src: local("Nunito Bold"),
+    url("/resources/js/Typeface/Nunito Bold/static/Nunito-Bold.ttf");
 }
 .navbar {
   display: flex;
@@ -21,7 +21,7 @@
 }
 
 .nav-left, .nav-center, .nav-right {
-  font-family: "Nunito";
+  font-family: "Nunito Bold";
   display: flex;
   align-items: center;
 }
@@ -56,8 +56,9 @@
   cursor: pointer;
 }
 
-.logout-btn:active {
+.logout-btn:hover {
   color: red;
   background-color: white;
   border: red 1px;
+  transition: .2s;
 }

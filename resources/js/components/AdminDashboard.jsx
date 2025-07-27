@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../authContext';
-import './styles/Admin.css';
+import './styles/admindashboard.css';
 
 const AdminDashboard = () => {
     const [user, setUser] = useState(null);
@@ -83,162 +83,121 @@ const AdminDashboard = () => {
     }
 
     return (
-        <div className="min-h-screen">
-            {/* Navigation */}
-            <nav className="bg-white/80 backdrop-blur-sm shadow-sm border-b">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between h-16">
-                        <div className="flex items-center">
-                            <Link to="/" className="text-xl font-semibold text-gray-900">
-                                Admin Dashboard
-                            </Link>
-                        </div>
-                        <div className="flex items-center space-x-4" style={{zIndex:2, position:'relative'}}>
-                            <span className="text-sm text-gray-700">
-                                Welcome, {user?.name || 'Admin'}
-                            </span>
-                            <button
-                                onClick={handleLogout}
-                                className="text-sm text-red-600 hover:text-red-800"
-                                style={{cursor:'pointer', background:'none', border:'none', padding:0, margin:0, font:'inherit', zIndex:99, position:'relative'}}
-                            >
-                                Logout
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </nav>
+    <>     
+    {/* Navigation */}
+    <nav className="admin-navbar">
+        <Link to="/" className="text-xl font-semibold text-gray-900">
+            Admin Dashboard
+        </Link>
+        <div className="admin-logout" style={{zIndex:2, position:'relative'}}>
+            <span>
+                Welcome, {user?.name || 'Admin'}
+            </span>
+                <button
+                    onClick={handleLogout}
+                    className="logout-btn">
+                        Logout
+            </button>
+        </div>
+    </nav>
 
-            {/* Main Content */}
-            <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                {/* Page Header */}
-                <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-gray-900">Admin Dashboard Overview</h2>
-                    <p className="mt-1 text-sm text-gray-600">Manage your blog content and track performance</p>
-                </div>
-
-                {/* Statistics Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    {/* Total Posts */}
-                    <div className="bg-white/90 backdrop-blur-sm overflow-hidden shadow rounded-lg">
-                        <div className="p-5">
-                            <div className="flex items-center">
-                                <div className="flex-shrink-0">
-                                    <i className="fas fa-file-alt text-blue-600 text-2xl"></i>
-                                </div>
-                                <div className="ml-5 w-0 flex-1">
-                                    <dl>
-                                        <dt className="text-sm font-medium text-gray-500 truncate">Total Posts</dt>
-                                        <dd className="text-lg font-medium text-gray-900">{stats.total_posts}</dd>
-                                    </dl>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Total Views */}
-                    <div className="bg-white/90 backdrop-blur-sm overflow-hidden shadow rounded-lg">
-                        <div className="p-5">
-                            <div className="flex items-center">
-                                <div className="flex-shrink-0">
-                                    <i className="fas fa-eye text-purple-600 text-2xl"></i>
-                                </div>
-                                <div className="ml-5 w-0 flex-1">
-                                    <dl>
-                                        <dt className="text-sm font-medium text-gray-500 truncate">Total Views</dt>
-                                        <dd className="text-lg font-medium text-gray-900">{stats.total_views.toLocaleString()}</dd>
-                                    </dl>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Total Comments */}
-                    <div className="bg-white/90 backdrop-blur-sm overflow-hidden shadow rounded-lg">
-                        <div className="p-5">
-                            <div className="flex items-center">
-                                <div className="flex-shrink-0">
-                                    <i className="fas fa-comments text-yellow-600 text-2xl"></i>
-                                </div>
-                                <div className="ml-5 w-0 flex-1">
-                                    <dl>
-                                        <dt className="text-sm font-medium text-gray-500 truncate">Comments</dt>
-                                        <dd className="text-lg font-medium text-gray-900">{stats.total_comments}</dd>
-                                    </dl>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    {/* Main Content */}
+    <div className="container">    
+        {/* Page Header */}
+        <div className="dashboard-header">
+            <h2>Admin Dashboard Overview</h2>
+            <p>Manage your blog content and track performance</p>
+        </div>
+        <hr />
+            {/* Statistics Cards */}
+            <h2>Statistics</h2>
+            <div className="grid-stats">
+                {/* Total Posts */}
+                <div className="stats-card">
+                    <dl>
+                        <dt>Total Posts</dt>
+                        <dd>{stats.total_posts}</dd>
+                    </dl>
                 </div>
 
-                {/* Quick Actions */}
-                <div className="bg-white/90 backdrop-blur-sm shadow rounded-lg mb-8">
-                    <div className="px-4 py-5 sm:p-6">
-                        <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">Admin Quick Actions</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <Link to="/admin/posts/new" className="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50">
-                                <i className="fas fa-plus text-blue-600 mr-3"></i>
-                                <span className="text-sm font-medium text-gray-900">New Post</span>
-                            </Link>
-                            <Link to="/admin/posts" className="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50">
-                                <i className="fas fa-edit text-green-600 mr-3"></i>
-                                <span className="text-sm font-medium text-gray-900">Edit Posts</span>
-                            </Link>
-                            <Link to="/admin/comments" className="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50">
-                                <i className="fas fa-comment text-purple-600 mr-3"></i>
-                                <span className="text-sm font-medium text-gray-900">Manage Comments</span>
-                            </Link>
-                            <Link to="/admin/settings" className="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50">
-                                <i className="fas fa-cog text-gray-600 mr-3"></i>
-                                <span className="text-sm font-medium text-gray-900">Admin Settings</span>
-                            </Link>
-                        </div>
-                    </div>
+                {/* Total Views */}
+                <div className="stats-card">
+                    <dl>
+                        <dt>Total Views</dt>
+                        <dd>{stats.total_views.toLocaleString()}</dd>
+                    </dl>
                 </div>
 
-                {/* Recent Posts */}
-                <div className="bg-white/90 backdrop-blur-sm shadow rounded-lg">
-                    <div className="px-4 py-5 sm:p-6">
-                        <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">Recent Posts</h3>
-                        <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
-                                    <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Likes</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Views</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                    {stats.recent_posts.map((post, index) => (
-                                        <tr key={index}>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm font-medium text-gray-900">{post.title}</div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm text-gray-900">{post.likes_count ?? 0}</div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm text-gray-900">{post.views.toLocaleString()}</div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm text-gray-900">{post.created_at ? new Date(post.created_at).toLocaleDateString() : 'N/A'}</div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                <a href="#" className="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
-                                                <a href="#" className="text-red-600 hover:text-red-900">Delete</a>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                {/* Total Comments */}
+                <div className="stats-card">
+                    <dl>
+                        <dt>Comments</dt>
+                        <dd>{stats.total_comments}</dd>
+                    </dl>
                 </div>
             </div>
+        <hr />
+        {/* Quick Actions */}
+        <h2>Admin Quick Actions</h2>
+        <div className="quick-act-cont">
+            
+            <div className="quick-act-grid">
+                <Link to="/admin/posts/new" className='action-btn'>
+                <button>
+                    New Post
+                </button></Link>
+                <Link to="/admin/posts" className='action-btn'>
+                    <button>Edit Posts</button>
+                </Link>
+                <Link to="/admin/comments" className='action-btn'>
+                    <button>Manage Comments</button>
+                </Link>
+                <Link to="/admin/settings" className='action-btn'>
+                    <button>Admin Settings</button>
+                </Link>
+            </div>
         </div>
+
+        <hr />
+        {/* Recent Posts */}
+        <h2>Recent Posts</h2>
+        <div className='table-cont'>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Likes</th>
+                            <th>Views</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {stats.recent_posts.map((post, index) => (
+                            <tr key={index}>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <div>{post.title}</div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="text-sm text-gray-900">{post.likes_count ?? 0}</div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="text-sm text-gray-900">{post.views.toLocaleString()}</div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="text-sm text-gray-900">{post.created_at ? new Date(post.created_at).toLocaleDateString() : 'N/A'}</div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <a href="#" className="edit-btn">Edit</a>
+                                    <a href="#" className="delete-btn">Delete</a>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+    </div>
+    </>
     );
 };
 
