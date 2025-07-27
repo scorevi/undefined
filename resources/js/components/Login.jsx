@@ -76,7 +76,6 @@ const Login = () => {
                     <button type="button" style={{marginTop: '1rem', background: '#f3f4f6', color: '#222', border: 'none', borderRadius: 6, padding: '10px 0', width: '100%', fontWeight: 500, cursor: 'pointer'}} onClick={() => navigate('/')}>← Back</button>
                 </div>
             </div>
-            <Footer />
         </div>
     );
 };
