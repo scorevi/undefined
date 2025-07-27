@@ -49,14 +49,14 @@
 }
 
 .edit-btn:hover {
-  background-color: #6a1b9a;
-  color: #fbf3ff;
+  background-color: #5e4ae3;
+  color: #f8e2ff;
   box-shadow: 0 1px 4px rgba(0,0,0,0.04);
   transition: 0.2s;
 }
 
 .delete-btn {
-  color: #dc2626;
+  color: #DD1C1A;
   border: none; 
   border-radius: .3rem;
   padding: .5rem 1rem;
@@ -65,7 +65,7 @@
 }
 
 .delete-btn:hover {
-  background-color: #dc2626;
+  background-color: #DD1C1A;
   color: #fee2e2;
   box-shadow: 0 1px 4px rgba(0,0,0,0.04);
   transition: 0.2s;
@@ -105,14 +105,22 @@
 
 .edit-title, .edit-content {
   font-size: 1rem;
-  margin-bottom: 1rem;
+  margin: 1rem 0;
   padding: .6rem;
   border-radius: .3rem;
-  border: .1rem solid #ccc;
+}
+
+.edit-title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  outline: none;
+  border-bottom: #5e4ae3 solid;
 }
 
 .edit-content {
-  background-color: rgb(252, 251, 231);
+  background-color: white;
+  border-top: .2rem solid #5e4ae354;
+  border-left: .2rem solid #5e4ae354;
 }
 
 .edit-btns {
@@ -129,23 +137,25 @@
 }
 
 .save-btn {
-  border: solid #6a1b9a;
-  background-color: #6a1b9a;
+  border: solid #5e4ae3;
+  background-color: #5e4ae3;
   color: #fbf3ff;
 }
 
 .cancel-btn {
-  background-color: #f3f4f6;
+  background-color: #F8E2FF;
+  border: solid #5e4ae360;
 }
 
 .save-btn:hover {
   background-color: #ffffff;
-  color: #6a1b9a;
+  color: #5e4ae3;
   transition: .2s;
 }
 
 .cancel-btn:hover {
-  background-color: rgba(135, 107, 158, 0.24);
+  background-color: #F8E2FF;
+  border: solid #F8E2FF;
   transition: .2s;
 }
 
@@ -198,7 +208,7 @@
 
 .comment-field[type=text] {
   border: none;
-  border-bottom: #6a1b9a solid;
+  border-bottom: #5e4ae3 solid;
   border-radius: .3rem;
   padding: 1rem;
   flex: 1;
@@ -210,9 +220,9 @@
 
 .submit-comment {
   font-weight: 500;
-  background-color: #6a1b9a;
+  background-color: #5e4ae3;
   color: #fbf3ff;
-  border: solid #6a1b9a;
+  border: solid #5e4ae3;
   border-radius: .3rem;
   padding: .1rem 1rem;
   cursor: pointer;
@@ -220,19 +230,15 @@
 
 .submit-comment:hover {
   background-color: #fbf3ff;
-  color: #6a1b9a;
+  color: #5e4ae3;
   transition: .2s;
-}
-
-.comment-section {
-
 }
 
 .comment-content {
   background-color: white;
   padding: .5rem 1rem;
   margin: 2rem 0;
-  border-bottom: solid #691b9a54;
+  border-bottom: solid #5e4ae354;
   border-radius: .5rem;
   display: flex;
   align-items: flex-start;
@@ -253,8 +259,29 @@
   display: flex;
   align-items: center;
   gap: .5rem;
+  justify-content: space-between;
+}
+
+.comment-details span {
+  margin-right: .5rem;
 }
 
 .comment-name {
   font-weight: 600;
+}
+
+.comment-date {
+  color: #888;
+}
+
+.comment-actions {
+  display:flex;
+}
+/* Editing comment */
+.edit-comment {
+  flex: 1;
+  padding: .5rem;
+  border-radius: .3rem;
+  border-bottom: solid #5e4ae3;
+  outline: none;
 }

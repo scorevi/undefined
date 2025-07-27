@@ -5,13 +5,13 @@
 }
 
 body {
-  background: 
-    linear-gradient(80deg,
-    rgb(236, 204, 236), 
-    rgb(240, 236, 186));
+  background: linear-gradient(90deg,
+  #f8e2ff,
+  #d4d9f7);
 }
 
 .container {
+  font-family: "Nunito";
   margin-top: 3rem auto;
   width: 90%;
   padding: 1rem 1.5rem;
@@ -48,10 +48,11 @@ hr {
 }
 
 textarea {
-  font-family: "Nunito";
+  background-color: white;
+  border-top: .2rem solid #5e4ae354;
+  border-left: .2rem solid #5e4ae354;
   font-size: 1rem;
   width: 100%;
-  background: #f0e7f8;
   padding: 0.8rem 2rem;
   border-radius: 12px;
   resize: none;
@@ -81,18 +82,24 @@ textarea:focus {
 }
 
 .post-actions button {
-  font-family: "Nunito";
-  background-color: #6a1b9a;
-  color: white;
+  background-color: #5e4ae3;
+  border: solid #5e4ae3;
+  color: #fbf3ff;
   padding: 0.5rem 1rem;
   border-radius: 10px;
-  border: none;
   cursor: pointer;
 }
 
+.post-actions button:hover {
+  background-color: #ffffff;
+  color: #5e4ae3;
+  transition: .2s;
+}
+
 .custom-upload-btn {
-  background: #6d28d9;
-  color: #fff;
+  background-color: #F8E2FF;
+  border: solid #5e4ae3;
+  color: #1E1E24;
   padding: 8px 18px;
   border-radius: 8px;
   cursor: pointer;
@@ -104,8 +111,9 @@ textarea:focus {
 }
 
 .custom-upload-btn:hover {
-  background: #7c3aed;
-  transition: 0.2s;
+  background-color: #F8E2FF;
+  border: solid #F8E2FF;
+  transition: .2s;
 }
 
 .file-name {

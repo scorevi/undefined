@@ -439,32 +439,33 @@ const UserPost = () => {
                 />
                 <div style={{flex:1}}>
                   <div className="comment-top">
+                    <div className='comment-details'> 
+                      <span className='comment-name'>{comment.user?.name || comment.user?.email || 'Anonymous'}</span>
+                      <span className='comment-date'>At {new Date(comment.created_at).toLocaleString()}</span>
+                    </div>
 
-                    <span className='comment-name'>{comment.user?.name || comment.user?.email || 'Anonymous'}</span>
-                    <div style={{fontSize:'0.92rem',color:'#888'}}>At {new Date(comment.created_at).toLocaleString()}</div>
-                    
+                    {(user && (user.id === comment.user_id || user.role === 'admin')) && editingCommentId !== comment.id && (
+                      <div className='comment-actions'>
+                        <button onClick={() => handleEditComment(comment)} className='edit-btn'><FaPencil /></button>
+                        <button onClick={() => handleDeleteComment(comment.id)} className='delete-btn'><FaTrash /></button>
+                      </div>
+                  )}
                   </div>
                   {editingCommentId === comment.id ? (
                     <form onSubmit={e => handleEditCommentSubmit(e, comment.id)} style={{display:'flex',gap:8,margin:'6px 0'}}>
                       <input
+                        className='edit-comment'
                         type="text"
                         value={editingCommentContent}
                         onChange={e => setEditingCommentContent(e.target.value)}
                         required
-                        style={{flex:1,padding:'6px',borderRadius:6,border:'1px solid #bbb'}}
                         disabled={commentLoading}
                       />
-                      <button type="submit" disabled={commentLoading || !editingCommentContent.trim()} style={{background:'#22c55e',color:'white',border:'none',borderRadius:6,padding:'6px 14px',fontWeight:500,cursor:'pointer'}}>Save</button>
-                      <button type="button" onClick={() => {setEditingCommentId(null);setEditingCommentContent('');}} style={{background:'#f3f4f6',color:'#222',border:'none',borderRadius:6,padding:'6px 14px',fontWeight:500,cursor:'pointer'}}>Cancel</button>
+                      <button className='save-btn' type="submit" disabled={commentLoading || !editingCommentContent.trim()}>Save</button>
+                      <button className='cancel-btn' type="button" onClick={() => {setEditingCommentId(null);setEditingCommentContent('');}}>Cancel</button>
                     </form>
                   ) : (
                     <div style={{fontSize:'0.97rem',color:'#333',margin:'2px 0 4px 0'}}>{comment.content}</div>
-                  )}
-                  {(user && (user.id === comment.user_id || user.role === 'admin')) && editingCommentId !== comment.id && (
-                      <div style={{display:'flex',gap:4,marginLeft:8}}>
-                        <button onClick={() => handleEditComment(comment)} style={{background:'none',color:'#2563eb',border:'none',fontWeight:600,cursor:'pointer',padding:0,transition:'color 0.2s'}}>Edit</button>
-                        <button onClick={() => handleDeleteComment(comment.id)} style={{background:'none',color:'#e11d48',border:'none',fontWeight:600,cursor:'pointer',padding:0,transition:'color 0.2s'}}>Delete</button>
-                      </div>
                   )}
                   
                 </div>

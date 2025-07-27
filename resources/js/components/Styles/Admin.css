@@ -1,19 +1,19 @@
-html, body {
+/* html, body {
   background: linear-gradient(80deg, rgb(236, 204, 236), rgb(240, 236, 186)) !important;
   min-height: 100vh;
   margin: 0;
   font-family: Arial, sans-serif;
-}
+} */
 
 body {
-  background: linear-gradient(80deg, rgb(236, 204, 236), rgb(240, 236, 186)) !important;
+  /* background: linear-gradient(80deg, rgb(236, 204, 236), rgb(240, 236, 186)) !important; */
   min-height: 100vh;
   margin: 0;
   font-family: Arial, sans-serif;
 }
 
 #root {
-  background: linear-gradient(80deg, rgb(236, 204, 236), rgb(240, 236, 186)) !important;
+  /* background: linear-gradient(80deg, rgb(236, 204, 236), rgb(240, 236, 186)) !important; */
   min-height: 100vh;
 }
 
