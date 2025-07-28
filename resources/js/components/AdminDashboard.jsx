@@ -23,11 +23,11 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         // Check if user is authenticated
-        fetch('/api/dashboard', {
-            method: 'GET',
+        fetch('/api/admin/dashboard', {
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                'X-XSRF-TOKEN': decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || ''),
             },
             credentials: 'include', // Ensure cookies are sent
         })
@@ -83,7 +83,7 @@ const AdminDashboard = () => {
     }
 
     return (
-    <>     
+    <>
     {/* Navigation */}
     <nav className="admin-navbar">
         <Link to="/" className="text-xl font-semibold text-gray-900">
@@ -102,7 +102,7 @@ const AdminDashboard = () => {
     </nav>
 
     {/* Main Content */}
-    <div className="container">    
+    <div className="container">
         {/* Page Header */}
         <div className="dashboard-header">
             <h2>Admin Dashboard Overview</h2>
@@ -140,13 +140,13 @@ const AdminDashboard = () => {
         </div>
         <hr />
         {/* Quick Actions */}
-        
+
         <div className="quick-act-cont">
             <h2>Admin Quick Actions</h2>
             <div className="quick-act-grid">
                 <button className='action-btn'>
                 <Link to="/admin/posts/new">
-                
+
                     New Post
                 </Link></button>
                 <button className='action-btn'>
@@ -164,7 +164,7 @@ const AdminDashboard = () => {
 
         <hr />
         {/* Recent Posts */}
-        
+
         <div className='table-cont'>
             <h2>Recent Posts</h2>
                 <table>
@@ -178,7 +178,7 @@ const AdminDashboard = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {stats.recent_posts.map((post, index) => (
+                        {stats.recent_posts?.map((post, index) => (
                             <tr key={index}>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div>{post.title}</div>
@@ -206,4 +206,4 @@ const AdminDashboard = () => {
     );
 };
 
-export default AdminDashboard; 
+export default AdminDashboard;

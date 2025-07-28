@@ -55,7 +55,12 @@ const App = () => {
   useEffect(() => {
     if (!user) return; // Only fetch if user is logged in
     NProgress.start();
-    fetch('/api/dashboard', { credentials: 'include' })
+    fetch(user.role === 'admin' ? '/api/admin/dashboard' : '/api/user/dashboard', {
+      credentials: 'include',
+      headers: {
+        'X-XSRF-TOKEN': decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || ''),
+      }
+    })
       .then(res => res.json())
       .then(data => {
         const name = data.stats?.site_name || 'Erikanoelvi\'s Blog';

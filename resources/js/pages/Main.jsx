@@ -35,7 +35,12 @@ const Main = () => {
     // Fetch top 3 most recent posts for the featured carousel
     const fetchFeatured = async () => {
       try {
-        const response = await fetch('/api/posts');
+        const response = await fetch('/api/posts', {
+          credentials: 'include',
+          headers: {
+            'X-XSRF-TOKEN': decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || ''),
+          }
+        });
         if (!response.ok) throw new Error('Failed to fetch posts');
         const data = await response.json();
         setFeaturedPosts((data.data || []).slice(0, 3));
@@ -50,7 +55,12 @@ const Main = () => {
     // Fetch top 3 most recent posts for the featured carousel
     const fetchFeatured = async () => {
       try {
-        const response = await fetch('/api/posts');
+        const response = await fetch('/api/posts', {
+          credentials: 'include',
+          headers: {
+            'X-XSRF-TOKEN': decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || ''),
+          }
+        });
         if (!response.ok) throw new Error('Failed to fetch posts');
         const data = await response.json();
         setFeaturedPosts((data.data || []).slice(0, 3));
@@ -116,14 +126,23 @@ const Main = () => {
       const response = await fetch('/api/posts', {
         method: 'POST',
         headers: {
-          'X-CSRF-TOKEN': csrfToken,
+          'X-XSRF-TOKEN': decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || ''),
+          'Accept': 'application/json'
         },
         credentials: 'include',
         body: formData,
       });
       const data = await response.json();
       if (!response.ok || !data.success) {
-        setError(data.error || data.message || 'Failed to submit post');
+        let errorMessage = data.error || data.message || 'Failed to submit post';
+        if (data.errors) {
+          // If we have detailed validation errors, show the first one
+          const firstError = Object.values(data.errors)[0];
+          if (firstError) {
+            errorMessage = firstError[0];
+          }
+        }
+        setError(errorMessage);
       } else {
         setSuccess('Post submitted!');
         setContent('');
@@ -140,10 +159,10 @@ const Main = () => {
   };
 
   return (
-    <> 
-    <Navbar name={user?.name || user?.email || 'John'}/> 
+    <>
+    <Navbar name={user?.name || user?.email || 'John'}/>
     <div className="container">
-      
+
       {/* Post something, text field, or something to be able to post */}
       <form className="post-form" onSubmit={handleSubmit}>
 
@@ -159,7 +178,7 @@ const Main = () => {
             onChange={(e) => setContent(e.target.value)}
             disabled={loading}
           />
-          
+
           <div className="post-actions">
             <label htmlFor="image-upload" className="custom-upload-btn">
               <FaCamera /> Upload Image
@@ -202,7 +221,7 @@ const Main = () => {
           slidesPerView={1}
           className="mySwiper"
         >
-          
+
           {featuredPosts.map((post) => (
             <SwiperSlide key={post.id}>
               <Link to={`/blog/post/${post.id}`}>
@@ -222,7 +241,7 @@ const Main = () => {
       </div>
       <hr />
       <Posts refresh={refreshPosts} />
-      
+
 
     </div>
     </>

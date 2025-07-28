@@ -53,11 +53,19 @@ class PostController extends Controller
         if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'image' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp|mimetypes:image/jpeg,image/png,image/gif,image/webp|max:51200', // 50MB
-        ]);
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'content' => 'required|string',
+                'image' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp|max:51200', // 50MB
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        }
 
         $imagePath = null;
         if ($request->hasFile('image')) {

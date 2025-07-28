@@ -44,6 +44,22 @@ class AdminController extends Controller
         return response()->json(['success' => true]);
     }
 
+    // Get site settings
+    public function getSettings(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user || $user->role !== 'admin') {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $settings = DB::table('settings')->pluck('value', 'key')->toArray();
+
+        return response()->json([
+            'success' => true,
+            'settings' => $settings
+        ]);
+    }
+
     // Update site settings (site_name, site_description)
     public function updateSiteSettings(Request $request)
     {
@@ -66,4 +82,4 @@ class AdminController extends Controller
         );
         return response()->json(['success' => true]);
     }
-} 
+}
