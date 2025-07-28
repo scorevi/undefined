@@ -1,0 +1,60 @@
+@font-face {
+  font-family: "Nunito";
+  src: local("Nunito"),
+  url("/resources/js/Typeface/Nunito/Nunito-VariableFont_wght.ttf");
+}
+
+@font-face {
+  font-family: "Nunito Bold";
+  src: local("Nunito Bold"),
+  url("/resources/js/Typeface/Nunito Bold/static/Nunito-Bold.ttf");
+}
+
+.welcome-cont {
+  font-family: "Nunito";
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+}
+
+.welcome-header {
+  text-align: center;
+}
+
+.welcome-cont h1 {
+  font-family: "Nunito Bold";
+  color: #5E4AE3;
+  font-size: 3rem; 
+  font-weight: 800;
+  margin-bottom: 1rem;
+  letter-spacing: .2rem;
+}
+
+.welcome-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 320px;
+  align-items: stretch;
+}
+
+.welcome-actions a {
+  border-radius: .3rem;
+  padding: 18px 0;
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 1.3rem;
+  text-align: center;
+  box-shadow: 3px 2px 8px rgba(67, 23, 85, 0.582);
+}
+
+.welcome-actions a:hover {
+  background-color: white;
+}

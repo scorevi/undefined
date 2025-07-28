@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Footer from './Footer';
 import './styles/Admin.css';
 import { useAuth } from '../authContext';
 

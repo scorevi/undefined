@@ -1,15 +1,19 @@
-/* html, body {
-  background: linear-gradient(80deg, rgb(236, 204, 236), rgb(240, 236, 186)) !important;
+@font-face {
+    font-family: "Nunito";
+    src: local("Nunito"),
+    url("/resources/js/Typeface/Nunito/Nunito-VariableFont_wght.ttf");
+}
+
+html, body {
   min-height: 100vh;
   margin: 0;
-  font-family: Arial, sans-serif;
-} */
+  font-family: "Nunito";
+}
 
 body {
   /* background: linear-gradient(80deg, rgb(236, 204, 236), rgb(240, 236, 186)) !important; */
   min-height: 100vh;
   margin: 0;
-  font-family: Arial, sans-serif;
 }
 
 #root {
@@ -18,7 +22,7 @@ body {
 }
 
 .auth-container {
-  background-color: #FFF8E1; /* Cream */
+  background-color: #ffffff; 
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 2rem;
@@ -36,22 +40,22 @@ body {
   gap: 1rem;
 }
 .auth-form input {
-  background-color: #F5F5F5; /* Pastel input */
-  border: 1px solid #ddd;
+  outline: none;
+  border-bottom: 2px solid #ddd;
   border-radius: 4px;
   padding: 0.75rem;
   font-size: 1rem;
-  transition: border-color 0.3s;
 }
 .auth-form input:focus {
   outline: none;
-  border-color: #9C27B0; /* Purple focus */
-  box-shadow: 0 0 0 2px rgba(156, 39, 176, 0.2);
+  border-color: #5E4AE3;
+  /* box-shadow: 0 0 0 2px rgba(156, 39, 176, 0.2); */
+  transition: .2s;
 }
 .auth-form button {
-  background-color: #9C27B0; /* Purple button */
+  background-color: #5E4AE3; /* Purple button */
   color: white;
-  border: none;
+  border: solid #5E4AE3;
   border-radius: 4px;
   padding: 0.75rem;
   font-size: 1rem;
@@ -60,7 +64,8 @@ body {
   transition: background-color 0.3s;
 }
 .auth-form button:hover {
-  background-color: #7B1FA2; /* Darker purple */
+  background-color: #ffffff; /* Darker purple */
+  color: black;
 }
 .auth-form button:disabled {
   background-color: #ccc;

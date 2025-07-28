@@ -79,7 +79,7 @@ const UserLogin = () => {
             <div className="user-auth-outer">
                 <div className="user-auth-container">
                     <div className="text-center mb-6">
-                        <h1 className="text-3xl font-bold mb-2" style={{color:'#2563eb'}}>Erikanoelvi's Blog</h1>
+                        <h1 className="text-3xl font-bold mb-2" style={{color:'#5E4AE3'}}>Erikanoelvi's Blog</h1>
                         <h2 className="text-xl font-semibold mb-1">User Login</h2>
                         <p className="text-gray-600">Sign in to your account</p>
                     </div>

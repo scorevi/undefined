@@ -1,4 +1,14 @@
+
+@font-face {
+    font-family: "Nunito";
+    src: local("Nunito"),
+    url("/resources/js/Typeface/Nunito/Nunito-VariableFont_wght.ttf");
+}
 /* User Dashboard Styles */
+html {
+    font-family: "Nunito";
+}
+
 .user-dashboard {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
@@ -87,37 +97,35 @@
 }
 
 .user-auth-input {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 2px solid rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    background: white;
+  outline: none;
+  border-bottom: 2px solid #ddd;
+  border-radius: 4px;
+  padding: 0.75rem;
+  font-size: 1rem;
 }
 
 .user-auth-input:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: #5E4AE3;
+    /* box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); */
 }
 
 .user-auth-button {
     width: 100%;
     padding: 0.75rem 1rem;
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    background: linear-gradient(135deg, #b870da 0%, #5E4AE3 100%);
     color: white;
-    border: none;
+    border: 3px solid #5E4AE3;
     border-radius: 8px;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
 }
 
 .user-auth-button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+    color: black;
+    background: white;
+    transition: .2s;
 }
 
 .user-auth-button:disabled {
@@ -174,7 +182,9 @@
 .user-auth-bg {
     min-height: 100vh;
     width: 100vw;
-    background: linear-gradient(120deg, #f8cdda 0%, #f9f9b5 100%);
+    background: linear-gradient(90deg,
+    #f8e2ff,
+    #d4d9f7);
     display: flex;
     align-items: center;
     justify-content: center;

@@ -65,7 +65,7 @@ const UserRegister = () => {
             <div className="user-auth-outer">
                 <div className="user-auth-container">
                     <div className="text-center mb-6">
-                        <h1 className="text-3xl font-bold mb-2" style={{color:'#22c55e'}}>Erikanoelvi's Blog</h1>
+                        <h1 className="text-3xl font-bold mb-2" style={{color:'#5E4AE3'}}>Erikanoelvi's Blog</h1>
                         <h2 className="text-xl font-semibold mb-1">User Registration</h2>
                         <p className="text-gray-600">Join our community today</p>
                     </div>
@@ -131,7 +131,7 @@ const UserRegister = () => {
                         <div className="text-center mt-2">
                             <p className="text-sm text-gray-600">
                                 Already have an account?{' '}
-                                <a href="/login" className="font-medium" style={{color:'#22c55e'}}>Sign in here</a>
+                                <a href="/login" className="font-medium" style={{color:'#2563eb'}}>Sign in here</a>
                             </p>
                         </div>
                     </form>
