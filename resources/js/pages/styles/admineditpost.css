@@ -51,7 +51,7 @@
 }
 
 .table-cont thead {
-  background-color: #6a1b9a;
+  background-color: #5E4AE3;
 }
 
 .table-cont th {
@@ -69,7 +69,7 @@
 }
 
 .table-cont tbody tr:hover {
-  background-color: #e2d4803d;
+  background-color: #F8E2FF;
   transition: .2s;
 }
 

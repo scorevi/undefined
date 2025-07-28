@@ -110,6 +110,7 @@ const AdminDashboard = () => {
         </div>
         <hr />
             {/* Statistics Cards */}
+        <div className="stats-cont">
             <h2>Statistics</h2>
             <div className="grid-stats">
                 {/* Total Posts */}
@@ -136,32 +137,36 @@ const AdminDashboard = () => {
                     </dl>
                 </div>
             </div>
+        </div>
         <hr />
         {/* Quick Actions */}
-        <h2>Admin Quick Actions</h2>
+        
         <div className="quick-act-cont">
-            
+            <h2>Admin Quick Actions</h2>
             <div className="quick-act-grid">
-                <Link to="/admin/posts/new" className='action-btn'>
-                <button>
+                <button className='action-btn'>
+                <Link to="/admin/posts/new">
+                
                     New Post
-                </button></Link>
-                <Link to="/admin/posts" className='action-btn'>
-                    <button>Edit Posts</button>
-                </Link>
-                <Link to="/admin/comments" className='action-btn'>
-                    <button>Manage Comments</button>
-                </Link>
-                <Link to="/admin/settings" className='action-btn'>
-                    <button>Admin Settings</button>
-                </Link>
+                </Link></button>
+                <button className='action-btn'>
+                <Link to="/admin/posts" >
+                    Edit Posts
+                </Link></button>
+                <button className='action-btn'><Link to="/admin/comments">
+                    Manage Comments
+                </Link></button>
+                <button className='action-btn'><Link to="/admin/settings">
+                    Admin Settings
+                </Link></button>
             </div>
         </div>
 
         <hr />
         {/* Recent Posts */}
-        <h2>Recent Posts</h2>
+        
         <div className='table-cont'>
+            <h2>Recent Posts</h2>
                 <table>
                     <thead>
                         <tr>
