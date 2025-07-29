@@ -1,63 +1,87 @@
-@font-face {
-    font-family: "Oi";
-    src: local("Oi"),
-    url("/resources/js/Typeface/Oi/Oi-Regular.ttf");
+@import url('/resources/css/design-system.css');
+
+.navbar {
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-gray-200);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
 }
 
-@font-face {
-    font-family: "Nunito Bold";
-    src: local("Nunito Bold"),
-    url("/resources/js/Typeface/Nunito Bold/static/Nunito-Bold.ttf");
-}
-.navbar {
+.navbar-container {
+  max-width: var(--container-xl);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #ffffff;
-  padding: 1rem 7rem;
-  border-bottom: 1px solid #ddd;
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
+  height: 64px;
 }
 
-.nav-left, .nav-center, .nav-right {
-  font-family: "Nunito Bold";
+.navbar-brand {
   display: flex;
   align-items: center;
+  gap: var(--space-3);
 }
 
-.nav-left .icon {
-  font-size: 1.5rem;
-  margin-right: 8px;
+.navbar-icon {
+  font-size: var(--text-xl);
+  color: var(--color-primary);
 }
 
-.title {
-  font-family: 'Oi';
-  font-size: 1.2rem;
-  letter-spacing: 2px;
+.navbar-title {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-gray-900);
+  text-decoration: none;
+  transition: color 0.2s ease;
 }
 
-.nav-center {
-  font-weight: bolder;
-  font-size: 1.1rem;
+.navbar-title:hover {
+  color: var(--color-primary);
+}
+
+.navbar-center {
   font-weight: 500;
+  color: var(--color-gray-600);
+  font-size: var(--text-base);
 }
 
-.nav-right {
-  gap: 10px;
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
 }
 
 .logout-btn {
-  color: white;
-  background-color: #dd1c1a;
-  padding: .5rem;
-  border-radius: 10px;
+  background: var(--color-error);
+  color: var(--color-white);
   border: none;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  font-size: var(--text-sm);
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .logout-btn:hover {
-  color: #dd1c1a;
-  background-color: white;
-  transition: .2s;
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 768px) {
+  .navbar-container {
+    padding: 0 var(--space-3);
+  }
+
+  .navbar-center {
+    display: none;
+  }
+
+  .navbar-title {
+    font-size: var(--text-lg);
+  }
 }

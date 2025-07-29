@@ -1,0 +1,25 @@
+---
+applyTo: '**'
+---
+Layouts should be consistent across the site. Use the following guidelines to ensure uniformity:
+- **Header**: Always include the site logo and navigation links.
+- **Footer**: Include contact information and social media links.
+- **Sidebar**: Use for additional navigation or information, but ensure it does not clutter the main content area.
+- **Content Area**: Should be spacious and easy to read, with appropriate margins and padding
+- **Typography**: Use a consistent font family and size throughout the site for readability.
+- **Colors**: Maintain a consistent color scheme that aligns with the brand identity.
+- **Buttons**: Use consistent styles for buttons, including hover effects and active states.
+- **Images**: Ensure images are optimized for web use and maintain a consistent aspect ratio.
+- **Responsiveness**: Ensure layouts adapt well to different screen sizes, maintaining usability on mobile and desktop devices.
+- **Accessibility**: Ensure all elements are accessible, including alt text for images and proper ARIA labels for interactive elements.
+- **Testing**: Regularly test layouts across different browsers and devices to ensure consistency and functionality
+- **Development Environment**: Use the provided Docker setup for local development. Ensure all services are running before making changes.
+- **Restarting Services**:
+  - Use the `docker-compose up` command to start all services.
+  - If you need to restart services, use the `docker-compose restart` command.
+- **Development Scripts**: Use the provided scripts for development tasks, such as `start-all.bat` for starting all services, and `stop-all.bat` for stopping them.
+- **Main Site Hosting**: The main site is hosted at `localhost:8000`, not `localhost:5174`. Ensure that you are serving content from this address, not the Vite development server. The Vite server is used for development purposes only and should not be used for production content delivery.
+- **Content Serving**: Ensure that the content is served correctly from the main site. The Vite development server is not intended for production use and should only be used for local development and testing. Always check that the content is accessible via the main site URL.
+- **Version Control**: Use Git for version control. Commit changes regularly with clear messages describing the changes made. Use branches for new features or fixes, and merge them into the main branch after thorough testing.
+- **Documentation**: Keep documentation up to date with any changes made to the layouts or development processes. This includes updating the README files and any other relevant documentation in the repository.
+- **Code Reviews**: Before merging changes, conduct code reviews to ensure quality and adherence to the layout guidelines. Use pull requests for this purpose.

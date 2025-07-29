@@ -18,10 +18,28 @@ const AdminDashboard = () => {
         ]
     });
     const [loading, setLoading] = useState(true);
+    const [authChecked, setAuthChecked] = useState(false);
+    const [error, setError] = useState('');
     const navigate = useNavigate();
-    const { logout } = useAuth();
+    const { user: contextUser, logout } = useAuth();
+
+    // If context user is missing or not admin, don't even try to load
+    React.useEffect(() => {
+        if (!contextUser || contextUser.role !== 'admin') {
+            setError('Authentication required');
+            setLoading(false);
+            return;
+        }
+    }, [contextUser]);
 
     useEffect(() => {
+        // Prevent multiple authentication checks or if context user is invalid
+        if (authChecked || !contextUser || contextUser.role !== 'admin') return;
+
+        // Add timeout to prevent hanging requests
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
         // Check if user is authenticated
         fetch('/api/admin/dashboard', {
             credentials: 'include',
@@ -29,25 +47,38 @@ const AdminDashboard = () => {
                 'Content-Type': 'application/json',
                 'X-XSRF-TOKEN': decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || ''),
             },
-            credentials: 'include', // Ensure cookies are sent
+            signal: controller.signal
         })
         .then(response => {
+            clearTimeout(timeoutId);
             if (response.ok) {
                 return response.json();
             } else {
-                throw new Error('Not authenticated');
+                throw new Error(`Authentication failed: ${response.status}`);
             }
         })
         .then(data => {
             setUser(data.user);
             setStats(data.stats || stats);
             setLoading(false);
+            setAuthChecked(true);
         })
         .catch(error => {
+            clearTimeout(timeoutId);
             console.error('Authentication error:', error);
-            navigate('/login');
+            // Clear any stale auth data and redirect to admin login
+            logout();
+            setAuthChecked(true);
+            setLoading(false);
+            navigate('/admin/login', { replace: true });
         });
-    }, []); // Removed navigate from dependency array
+
+        // Cleanup function
+        return () => {
+            clearTimeout(timeoutId);
+            controller.abort();
+        };
+    }, [navigate, logout, authChecked, contextUser]);
 
     const handleLogout = async () => {
         console.log('Admin Logout clicked');
@@ -77,6 +108,17 @@ const AdminDashboard = () => {
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
                     <p className="mt-4 text-gray-600">Loading admin dashboard...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <p className="text-red-600 mb-4">{error}</p>
+                    <a href="/admin/login" className="text-blue-600 underline">Go to Admin Login</a>
                 </div>
             </div>
         );
@@ -144,21 +186,18 @@ const AdminDashboard = () => {
         <div className="quick-act-cont">
             <h2>Admin Quick Actions</h2>
             <div className="quick-act-grid">
-                <button className='action-btn'>
-                <Link to="/admin/posts/new">
-
+                <Link to="/admin/posts/new" className='action-btn'>
                     New Post
-                </Link></button>
-                <button className='action-btn'>
-                <Link to="/admin/posts" >
+                </Link>
+                <Link to="/admin/posts" className='action-btn'>
                     Edit Posts
-                </Link></button>
-                <button className='action-btn'><Link to="/admin/comments">
+                </Link>
+                <Link to="/admin/comments" className='action-btn'>
                     Manage Comments
-                </Link></button>
-                <button className='action-btn'><Link to="/admin/settings">
+                </Link>
+                <Link to="/admin/settings" className='action-btn'>
                     Admin Settings
-                </Link></button>
+                </Link>
             </div>
         </div>
 

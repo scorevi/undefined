@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import './styles/admincomments.css';
 
 const AdminComments = () => {
   const [comments, setComments] = useState([]);
@@ -61,50 +62,61 @@ const AdminComments = () => {
   };
 
   return (
-    <div style={{maxWidth:1100,margin:'40px auto',background:'#fff',padding:32,borderRadius:12,boxShadow:'0 2px 12px #e0e0e0'}}>
-      <button onClick={() => navigate('/admin')} className="mb-4 text-blue-600 hover:underline">&larr; Back to Dashboard</button>
-      <h2 className="text-xl font-bold mb-4">All Comments</h2>
-      {loading ? <div>Loading...</div> : error ? <div style={{color:'#dc2626'}}>{error}</div> : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Content</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Post</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Updated</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {comments.map(comment => (
-                <tr key={comment.id}>
-                  <td className="px-6 py-4 whitespace-pre-line max-w-xs">
-                    <div className="text-sm text-gray-900">{comment.content}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{comment.post?.title || `Post #${comment.post_id}`}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{comment.user?.name || comment.user?.email || 'Unknown'}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{comment.created_at ? new Date(comment.created_at).toLocaleString() : 'N/A'}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{comment.updated_at ? new Date(comment.updated_at).toLocaleString() : 'N/A'}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button onClick={() => handleEdit(comment)} className="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-                    <button onClick={() => handleDelete(comment)} className="text-red-600 hover:text-red-900">Delete</button>
-                  </td>
+    <div className="admin-comments-container">
+      <div className="admin-comments-header">
+        <a onClick={() => navigate('/admin')} className="back-link">Back to Dashboard</a>
+        <h2>All Comments</h2>
+      </div>
+      <div className="admin-comments-content">
+        {loading ? (
+          <div className="loading-message">Loading comments...</div>
+        ) : error ? (
+          <div className="error-message">{error}</div>
+        ) : comments.length === 0 ? (
+          <div className="empty-state">
+            <h3>No comments found</h3>
+            <p>There are no comments to display at the moment.</p>
+          </div>
+        ) : (
+          <div className="comments-table-container">
+            <table className="comments-table">
+              <thead>
+                <tr>
+                  <th>Content</th>
+                  <th>Post</th>
+                  <th>User</th>
+                  <th>Created</th>
+                  <th>Updated</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody>
+                {comments.map(comment => (
+                  <tr key={comment.id}>
+                    <td className="content-cell">{comment.content}</td>
+                    <td>
+                      <div className="post-title">{comment.post?.title || `Post #${comment.post_id}`}</div>
+                    </td>
+                    <td>
+                      <div className="user-name">{comment.user?.name || comment.user?.email || 'Unknown'}</div>
+                    </td>
+                    <td className="date-cell">
+                      {comment.created_at ? new Date(comment.created_at).toLocaleString() : 'N/A'}
+                    </td>
+                    <td className="date-cell">
+                      {comment.updated_at ? new Date(comment.updated_at).toLocaleString() : 'N/A'}
+                    </td>
+                    <td className="actions-cell">
+                      <button onClick={() => handleEdit(comment)} className="edit-btn">Edit</button>
+                      <button onClick={() => handleDelete(comment)} className="delete-btn">Delete</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

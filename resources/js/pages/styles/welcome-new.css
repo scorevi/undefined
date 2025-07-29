@@ -245,23 +245,23 @@
     padding: var(--space-8);
     margin: var(--space-4);
   }
-  
+
   .welcome-title {
     font-size: var(--text-3xl);
   }
-  
+
   .welcome-subtitle {
     font-size: var(--text-lg);
   }
-  
+
   .welcome-actions {
     grid-template-columns: 1fr;
   }
-  
+
   .admin-actions {
     grid-template-columns: 1fr;
   }
-  
+
   .welcome-features {
     grid-template-columns: 1fr;
     gap: var(--space-4);
@@ -272,20 +272,20 @@
   .welcome-page {
     padding: var(--space-2);
   }
-  
+
   .welcome-container {
     padding: var(--space-6);
   }
-  
+
   .welcome-logo {
     width: 64px;
     height: 64px;
   }
-  
+
   .welcome-title {
     font-size: var(--text-2xl);
   }
-  
+
   .welcome-subtitle {
     font-size: var(--text-base);
   }

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import './styles/adminnewpost.css';
 
 const AdminNewPost = () => {
   const [title, setTitle] = useState('');
@@ -76,27 +77,83 @@ const AdminNewPost = () => {
   };
 
   return (
-    <div style={{maxWidth:600,margin:'40px auto',background:'#fff',padding:32,borderRadius:12,boxShadow:'0 2px 12px #e0e0e0'}}>
-      <button onClick={() => navigate(-1)} className="mb-4 text-blue-600 hover:underline">&larr; Back</button>
-      <h2 className="text-xl font-bold mb-4">Create New Post</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block font-medium mb-1">Title</label>
-          <input type="text" className="w-full border rounded px-3 py-2" value={title} onChange={e=>setTitle(e.target.value)} disabled={loading} required />
-        </div>
-        <div className="mb-4">
-          <label className="block font-medium mb-1">Content</label>
-          <textarea className="w-full border rounded px-3 py-2" rows={6} value={content} onChange={e=>setContent(e.target.value)} disabled={loading} required />
-        </div>
-        <div className="mb-4">
-          <label className="block font-medium mb-1">Image (optional)</label>
-          <input type="file" accept="image/*" onChange={handleImageChange} disabled={loading} />
-          {imagePreview && <img src={imagePreview} alt="Preview" style={{maxWidth:180,maxHeight:180,marginTop:8,borderRadius:8}} />}
-        </div>
-        {error && <div style={{color:'#dc2626',marginBottom:8}}>{error}</div>}
-        {success && <div style={{color:'#22c55e',marginBottom:8}}>{success}</div>}
-        <button type="submit" className="bg-blue-600 text-white px-5 py-2 rounded font-semibold" disabled={loading}>{loading ? 'Creating...' : 'Create Post'}</button>
-      </form>
+    <div className="admin-new-post-container">
+      <div className="admin-new-post-header">
+        <h2>Create New Post</h2>
+        <p>Share your thoughts and ideas with the community</p>
+      </div>
+
+      <div className="admin-new-post-content">
+        <button onClick={() => navigate(-1)} className="back-btn">&larr; Back</button>
+
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label className="form-label">Title</label>
+            <input
+              type="text"
+              className="form-input"
+              value={title}
+              onChange={e=>setTitle(e.target.value)}
+              disabled={loading}
+              required
+              placeholder="Enter your post title..."
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Content</label>
+            <textarea
+              className="form-textarea"
+              rows={8}
+              value={content}
+              onChange={e=>setContent(e.target.value)}
+              disabled={loading}
+              required
+              placeholder="Write your post content here..."
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Featured Image (optional)</label>
+            <div className={`image-upload-section ${imagePreview ? 'has-image' : ''}`}>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                disabled={loading}
+              />
+              {imagePreview ? (
+                <div className="image-preview-container">
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="image-preview"
+                  />
+                  <button
+                    type="button"
+                    className="remove-image-btn"
+                    onClick={() => {
+                      setImage(null);
+                      setImagePreview(null);
+                    }}
+                    title="Remove image"
+                  >
+                    ×
+                  </button>
+                </div>
+              ) : null}
+            </div>
+          </div>
+
+          {error && <div className="alert alert-error">{error}</div>}
+          {success && <div className="alert alert-success">{success}</div>}
+
+          <button type="submit" className="submit-btn" disabled={loading}>
+            {loading && <span className="loading-indicator">⟳</span>}
+            {loading ? 'Creating Post...' : 'Create Post'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

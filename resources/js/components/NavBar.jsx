@@ -45,19 +45,21 @@ export default function Navbar() {
   return (
     <>
       <nav className="navbar">
-        <div className="nav-left">
-          <FaBookOpen className="icon" />
-          <Link to={user ? "/blog" : "/"} className="title">Blog Site</Link>
-        </div>
-        <div className="nav-center">
-          {user ? `Welcome, ${user.name || user.email}!` : 'Welcome!'}
-        </div>
-        <div className="nav-right">
-          {user && (
-            <button className="logout-btn" onClick={handleLogout}>
-              Log out
-            </button>
-          )}
+        <div className="navbar-container">
+          <div className="navbar-brand">
+            <FaBookOpen className="navbar-icon" />
+            <Link to={user ? "/blog" : "/"} className="navbar-title">Blog Site</Link>
+          </div>
+          <div className="navbar-center">
+            {user ? `Welcome, ${user.name || user.email}!` : 'Welcome!'}
+          </div>
+          <div className="navbar-actions">
+            {user && (
+              <button className="logout-btn" onClick={handleLogout}>
+                Log out
+              </button>
+            )}
+          </div>
         </div>
       </nav>
       <Outlet />

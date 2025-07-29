@@ -18,7 +18,7 @@
 .main-content {
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
+  gap: var(--space-6);
 }
 
 /* Page Header */
@@ -214,7 +214,7 @@
 .posts-list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
+  gap: var(--space-6);
 }
 
 /* Individual Post Card */

@@ -32,7 +32,28 @@ const ProtectedRoute = ({ children }) => {
 // Admin Route Wrapper
 const AdminRoute = ({ children }) => {
   const { user } = useAuth();
-  if (!user || user.role !== 'admin') return <Navigate to="/admin/login" replace />;
+  const navigate = useNavigate();
+
+  // More robust check for admin access
+  React.useEffect(() => {
+    if (!user || user.role !== 'admin') {
+      // If no user or not admin, redirect to admin login
+      navigate('/admin/login', { replace: true });
+    }
+  }, [user, navigate]);
+
+  // Show loading while checking
+  if (!user || user.role !== 'admin') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
   return children;
 };
 

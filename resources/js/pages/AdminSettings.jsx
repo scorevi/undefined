@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import './styles/adminsettings.css';
 
 const AdminSettings = () => {
   const [email, setEmail] = useState('');
@@ -122,33 +123,154 @@ const AdminSettings = () => {
   };
 
   return (
-    <div style={{maxWidth:600,margin:'40px auto',background:'#fff',padding:32,borderRadius:12,boxShadow:'0 2px 12px #e0e0e0'}}>
-      <button onClick={() => navigate('/admin')} className="mb-4 text-blue-600 hover:underline">&larr; Back to Dashboard</button>
-      <h2 className="text-xl font-bold mb-4">Admin Settings</h2>
-      {loading ? <div>Loading...</div> : (
-        <>
-          <form onSubmit={handleSaveEmail} className="mb-8">
-            <h3 className="font-semibold mb-2">Change Email</h3>
-            <input type="email" className="w-full border rounded px-3 py-2 mb-2" value={email} onChange={e=>setEmail(e.target.value)} disabled={saving} required />
-            <button type="submit" className="bg-blue-600 text-white px-5 py-2 rounded font-semibold" disabled={saving}>Save Email</button>
-          </form>
-          <form onSubmit={handleSavePassword} className="mb-8">
-            <h3 className="font-semibold mb-2">Change Password</h3>
-            <input type="password" className="w-full border rounded px-3 py-2 mb-2" placeholder="Current password" value={currentPassword} onChange={e=>setCurrentPassword(e.target.value)} disabled={saving} required />
-            <input type="password" className="w-full border rounded px-3 py-2 mb-2" placeholder="New password" value={newPassword} onChange={e=>setNewPassword(e.target.value)} disabled={saving} required />
-            <input type="password" className="w-full border rounded px-3 py-2 mb-2" placeholder="Confirm new password" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} disabled={saving} required />
-            <button type="submit" className="bg-blue-600 text-white px-5 py-2 rounded font-semibold" disabled={saving}>Save Password</button>
-          </form>
-          <form onSubmit={handleSaveSite} className="mb-8">
-            <h3 className="font-semibold mb-2">Site Settings</h3>
-            <input type="text" className="w-full border rounded px-3 py-2 mb-2" placeholder="Site Name" value={siteName} onChange={e=>setSiteName(e.target.value)} disabled={saving} />
-            <textarea className="w-full border rounded px-3 py-2 mb-2" placeholder="Site Description" value={siteDescription} onChange={e=>setSiteDescription(e.target.value)} disabled={saving} />
-            <button type="submit" className="bg-blue-600 text-white px-5 py-2 rounded font-semibold" disabled={saving}>Save Site Settings</button>
-          </form>
-          {feedback && <div style={{color:'#22c55e',marginBottom:8}}>{feedback}</div>}
-          {error && <div style={{color:'#dc2626',marginBottom:8}}>{error}</div>}
-        </>
-      )}
+    <div className="admin-settings-container">
+      <div className="admin-settings-header">
+        <h2>Admin Settings</h2>
+        <p>Manage your account and site configuration</p>
+      </div>
+
+      <div className="admin-settings-content">
+        <div className="back-btn-container">
+          <button onClick={() => navigate('/admin')} className="back-btn">&larr; Back to Dashboard</button>
+        </div>
+
+        {loading ? (
+          <div className="loading-container">
+            <span className="loading-spinner">⟳</span>
+            Loading settings...
+          </div>
+        ) : (
+          <div className="settings-grid">
+            {/* Email Settings Section */}
+            <div className="settings-section">
+              <h3>
+                <svg className="icon" viewBox="0 0 20 20">
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                </svg>
+                Email Settings
+              </h3>
+              <div className="settings-section-content">
+                <form onSubmit={handleSaveEmail}>
+                  <div className="form-group">
+                    <label className="form-label">Email Address</label>
+                    <input
+                      type="email"
+                      className="form-input"
+                      value={email}
+                      onChange={e=>setEmail(e.target.value)}
+                      disabled={saving}
+                      required
+                      placeholder="Enter your email address"
+                    />
+                  </div>
+                  <button type="submit" className="submit-btn" disabled={saving}>
+                    {saving ? 'Saving...' : 'Update Email'}
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            {/* Password Settings Section */}
+            <div className="settings-section">
+              <h3>
+                <svg className="icon" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/>
+                </svg>
+                Password Settings
+              </h3>
+              <div className="settings-section-content">
+                <form onSubmit={handleSavePassword}>
+                  <div className="form-group">
+                    <label className="form-label">Current Password</label>
+                    <input
+                      type="password"
+                      className="form-input"
+                      placeholder="Enter your current password"
+                      value={currentPassword}
+                      onChange={e=>setCurrentPassword(e.target.value)}
+                      disabled={saving}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">New Password</label>
+                    <input
+                      type="password"
+                      className="form-input"
+                      placeholder="Enter your new password"
+                      value={newPassword}
+                      onChange={e=>setNewPassword(e.target.value)}
+                      disabled={saving}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Confirm New Password</label>
+                    <input
+                      type="password"
+                      className="form-input"
+                      placeholder="Confirm your new password"
+                      value={confirmPassword}
+                      onChange={e=>setConfirmPassword(e.target.value)}
+                      disabled={saving}
+                      required
+                    />
+                  </div>
+                  <button type="submit" className="submit-btn" disabled={saving}>
+                    {saving ? 'Updating...' : 'Update Password'}
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            {/* Site Settings Section */}
+            <div className="settings-section">
+              <h3>
+                <svg className="icon" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd"/>
+                </svg>
+                Site Settings
+              </h3>
+              <div className="settings-section-content">
+                <form onSubmit={handleSaveSite}>
+                  <div className="form-group">
+                    <label className="form-label">Site Name</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="Enter your site name"
+                      value={siteName}
+                      onChange={e=>setSiteName(e.target.value)}
+                      disabled={saving}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Site Description</label>
+                    <textarea
+                      className="form-textarea"
+                      placeholder="Enter your site description"
+                      value={siteDescription}
+                      onChange={e=>setSiteDescription(e.target.value)}
+                      disabled={saving}
+                      rows={4}
+                    />
+                  </div>
+                  <button type="submit" className="submit-btn" disabled={saving}>
+                    {saving ? 'Saving...' : 'Update Site Settings'}
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            {/* Feedback Messages */}
+            <div className="feedback-messages">
+              {feedback && <div className="alert alert-success">{feedback}</div>}
+              {error && <div className="alert alert-error">{error}</div>}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

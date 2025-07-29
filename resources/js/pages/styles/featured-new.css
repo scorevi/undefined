@@ -249,27 +249,27 @@
   .featured-posts {
     padding: var(--space-4);
   }
-  
+
   .slide-card {
     height: 300px;
   }
-  
+
   .slide-overlay {
     padding: var(--space-6) var(--space-4) var(--space-4);
   }
-  
+
   .slide-title {
     font-size: var(--text-xl);
   }
-  
+
   .slide-excerpt {
     font-size: var(--text-sm);
   }
-  
+
   .carousel-controls {
     gap: var(--space-3);
   }
-  
+
   .carousel-btn {
     width: 40px;
     height: 40px;
@@ -281,17 +281,17 @@
   .slide-card {
     height: 250px;
   }
-  
+
   .slide-title {
     font-size: var(--text-lg);
   }
-  
+
   .slide-meta {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-1);
   }
-  
+
   .slide-date::before {
     display: none;
   }
