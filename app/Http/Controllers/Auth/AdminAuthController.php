@@ -11,24 +11,44 @@ class AdminAuthController extends Controller
 {
     public function register(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8|confirmed',
+            ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => bcrypt($validated['password']),
-            'role' => 'admin',
-        ]);
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => bcrypt($validated['password']),
+                'role' => 'admin',
+            ]);
 
-        Auth::login($user);
-        return response()->json(['success' => true, 'user' => $user, 'redirect' => '/admin']);
-    }
+            // Create Sanctum token for API authentication
+            $token = $user->createToken('admin-token')->plainTextToken;
 
-    public function login(Request $request)
+            return response()->json([
+                'success' => true,
+                'user' => $user,
+                'token' => $token,
+                'redirect' => '/admin',
+                'message' => 'Admin account created successfully.'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed.',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Admin registration error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Registration failed. Please try again.'
+            ], 500);
+        }
+    }    public function login(Request $request)
     {
         // Validate input with detailed error messages
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
@@ -48,11 +68,9 @@ class AdminAuthController extends Controller
             ], 422);
         }
 
-        Auth::logout(); // Always clear any existing session first
         $credentials = $request->only(['email', 'password']);
 
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
             $user = Auth::user();
 
             if ($user->role !== 'admin') {
@@ -63,9 +81,13 @@ class AdminAuthController extends Controller
                 ], 403);
             }
 
+            // Create Sanctum token for API authentication
+            $token = $user->createToken('admin-token')->plainTextToken;
+
             return response()->json([
                 'success' => true,
                 'user' => $user,
+                'token' => $token,
                 'redirect' => '/admin',
                 'message' => 'Login successful.'
             ]);

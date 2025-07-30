@@ -23,16 +23,28 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         // Check if user is authenticated
+        const token = localStorage.getItem('auth_token');
+
+        if (!token) {
+            console.error('No auth token found');
+            navigate('/login');
+            return;
+        }
+
         fetch('/api/admin/dashboard', {
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
-                'X-XSRF-TOKEN': decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || ''),
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json',
             }
         })
         .then(response => {
             if (response.ok) {
                 return response.json();
+            } else if (response.status === 401) {
+                // Token is invalid or expired
+                localStorage.removeItem('auth_token');
+                throw new Error('Token expired');
             } else {
                 throw new Error('Not authenticated');
             }
@@ -51,22 +63,91 @@ const AdminDashboard = () => {
     const handleLogout = async () => {
         console.log('Admin Logout clicked');
         try {
-            const response = await fetch('/api/logout', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                },
-                credentials: 'include', // Ensure cookies are sent
-            });
+            const token = localStorage.getItem('auth_token');
 
-            const data = await response.json();
-            if (data.success) {
+            if (token) {
+                const response = await fetch('/api/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json',
+                    }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    // Clear the token from localStorage
+                    localStorage.removeItem('auth_token');
+                    logout();
+                    window.location.href = '/';
+                }
+            } else {
+                // No token found, just redirect
                 logout();
                 window.location.href = '/';
             }
         } catch (error) {
             console.error('Admin Logout error:', error);
+            // Even if logout fails, clear token and redirect
+            localStorage.removeItem('auth_token');
+            logout();
+            window.location.href = '/';
+        }
+    };
+
+    const handleViewPost = (postId) => {
+        // Open the post in a new tab
+        window.open(`/blog/post/${postId}`, '_blank');
+    };
+
+    const handleEditPost = (postId) => {
+        // Navigate to the edit post page
+        navigate(`/admin/posts/${postId}/edit`);
+    };
+
+    const handleDeletePost = async (postId, postTitle) => {
+        if (!confirm(`Are you sure you want to delete the post "${postTitle}"? This action cannot be undone.`)) {
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('auth_token');
+
+            if (!token) {
+                navigate('/login');
+                return;
+            }
+
+            const response = await fetch(`/api/posts/${postId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    localStorage.removeItem('auth_token');
+                    navigate('/login');
+                    return;
+                }
+                throw new Error('Failed to delete post');
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Refresh the dashboard data
+                window.location.reload();
+            } else {
+                alert('Failed to delete post: ' + (data.message || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Delete post error:', error);
+            alert('Failed to delete post. Please try again.');
         }
     };
 
@@ -189,8 +270,26 @@ const AdminDashboard = () => {
                                     <div className="text-sm text-gray-900">{post.created_at ? new Date(post.created_at).toLocaleDateString() : 'N/A'}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <a href="#" className="edit-btn">Edit</a>
-                                    <a href="#" className="delete-btn">Delete</a>
+                                    <button
+                                        onClick={() => handleViewPost(post.id)}
+                                        className="view-btn"
+                                        style={{marginRight: '8px'}}
+                                    >
+                                        View
+                                    </button>
+                                    <button
+                                        onClick={() => handleEditPost(post.id)}
+                                        className="edit-btn"
+                                        style={{marginRight: '8px'}}
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        onClick={() => handleDeletePost(post.id, post.title)}
+                                        className="delete-btn"
+                                    >
+                                        Delete
+                                    </button>
                                 </td>
                             </tr>
                         ))}

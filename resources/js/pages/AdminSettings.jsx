@@ -17,12 +17,39 @@ const AdminSettings = () => {
   useEffect(() => {
     setLoading(true);
     setError('');
+
+    const token = localStorage.getItem('auth_token');
+
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
     // Fetch current admin info and site settings
     Promise.all([
-      fetch('/api/admin/dashboard', { credentials: 'include' }),
-      fetch('/api/admin/settings', { credentials: 'include' })
+      fetch('/api/admin/dashboard', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+        }
+      }),
+      fetch('/api/admin/settings', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+        }
+      })
     ])
       .then(async ([dashboardRes, settingsRes]) => {
+        if (!dashboardRes.ok || !settingsRes.ok) {
+          if (dashboardRes.status === 401 || settingsRes.status === 401) {
+            localStorage.removeItem('auth_token');
+            navigate('/login');
+            return;
+          }
+          throw new Error('Failed to fetch data');
+        }
+
         const dashboardData = await dashboardRes.json();
         const settingsData = await settingsRes.json();
 
@@ -49,28 +76,29 @@ const AdminSettings = () => {
     setFeedback('');
     setError('');
     try {
-      // Get CSRF cookie
-      await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
+      const token = localStorage.getItem('auth_token');
 
-      // Get CSRF token from cookie
-      const csrfToken = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('XSRF-TOKEN='))
-        ?.split('=')[1];
+      if (!token) {
+        navigate('/login');
+        return;
+      }
 
       const res = await fetch('/api/admin/email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
-          ...(csrfToken && { 'X-XSRF-TOKEN': decodeURIComponent(csrfToken) }),
+          'Authorization': `Bearer ${token}`,
         },
-        credentials: 'include',
         body: JSON.stringify({ email }),
       });
       const data = await res.json();
       if (!res.ok) {
+        if (res.status === 401) {
+          localStorage.removeItem('auth_token');
+          navigate('/login');
+          return;
+        }
         const errorMsg = data.errors ? Object.values(data.errors).flat().join(', ') : (data.error || data.message || 'Failed to update email');
         throw new Error(errorMsg);
       }
@@ -99,28 +127,29 @@ const AdminSettings = () => {
       return;
     }
     try {
-      // Get CSRF cookie
-      await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
+      const token = localStorage.getItem('auth_token');
 
-      // Get CSRF token from cookie
-      const csrfToken = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('XSRF-TOKEN='))
-        ?.split('=')[1];
+      if (!token) {
+        navigate('/login');
+        return;
+      }
 
       const res = await fetch('/api/admin/password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
-          ...(csrfToken && { 'X-XSRF-TOKEN': decodeURIComponent(csrfToken) }),
+          'Authorization': `Bearer ${token}`,
         },
-        credentials: 'include',
         body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
       });
       const data = await res.json();
       if (!res.ok) {
+        if (res.status === 401) {
+          localStorage.removeItem('auth_token');
+          navigate('/login');
+          return;
+        }
         const errorMsg = data.errors ? Object.values(data.errors).flat().join(', ') : (data.error || data.message || 'Failed to update password');
         throw new Error(errorMsg);
       }
@@ -142,28 +171,29 @@ const AdminSettings = () => {
     setFeedback('');
     setError('');
     try {
-      // Get CSRF cookie
-      await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
+      const token = localStorage.getItem('auth_token');
 
-      // Get CSRF token from cookie
-      const csrfToken = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('XSRF-TOKEN='))
-        ?.split('=')[1];
+      if (!token) {
+        navigate('/login');
+        return;
+      }
 
       const res = await fetch('/api/admin/site-settings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
-          ...(csrfToken && { 'X-XSRF-TOKEN': decodeURIComponent(csrfToken) }),
+          'Authorization': `Bearer ${token}`,
         },
-        credentials: 'include',
         body: JSON.stringify({ site_name: siteName, site_description: siteDescription }),
       });
       const data = await res.json();
       if (!res.ok) {
+        if (res.status === 401) {
+          localStorage.removeItem('auth_token');
+          navigate('/login');
+          return;
+        }
         const errorMsg = data.errors ? Object.values(data.errors).flat().join(', ') : (data.error || data.message || 'Failed to update site settings');
         throw new Error(errorMsg);
       }

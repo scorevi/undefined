@@ -29,25 +29,37 @@ const Signup = () => {
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                    'Accept': 'application/json',
                 },
-                body: JSON.stringify({ 
-                    name, 
-                    email, 
-                    password, 
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    name,
+                    email,
+                    password,
                     password_confirmation: passwordConfirmation,
-                    role: 'admin',
                 }),
             });
 
             const data = await response.json();
 
-            if (data.success) {
+            if (response.ok && data.success) {
+                // Store the token for API authentication
+                if (data.token) {
+                    localStorage.setItem('auth_token', data.token);
+                }
                 navigate('/admin');
             } else {
-                setError(data.message || 'Registration failed');
+                // Handle validation errors
+                if (data.errors) {
+                    const errorMessages = Object.values(data.errors).flat();
+                    setError(errorMessages.join('. '));
+                } else {
+                    setError(data.message || 'Registration failed. Please check your details and try again.');
+                }
             }
         } catch (err) {
-            setError('An error occurred. Please try again.');
+            console.error('Registration error:', err);
+            setError('Network error occurred. Please check your connection and try again.');
         } finally {
             setLoading(false);
         }

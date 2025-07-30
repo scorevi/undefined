@@ -17,27 +17,13 @@ const Login = () => {
         setError('');
 
         try {
-            // Step 1: Get CSRF cookie from Sanctum
-            await fetch('/sanctum/csrf-cookie', {
-                credentials: 'include',
-            });
-
-            // Step 2: Get CSRF token from cookie
-            const csrfToken = document.cookie
-                .split('; ')
-                .find(row => row.startsWith('XSRF-TOKEN='))
-                ?.split('=')[1];
-
-            // Step 3: Login using Sanctum's stateful authentication
             const response = await fetch('/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    ...(csrfToken && { 'X-XSRF-TOKEN': decodeURIComponent(csrfToken) }),
                 },
-                credentials: 'include',
+                credentials: 'same-origin',
                 body: JSON.stringify({ email, password }),
             });
 
@@ -64,6 +50,10 @@ const Login = () => {
 
             if (data.success && data.user) {
                 if (data.user.role === 'admin') {
+                    // Store the token for API authentication
+                    if (data.token) {
+                        localStorage.setItem('auth_token', data.token);
+                    }
                     login(data.user); // Set user context
                     navigate('/admin');
                 } else {

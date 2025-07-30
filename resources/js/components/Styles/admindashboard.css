@@ -270,7 +270,7 @@ td div {
 }
 
 /* Action buttons in table */
-.edit-btn, .delete-btn {
+.view-btn, .edit-btn, .delete-btn {
   padding: 0.375rem 0.75rem;
   border-radius: 0.25rem;
   font-size: 0.75rem;
@@ -278,6 +278,17 @@ td div {
   text-decoration: none;
   margin-right: 0.5rem;
   transition: all 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.view-btn {
+  background-color: #10b981; /* emerald/green */
+  color: #ffffff;
+}
+
+.view-btn:hover {
+  background-color: #059669; /* darker green */
 }
 
 .edit-btn {

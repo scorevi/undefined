@@ -18,14 +18,18 @@ Route::middleware(['api'])->group(function () {
     Route::get('/posts/categories', [PostController::class, 'categories']);
 });
 
-// Authentication Routes
-Route::middleware(['web'])->group(function () {
+// Authentication Routes - moved to use proper API middleware
+Route::middleware(['api'])->group(function () {
     Route::post('/user/login', [UserAuthController::class, 'login'])->name('user.login.post');
     Route::post('/user/register', [UserAuthController::class, 'register'])->name('user.register.post');
+
+    // Admin authentication routes
+    Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
+    Route::post('/register', [AdminAuthController::class, 'register'])->name('register.post');
 });
 
 // Protected API Routes (requires authentication)
-Route::middleware(['web', 'auth:sanctum'])->group(function () {
+Route::middleware(['api', 'auth:sanctum'])->group(function () {
     Route::get('/user/dashboard', [UserDashboardController::class, '__invoke']);
     Route::get('/admin/dashboard', [AdminDashboardController::class, '__invoke']);
     Route::get('/admin/settings', [AdminController::class, 'getSettings']);
@@ -40,27 +44,17 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
 });
 
 // User Logout API route
-Route::post('/user/logout', function (\Illuminate\Http\Request $request) {
-    Auth::logout();
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
+Route::middleware(['api'])->post('/user/logout', function (\Illuminate\Http\Request $request) {
+    if (Auth::check()) {
+        Auth::user()->currentAccessToken()->delete();
+    }
     return response()->json(['success' => true, 'redirect' => '/']);
 })->name('user.logout');
 
-// Hidden Admin API Routes (for admin access)
-Route::middleware(['web'])->group(function () {
-    Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
-    Route::post('/register', [AdminAuthController::class, 'register'])->name('register.post');
-});
-
-// Logout API route
-Route::post('/logout', function (\Illuminate\Http\Request $request) {
-    try {
-        \Illuminate\Support\Facades\Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-    } catch (\Throwable $e) {
-        // Ignore errors, always return JSON
+// Admin Logout API route
+Route::middleware(['api'])->post('/logout', function (\Illuminate\Http\Request $request) {
+    if (Auth::check()) {
+        Auth::user()->currentAccessToken()->delete();
     }
     return response()->json(['success' => true, 'redirect' => '/']);
 })->name('logout');
