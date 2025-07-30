@@ -488,7 +488,7 @@ const UserPost = () => {
 
           <div className="author-section">
             <img
-              src={post.user?.avatar || 'https://i.pravatar.cc/300'}
+              src={post.user?.avatar || '/default-avatar.svg'}
               alt="Author"
               className="author-img"
             />
@@ -686,7 +686,7 @@ const UserPost = () => {
               <div className="comment-content" key={comment.id}>
                 <img
                   className='comment-avatar'
-                  src={comment.user?.avatar || 'https://i.pravatar.cc/100'}
+                  src={comment.user?.avatar || '/default-avatar.svg'}
                   alt="User"
                 />
                 <div style={{flex:1}}>

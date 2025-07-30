@@ -81,46 +81,25 @@ const ImageUpload = ({
     e.preventDefault();
     e.stopPropagation();
 
-    // DEBUG: Increment click counter first
-    setClickCounter(prev => prev + 1);
-    console.log(`🔴 Admin ImageUpload click #${clickCounter + 1} detected!`);
+    if (disabled) return;
 
-    if (disabled) {
-      console.log(`🚫 Admin click blocked - component disabled`);
-      return;
-    }
+    if (isFileDialogOpen) return;
 
-    if (isFileDialogOpen) {
-      console.log(`🚫 Admin click blocked - dialog already open`);
-      return;
-    }
-
-    console.log(`✅ Admin click proceeding - opening file dialog`);
-
-    // Set dialog state
     setIsFileDialogOpen(true);
-
-    // Trigger file input with immediate execution
-    console.log('🔍 Input ref:', inputRef.current);
-    console.log('🔍 Input disabled:', inputRef.current?.disabled);
 
     if (inputRef.current && !inputRef.current.disabled) {
       try {
         inputRef.current.click();
-        console.log(`📁 File dialog triggered successfully`);
       } catch (error) {
-        console.error('❌ Error triggering file dialog:', error);
         setIsFileDialogOpen(false);
       }
     } else {
-      console.error('❌ Cannot trigger - input ref is null or disabled');
       setIsFileDialogOpen(false);
     }
 
     // Reset flag after timeout as backup
     setTimeout(() => {
       setIsFileDialogOpen(false);
-      console.log(`🔄 Dialog state reset after timeout`);
     }, 3000);
   };  const formatFileSize = (bytes) => {
     if (bytes === 0) return '0 Bytes';
@@ -181,19 +160,6 @@ const ImageUpload = ({
           <FaCloudUploadAlt className="image-upload-icon" />
           <div className="image-upload-text">
             {isFileDialogOpen ? 'Opening...' : (imagePreview ? 'Replace Image' : 'Upload Image')}
-            {clickCounter > 0 && (
-              <span style={{
-                marginLeft: '8px',
-                backgroundColor: 'red',
-                color: 'white',
-                padding: '2px 8px',
-                borderRadius: '12px',
-                fontSize: '12px',
-                fontWeight: 'bold'
-              }}>
-                Admin Clicks: {clickCounter}
-              </span>
-            )}
           </div>
           <div className="image-upload-subtext">
             {imagePreview

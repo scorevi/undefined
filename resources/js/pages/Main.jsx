@@ -25,7 +25,6 @@ const Main = () => {
   const [success, setSuccess] = useState('');
   const [refreshPosts, setRefreshPosts] = useState(0);
   const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);
-  const [clickCounter, setClickCounter] = useState(0);
   const fileInputRef = useRef(null);
 
   // Add focus event to detect when user returns to the page (dialog closed)
@@ -72,40 +71,25 @@ const Main = () => {
     e.preventDefault();
     e.stopPropagation();
 
-    // DEBUG: Increment click counter
-    setClickCounter(prev => prev + 1);
-    console.log(`🔵 Upload click #${clickCounter + 1} detected!`);
+    if (isFileDialogOpen || loading) return false;
 
-    // Double-check if already processing
-    if (isFileDialogOpen || loading) {
-      console.log(`🚫 Click #${clickCounter + 1} blocked - dialog already open or loading`);
-      return false;
-    }
-
-    console.log(`✅ Click #${clickCounter + 1} proceeding - opening file dialog`);
-    // Set flag immediately to prevent rapid clicks
     setIsFileDialogOpen(true);
 
-    // Trigger file input with a small delay to ensure state is set
     const timer = setTimeout(() => {
       if (fileInputRef.current && !loading) {
         fileInputRef.current.click();
-        console.log(`📁 File dialog triggered by click #${clickCounter + 1}`);
       }
     }, 50);
 
-    // Cleanup and reset flag after dialog interaction
     const resetTimer = setTimeout(() => {
       setIsFileDialogOpen(false);
-      console.log(`🔄 Dialog state reset after click #${clickCounter + 1}`);
     }, 3000);
 
-    // Cleanup function
     return () => {
       clearTimeout(timer);
       clearTimeout(resetTimer);
     };
-  }, [isFileDialogOpen, loading, clickCounter]);
+  }, [isFileDialogOpen, loading]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -193,7 +177,7 @@ const Main = () => {
         <>
           <form className="post-form" onSubmit={handleSubmit}>
             <img
-              src={user?.avatar || 'https://i.pravatar.cc/300'}
+              src={user?.avatar || '/default-avatar.svg'}
               alt="Avatar"
               className="avatar" />
 
@@ -241,7 +225,6 @@ const Main = () => {
                   }}
                 >
                   <FaCamera /> {isFileDialogOpen ? 'Opening...' : 'Upload Image'}
-                  {clickCounter > 0 && <span style={{marginLeft: '8px', backgroundColor: 'red', color: 'white', padding: '2px 6px', borderRadius: '10px', fontSize: '12px'}}>Clicks: {clickCounter}</span>}
                 </button>
                 <input
                   ref={fileInputRef}
