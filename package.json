@@ -7,13 +7,14 @@
         "dev": "vite",
         "dev:docker": "DOCKER_ENV=true vite",
         "preview": "vite preview",
+        "clean": "rimraf node_modules package-lock.json",
+        "fresh-install": "npm run clean && npm install",
         "setup:local": "setup-local.bat",
         "setup:docker": "setup-docker.bat",
         "start:local": "start-all.bat",
         "start:docker": "start-docker.bat"
     },
     "devDependencies": {
-        "@rollup/rollup-linux-x64-gnu": "^4.46.2",
         "@tailwindcss/vite": "^4.0.0",
         "@vitejs/plugin-react": "^4.6.0",
         "autoprefixer": "^10.4.21",
@@ -22,6 +23,7 @@
         "laravel-vite-plugin": "^1.2.0",
         "postcss": "^8.5.6",
         "react-router-dom": "^7.7.0",
+        "rimraf": "^6.0.1",
         "sass": "^1.89.2",
         "tailwindcss": "^4.1.11",
         "vite": "^6.2.4"

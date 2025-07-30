@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), '');
     const isDocker = process.env.DOCKER_ENV === 'true' || env.VITE_DEV_SERVER_HOST === '0.0.0.0';
-    
+
     return {
         plugins: [
             laravel({
