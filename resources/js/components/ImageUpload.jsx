@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { FaCloudUploadAlt, FaTimes } from 'react-icons/fa';
-import './styles/ImageUpload.css';
+import './Styles/ImageUpload.css';
 
 const ImageUpload = ({
   image,

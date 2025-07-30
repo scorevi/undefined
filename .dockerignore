@@ -55,4 +55,7 @@ phpunit.xml
 # Build artifacts
 public/hot
 public/build/*
-!public/build/.gitkeep 
+!public/build/.gitkeep
+
+# Windows symlink (will be recreated in container)
+public/storage 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Footer from './Footer';
-import './styles/Admin.css';
+import './Styles/Admin.css';
 
 const Signup = () => {
     const [name, setName] = useState('');

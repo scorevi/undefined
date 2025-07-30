@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaCrown, FaUser, FaUserShield } from 'react-icons/fa';
-import './styles/RoleBadge.css';
+import './Styles/RoleBadge.css';
 
 const RoleBadge = ({ role, className = '' }) => {
   if (!role) return null;

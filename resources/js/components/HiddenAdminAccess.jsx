@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './styles/Admin.css';
+import './Styles/Admin.css';
 
 const HiddenAdminAccess = () => {
     const [showAdminLogin, setShowAdminLogin] = useState(false);

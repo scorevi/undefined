@@ -25,20 +25,24 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy existing application directory contents
-COPY . /var/www
-
-# Copy existing application directory permissions
+# Copy existing application directory contents (excluding problematic symlinks)
 COPY --chown=www-data:www-data . /var/www
+
+# Remove Windows-specific storage symlink if it exists
+RUN rm -f /var/www/public/storage
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Install Node.js dependencies
-RUN npm install
+# Install Node.js dependencies and build assets
+RUN npm ci && npm run build
 
-# Build frontend assets
-RUN npm run build
+# Create Laravel storage directories if they don't exist
+RUN mkdir -p /var/www/storage/app/public
+
+# Copy and set permissions for startup script
+COPY docker/scripts/start-laravel.sh /usr/local/bin/start-laravel.sh
+RUN chmod +x /usr/local/bin/start-laravel.sh
 
 # Change ownership of our applications
 RUN chown -R www-data:www-data /var/www
@@ -48,4 +52,4 @@ USER www-data
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
-CMD ["php-fpm"] 
+CMD ["/usr/local/bin/start-laravel.sh"] 

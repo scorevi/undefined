@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../authContext';
-import './styles/AdminHeader.css';
+import './Styles/AdminHeader.css';
 
 const AdminHeader = ({ title = "Admin Dashboard", showBackButton = false, backTo = "/admin", backText = "Back to Dashboard" }) => {
   const { user, logout } = useAuth();
