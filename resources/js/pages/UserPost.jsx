@@ -7,7 +7,7 @@ import { useAuth } from '../authContext';
 import './styles/userpost.css';
 
 function getPostImageUrl(image) {
-  if (!image) return 'https://picsum.photos/1000/400?random=1';
+  if (!image) return null; // No fallback to external images
   if (image.startsWith('http://') || image.startsWith('https://')) return image;
   return `/storage/${image}`;
 }
@@ -334,12 +334,14 @@ const UserPost = () => {
       <Navbar />
       <div className="blog-container" key={post?.id}>
         <div className="img-cont">
-          {post.image && (
+          {post.image && getPostImageUrl(post.image) && (
           <img
               src={getPostImageUrl(post.image)}
             alt="Post cover"
             className="blog-image"
-            onError={e => { e.target.onerror = null; e.target.src = 'https://picsum.photos/1000/400?random=1'; }}
+            onError={e => { 
+              e.target.style.display = 'none'; // Hide broken images instead of showing fallback
+            }}
           />
           )}
         </div>

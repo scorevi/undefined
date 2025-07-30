@@ -5,7 +5,7 @@ import './styles/posts.css';
 // import UserPost from '../pages/UserPost';
 
 function getPostImageUrl(image) {
-  if (!image) return 'https://picsum.photos/400?random=5';
+  if (!image) return null; // No fallback to external images
   if (image.startsWith('http://') || image.startsWith('https://')) return image;
   return `/storage/${image}`;
 }
@@ -134,10 +134,15 @@ const Posts = ({ refresh }) => {
         )}
         {Array.isArray(posts) && posts.map((post) => (
           <div className="recent-post-card" key={post.id}>
-            {post.image && (
-              <img src={getPostImageUrl(post.image)} alt="post" className="post-img"
-              onError={e => { e.target.onerror = null; e.target.src = 'https://picsum.photos/400?random=5'; }}
-            />
+            {post.image && getPostImageUrl(post.image) && (
+              <img 
+                src={getPostImageUrl(post.image)} 
+                alt="post" 
+                className="post-img"
+                onError={e => { 
+                  e.target.style.display = 'none'; // Hide broken images instead of showing fallback
+                }}
+              />
             )}
             <div className="post-details" style={{flex:1,minWidth:0}}>
               <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:2}}>

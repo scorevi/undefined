@@ -97,23 +97,49 @@ class PostController extends Controller
         if (!$user || ($user->id !== $post->user_id && $user->role !== 'admin')) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'image' => 'nullable|image|max:2048',
-        ]);
+        
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'content' => 'required|string',
+                'image' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp|max:51200', // 50MB
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        }
+        
         if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            // Double-check MIME type server-side
+            $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!in_array($file->getMimeType(), $allowedMimes)) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Only JPEG, PNG, GIF, or WEBP images are allowed.'
+                ], 422);
+            }
+            
             // Delete old image if exists
             if ($post->image) {
                 Storage::disk('public')->delete($post->image);
             }
-            $post->image = $request->file('image')->store('posts', 'public');
+            $post->image = $file->store('posts', 'public');
         }
+        
         $post->title = $validated['title'];
         $post->content = $validated['content'];
         $post->save();
         $post->load('user');
-        return response()->json(['success' => true, 'post' => $post]);
+        
+        return response()->json([
+            'success' => true, 
+            'post' => $post,
+            'message' => 'Post updated successfully.'
+        ]);
     }
 
     // Delete a post
@@ -124,11 +150,18 @@ class PostController extends Controller
         if (!$user || ($user->id !== $post->user_id && $user->role !== 'admin')) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
+        
+        // Delete associated image if exists
         if ($post->image) {
             Storage::disk('public')->delete($post->image);
         }
+        
         $post->delete();
-        return response()->json(['success' => true]);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Post deleted successfully.'
+        ]);
     }
 
     // Trending posts by most likes, then views

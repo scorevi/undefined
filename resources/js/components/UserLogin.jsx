@@ -29,18 +29,21 @@ const UserLogin = () => {
             await fetch('/sanctum/csrf-cookie', {
                 credentials: 'include',
             });
-            // Step 2: Login
-            // Get XSRF-TOKEN from cookie and set X-XSRF-TOKEN header
-            const xsrfToken = (() => {
-                const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
-                return match ? decodeURIComponent(match[1]) : '';
-            })();
-            const response = await fetch('/login', {
+
+            // Step 2: Get CSRF token from cookie
+            const csrfToken = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('XSRF-TOKEN='))
+                ?.split('=')[1];
+
+            // Step 3: Login using Sanctum's stateful authentication
+            const response = await fetch('/api/user/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    'X-XSRF-TOKEN': xsrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    ...(csrfToken && { 'X-XSRF-TOKEN': decodeURIComponent(csrfToken) }),
                 },
                 credentials: 'include',
                 body: JSON.stringify({ email, password }),
@@ -132,4 +135,4 @@ const UserLogin = () => {
     );
 };
 
-export default UserLogin; 
+export default UserLogin;

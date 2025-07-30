@@ -33,13 +33,24 @@ const UserRegister = () => {
         }
 
         try {
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            // First get the CSRF cookie
+            await fetch('/sanctum/csrf-cookie', {
+                credentials: 'include',
+            });
+
+            // Get CSRF token from cookie
+            const csrfToken = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('XSRF-TOKEN='))
+                ?.split('=')[1];
+
             const response = await fetch('/api/user/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
                     'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    ...(csrfToken && { 'X-XSRF-TOKEN': decodeURIComponent(csrfToken) }),
                 },
                 credentials: 'include',
                 body: JSON.stringify({ name, email, password, password_confirmation: passwordConfirmation }),
@@ -142,4 +153,4 @@ const UserRegister = () => {
     );
 };
 
-export default UserRegister; 
+export default UserRegister;

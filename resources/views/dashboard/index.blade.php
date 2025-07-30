@@ -43,7 +43,7 @@
                 <div class="p-5">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
-                            <i class="fas fa-file-alt text-blue-600 text-2xl"></i>
+                            <i class="fas fa-file-alt text-slate-600 text-2xl"></i>
                         </div>
                         <div class="ml-5 w-0 flex-1">
                             <dl>
@@ -60,7 +60,7 @@
                 <div class="p-5">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
-                            <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                            <i class="fas fa-check-circle text-emerald-600 text-2xl"></i>
                         </div>
                         <div class="ml-5 w-0 flex-1">
                             <dl>
@@ -77,7 +77,7 @@
                 <div class="p-5">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
-                            <i class="fas fa-eye text-purple-600 text-2xl"></i>
+                            <i class="fas fa-eye text-amber-600 text-2xl"></i>
                         </div>
                         <div class="ml-5 w-0 flex-1">
                             <dl>
@@ -94,7 +94,7 @@
                 <div class="p-5">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
-                            <i class="fas fa-comments text-yellow-600 text-2xl"></i>
+                            <i class="fas fa-comments text-sky-600 text-2xl"></i>
                         </div>
                         <div class="ml-5 w-0 flex-1">
                             <dl>
@@ -112,20 +112,20 @@
             <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Quick Actions</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <a href="#" class="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50">
-                        <i class="fas fa-plus text-blue-600 mr-3"></i>
+                    <a href="#" class="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-plus text-slate-600 mr-3"></i>
                         <span class="text-sm font-medium text-gray-900">New Post</span>
                     </a>
-                    <a href="#" class="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50">
-                        <i class="fas fa-edit text-green-600 mr-3"></i>
+                    <a href="#" class="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-edit text-emerald-600 mr-3"></i>
                         <span class="text-sm font-medium text-gray-900">Edit Posts</span>
                     </a>
-                    <a href="#" class="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50">
-                        <i class="fas fa-comment text-purple-600 mr-3"></i>
+                    <a href="#" class="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-comment text-sky-600 mr-3"></i>
                         <span class="text-sm font-medium text-gray-900">Manage Comments</span>
                     </a>
-                    <a href="#" class="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50">
-                        <i class="fas fa-cog text-gray-600 mr-3"></i>
+                    <a href="#" class="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-cog text-amber-600 mr-3"></i>
                         <span class="text-sm font-medium text-gray-900">Settings</span>
                     </a>
                 </div>
@@ -156,14 +156,14 @@
                                     <div class="text-sm text-gray-900">{{ number_format($post['views']) }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
-                                        {{ $post['status'] === 'published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
+                                        {{ $post['status'] === 'published' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800' }}">
                                         {{ ucfirst($post['status']) }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <a href="#" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
-                                    <a href="#" class="text-red-600 hover:text-red-900">Delete</a>
+                                    <a href="#" class="text-slate-600 hover:text-slate-800 mr-3 transition-colors">Edit</a>
+                                    <a href="#" class="text-gray-500 hover:text-red-600 transition-colors">Delete</a>
                                 </td>
                             </tr>
                             @endforeach
@@ -183,4 +183,4 @@
         </div>
     </footer>
 </body>
-</html> 
+</html>

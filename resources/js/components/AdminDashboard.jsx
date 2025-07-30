@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../authContext';
-import './styles/admindashboard.css';
+import './Styles/admindashboard.css';
 
 const AdminDashboard = () => {
     const [user, setUser] = useState(null);
@@ -28,8 +28,7 @@ const AdminDashboard = () => {
             headers: {
                 'Content-Type': 'application/json',
                 'X-XSRF-TOKEN': decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || ''),
-            },
-            credentials: 'include', // Ensure cookies are sent
+            }
         })
         .then(response => {
             if (response.ok) {
@@ -83,14 +82,14 @@ const AdminDashboard = () => {
     }
 
     return (
-    <>
+    <div className="admin-dashboard">
     {/* Navigation */}
     <nav className="admin-navbar">
-        <Link to="/" className="text-xl font-semibold text-gray-900">
+        <Link to="/" className="admin-title">
             Admin Dashboard
         </Link>
         <div className="admin-logout" style={{zIndex:2, position:'relative'}}>
-            <span>
+            <span className="welcome-text">
                 Welcome, {user?.name || 'Admin'}
             </span>
                 <button
@@ -202,7 +201,7 @@ const AdminDashboard = () => {
                 </table>
             </div>
     </div>
-    </>
+    </div>
     );
 };
 

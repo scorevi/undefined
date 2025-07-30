@@ -46,22 +46,38 @@ const AdminNewPost = () => {
       return;
     }
     try {
+      // Get CSRF cookie
+      await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
+      
+      // Get CSRF token from cookie
+      const csrfToken = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('XSRF-TOKEN='))
+        ?.split('=')[1];
+      
       const formData = new FormData();
       formData.append('title', title);
       formData.append('content', content);
       if (image) formData.append('image', image);
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      
       const response = await fetch('/api/posts', {
         method: 'POST',
-        headers: { 'X-CSRF-TOKEN': csrfToken },
+        headers: {
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          ...(csrfToken && { 'X-XSRF-TOKEN': decodeURIComponent(csrfToken) }),
+        },
         credentials: 'include',
         body: formData,
       });
       const data = await response.json();
-      if (!response.ok || !data.success) {
+      if (!response.ok) {
+        const errorMsg = data.errors ? Object.values(data.errors).flat().join(', ') : (data.error || data.message || 'Failed to create post');
+        setError(errorMsg);
+      } else if (!data.success) {
         setError(data.error || data.message || 'Failed to create post');
       } else {
-        setSuccess('Post created!');
+        setSuccess('Post created successfully!');
         setTitle('');
         setContent('');
         setImage(null);
@@ -69,7 +85,7 @@ const AdminNewPost = () => {
         setTimeout(() => navigate('/admin/posts'), 1200);
       }
     } catch (err) {
-      setError('Error creating post');
+      setError('Network error. Please try again.');
     } finally {
       setLoading(false);
     }

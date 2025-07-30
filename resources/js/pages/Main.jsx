@@ -14,7 +14,7 @@ import Posts from '../components/Posts';
 import Navbar from '../components/NavBar';
 
 function getPostImageUrl(image) {
-  if (!image) return 'https://picsum.photos/1000/400?random=1';
+  if (!image) return null; // No fallback to external images
   if (image.startsWith('http://') || image.startsWith('https://')) return image;
   return `/storage/${image}`;
 }
@@ -226,7 +226,16 @@ const Main = () => {
             <SwiperSlide key={post.id}>
               <Link to={`/blog/post/${post.id}`}>
                 <div className="slide-card">
-                  <img src={getPostImageUrl(post.image)} alt={post.title} className="slide-image" />
+                  {post.image && getPostImageUrl(post.image) && (
+                    <img 
+                      src={getPostImageUrl(post.image)} 
+                      alt={post.title} 
+                      className="slide-image"
+                      onError={e => { 
+                        e.target.style.display = 'none'; // Hide broken images
+                      }}
+                    />
+                  )}
                   <div className="slide-overlay">
                     <h3 className="slide-title">{post.title}</h3>
                     <p>{post.content.length > 120 ? post.content.slice(0, 120) + '...' : post.content}</p>

@@ -17,29 +17,63 @@ const Login = () => {
         setError('');
 
         try {
+            // Step 1: Get CSRF cookie from Sanctum
+            await fetch('/sanctum/csrf-cookie', {
+                credentials: 'include',
+            });
+
+            // Step 2: Get CSRF token from cookie
+            const csrfToken = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('XSRF-TOKEN='))
+                ?.split('=')[1];
+
+            // Step 3: Login using Sanctum's stateful authentication
             const response = await fetch('/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    ...(csrfToken && { 'X-XSRF-TOKEN': decodeURIComponent(csrfToken) }),
                 },
+                credentials: 'include',
                 body: JSON.stringify({ email, password }),
             });
 
-            const data = await response.json();
+            let data;
+            try {
+                data = await response.json();
+            } catch (jsonErr) {
+                setError('Invalid server response.');
+                setLoading(false);
+                return;
+            }
+
+            if (!response.ok) {
+                // Handle validation errors
+                if (data.errors) {
+                    const errorMessages = Object.values(data.errors).flat();
+                    setError(errorMessages.join(' '));
+                } else {
+                    setError(data.message || `Login failed (status ${response.status})`);
+                }
+                setLoading(false);
+                return;
+            }
 
             if (data.success && data.user) {
                 if (data.user.role === 'admin') {
                     login(data.user); // Set user context
                     navigate('/admin');
                 } else {
-                    setError('You do not have admin access.');
+                    setError('Access denied. Admin privileges required.');
                 }
             } else {
-                setError(data.message || 'Login failed');
+                setError(data.message || 'Login failed. Please check your credentials.');
             }
         } catch (err) {
-            setError('An error occurred. Please try again.');
+            setError('Network error. Please check your connection and try again.');
         } finally {
             setLoading(false);
         }

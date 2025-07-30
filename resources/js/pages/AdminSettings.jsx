@@ -18,16 +18,27 @@ const AdminSettings = () => {
     setLoading(true);
     setError('');
     // Fetch current admin info and site settings
-    fetch('/api/dashboard', { credentials: 'include' })
-      .then(res => res.json())
-      .then(data => {
-        setEmail(data.user?.email || '');
-        setSiteName(data.stats?.site_name || '');
-        setSiteDescription(data.stats?.site_description || '');
+    Promise.all([
+      fetch('/api/admin/dashboard', { credentials: 'include' }),
+      fetch('/api/admin/settings', { credentials: 'include' })
+    ])
+      .then(async ([dashboardRes, settingsRes]) => {
+        const dashboardData = await dashboardRes.json();
+        const settingsData = await settingsRes.json();
+
+        setEmail(dashboardData.user?.email || '');
+        setSiteName(settingsData.settings?.site_name || '');
+        setSiteDescription(settingsData.settings?.site_description || '');
+
+        // Set document title
+        const title = settingsData.settings?.site_name || 'Blog';
+        document.title = `${title} - Admin Settings`;
+
         setLoading(false);
       })
       .catch(() => {
         setError('Failed to load settings');
+        document.title = 'Admin Settings';
         setLoading(false);
       });
   }, []);
@@ -38,20 +49,33 @@ const AdminSettings = () => {
     setFeedback('');
     setError('');
     try {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      // Get CSRF cookie
+      await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
+
+      // Get CSRF token from cookie
+      const csrfToken = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('XSRF-TOKEN='))
+        ?.split('=')[1];
+
       const res = await fetch('/api/admin/email', {
         method: 'POST',
         headers: {
-          'X-CSRF-TOKEN': csrfToken,
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          ...(csrfToken && { 'X-XSRF-TOKEN': decodeURIComponent(csrfToken) }),
         },
         credentials: 'include',
         body: JSON.stringify({ email }),
       });
       const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || data.message || 'Failed to update email');
-      setFeedback('Email updated!');
+      if (!res.ok) {
+        const errorMsg = data.errors ? Object.values(data.errors).flat().join(', ') : (data.error || data.message || 'Failed to update email');
+        throw new Error(errorMsg);
+      }
+      if (!data.success) throw new Error(data.error || data.message || 'Failed to update email');
+      setFeedback('Email updated successfully!');
     } catch (err) {
       setError(err.message || 'Failed to update email');
     } finally {
@@ -65,25 +89,43 @@ const AdminSettings = () => {
     setFeedback('');
     setError('');
     if (newPassword !== confirmPassword) {
-      setError('Passwords do not match.');
+      setError('New passwords do not match.');
+      setSaving(false);
+      return;
+    }
+    if (newPassword.length < 8) {
+      setError('New password must be at least 8 characters long.');
       setSaving(false);
       return;
     }
     try {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      // Get CSRF cookie
+      await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
+
+      // Get CSRF token from cookie
+      const csrfToken = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('XSRF-TOKEN='))
+        ?.split('=')[1];
+
       const res = await fetch('/api/admin/password', {
         method: 'POST',
         headers: {
-          'X-CSRF-TOKEN': csrfToken,
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          ...(csrfToken && { 'X-XSRF-TOKEN': decodeURIComponent(csrfToken) }),
         },
         credentials: 'include',
         body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
       });
       const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || data.message || 'Failed to update password');
-      setFeedback('Password updated!');
+      if (!res.ok) {
+        const errorMsg = data.errors ? Object.values(data.errors).flat().join(', ') : (data.error || data.message || 'Failed to update password');
+        throw new Error(errorMsg);
+      }
+      if (!data.success) throw new Error(data.error || data.message || 'Failed to update password');
+      setFeedback('Password updated successfully!');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
@@ -100,20 +142,38 @@ const AdminSettings = () => {
     setFeedback('');
     setError('');
     try {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      // Get CSRF cookie
+      await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
+
+      // Get CSRF token from cookie
+      const csrfToken = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('XSRF-TOKEN='))
+        ?.split('=')[1];
+
       const res = await fetch('/api/admin/site-settings', {
         method: 'POST',
         headers: {
-          'X-CSRF-TOKEN': csrfToken,
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          ...(csrfToken && { 'X-XSRF-TOKEN': decodeURIComponent(csrfToken) }),
         },
         credentials: 'include',
         body: JSON.stringify({ site_name: siteName, site_description: siteDescription }),
       });
       const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || data.message || 'Failed to update site settings');
-      setFeedback('Site settings updated!');
+      if (!res.ok) {
+        const errorMsg = data.errors ? Object.values(data.errors).flat().join(', ') : (data.error || data.message || 'Failed to update site settings');
+        throw new Error(errorMsg);
+      }
+      if (!data.success) throw new Error(data.error || data.message || 'Failed to update site settings');
+      setFeedback('Site settings updated successfully!');
+
+      // Update document title if site name changed
+      if (siteName) {
+        document.title = `${siteName} - Admin Settings`;
+      }
     } catch (err) {
       setError(err.message || 'Failed to update site settings');
     } finally {

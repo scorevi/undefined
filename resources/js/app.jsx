@@ -83,19 +83,19 @@ const App = () => {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <Routes>
-            <Route path="/" element={<PublicRoute><Welcome /></PublicRoute>} />
-            <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-            <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
-            <Route path="/admin/login" element={<PublicRoute><AdminLogin /></PublicRoute>} />
-            <Route path="/admin/signup" element={<PublicRoute><AdminSignup /></PublicRoute>} />
+          <Route path="/" element={<PublicRoute><Welcome /></PublicRoute>} />
+          <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+          <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+          <Route path="/admin/login" element={<PublicRoute><AdminLogin /></PublicRoute>} />
+          <Route path="/admin/signup" element={<PublicRoute><AdminSignup /></PublicRoute>} />
           <Route path="/blog" element={<ProtectedRoute><Main /></ProtectedRoute>} />
           <Route path="/blog/post/:id" element={<ProtectedRoute><UserPost /></ProtectedRoute>} />
           <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-            <Route path="/admin/posts/new" element={<AdminRoute><AdminNewPost /></AdminRoute>} />
-            <Route path="/admin/posts" element={<AdminRoute><AdminEditPosts /></AdminRoute>} />
-            <Route path="/admin/posts/:id/edit" element={<AdminRoute><AdminEditPostPage /></AdminRoute>} />
-            <Route path="/admin/comments" element={<AdminRoute><AdminComments /></AdminRoute>} />
-            <Route path="/admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
+          <Route path="/admin/posts/new" element={<AdminRoute><AdminNewPost /></AdminRoute>} />
+          <Route path="/admin/posts" element={<AdminRoute><AdminEditPosts /></AdminRoute>} />
+          <Route path="/admin/posts/:id/edit" element={<AdminRoute><AdminEditPostPage /></AdminRoute>} />
+          <Route path="/admin/comments" element={<AdminRoute><AdminComments /></AdminRoute>} />
+          <Route path="/admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
           {/* fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

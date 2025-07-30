@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 const AdminEditPostPage = () => {
@@ -72,27 +72,43 @@ const AdminEditPostPage = () => {
       return;
     }
     try {
+      // Get CSRF cookie
+      await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
+      
+      // Get CSRF token from cookie
+      const csrfToken = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('XSRF-TOKEN='))
+        ?.split('=')[1];
+      
       const formData = new FormData();
       formData.append('title', title);
       formData.append('content', content);
       if (image) formData.append('image', image);
       formData.append('_method', 'PUT');
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      
       const response = await fetch(`/api/posts/${id}`, {
         method: 'POST',
-        headers: { 'X-CSRF-TOKEN': csrfToken },
+        headers: {
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          ...(csrfToken && { 'X-XSRF-TOKEN': decodeURIComponent(csrfToken) }),
+        },
         credentials: 'include',
         body: formData,
       });
       const data = await response.json();
-      if (!response.ok || !data.success) {
+      if (!response.ok) {
+        const errorMsg = data.errors ? Object.values(data.errors).flat().join(', ') : (data.error || data.message || 'Failed to update post');
+        setError(errorMsg);
+      } else if (!data.success) {
         setError(data.error || data.message || 'Failed to update post');
       } else {
-        setSuccess('Post updated!');
+        setSuccess('Post updated successfully!');
         setTimeout(() => navigate('/admin/posts'), 1200);
       }
     } catch (err) {
-      setError('Error updating post');
+      setError('Network error. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -101,16 +117,33 @@ const AdminEditPostPage = () => {
   const handleDelete = async () => {
     if (!window.confirm('Are you sure you want to delete this post?')) return;
     try {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      // Get CSRF cookie
+      await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
+      
+      // Get CSRF token from cookie
+      const csrfToken = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('XSRF-TOKEN='))
+        ?.split('=')[1];
+      
       const res = await fetch(`/api/posts/${id}`, {
         method: 'DELETE',
-        headers: { 'X-CSRF-TOKEN': csrfToken },
+        headers: {
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          ...(csrfToken && { 'X-XSRF-TOKEN': decodeURIComponent(csrfToken) }),
+        },
         credentials: 'include',
       });
-      if (!res.ok) throw new Error();
-      navigate('/admin/posts');
+      const data = await res.json();
+      if (!res.ok) {
+        const errorMsg = data.errors ? Object.values(data.errors).flat().join(', ') : (data.error || data.message || 'Failed to delete post');
+        setError(errorMsg);
+      } else {
+        navigate('/admin/posts');
+      }
     } catch {
-      setError('Failed to delete post.');
+      setError('Network error. Failed to delete post.');
     }
   };
 

@@ -30,7 +30,7 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
     Route::post('/admin/site-settings', [AdminController::class, 'updateSiteSettings']);
     Route::post('/admin/email', [AdminController::class, 'updateEmail']);
     Route::post('/admin/password', [AdminController::class, 'updatePassword']);
-    Route::post('/posts', [PostController::class, 'store'])->middleware('web');
+    Route::post('/posts', [PostController::class, 'store']);
     Route::put('/posts/{id}', [PostController::class, 'update']);
     Route::delete('/posts/{id}', [PostController::class, 'destroy']);
     Route::post('/posts/{post}/like', [LikeController::class, 'like']);
@@ -76,8 +76,3 @@ Route::delete('/posts/{post}/comments/{comment}', [CommentController::class, 'de
 Route::patch('/posts/{post}/comments/{comment}', [CommentController::class, 'update'])->middleware(['web', 'auth']);
 // Admin comments management
 Route::middleware(['web', 'auth'])->get('/comments', [CommentController::class, 'adminIndex']);
-
-// Admin settings endpoints
-Route::middleware(['web', 'auth'])->post('/admin/email', [App\Http\Controllers\Api\AdminController::class, 'updateEmail']);
-Route::middleware(['web', 'auth'])->post('/admin/password', [App\Http\Controllers\Api\AdminController::class, 'updatePassword']);
-Route::middleware(['web', 'auth'])->post('/admin/site-settings', [App\Http\Controllers\Api\AdminController::class, 'updateSiteSettings']);
