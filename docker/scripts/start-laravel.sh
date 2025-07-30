@@ -9,8 +9,9 @@ if [ ! -L "/var/www/public/storage" ]; then
     php artisan storage:link
 fi
 
-# Ensure proper permissions
-chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+# Ensure proper permissions for development
+# Files are already owned by laravel:www-data from Dockerfile
+chmod -R 775 /var/www/storage /var/www/bootstrap/cache 2>/dev/null || true
 
 # Start PHP-FPM
 echo "Starting PHP-FPM..."

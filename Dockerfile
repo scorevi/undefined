@@ -11,7 +11,12 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     nodejs \
-    npm
+    npm \
+    bash \
+    vim \
+    nano \
+    procps \
+    htop
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -44,11 +49,19 @@ RUN mkdir -p /var/www/storage/app/public
 COPY docker/scripts/start-laravel.sh /usr/local/bin/start-laravel.sh
 RUN chmod +x /usr/local/bin/start-laravel.sh
 
-# Change ownership of our applications
-RUN chown -R www-data:www-data /var/www
+# Create a development user with proper shell access
+RUN groupadd -g 1000 laravel && \
+    useradd -u 1000 -g laravel -m -s /bin/bash laravel && \
+    usermod -a -G www-data laravel
 
-# Change current user to www
-USER www-data
+# Set proper ownership for development
+# Laravel user owns the files, but www-data group has access for web server
+RUN chown -R laravel:www-data /var/www && \
+    chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+
+# For development, we'll run as the laravel user instead of www-data
+# This allows for proper terminal access in VS Code
+USER laravel
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000

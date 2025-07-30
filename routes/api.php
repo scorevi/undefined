@@ -51,6 +51,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/user/dashboard', [UserDashboardController::class, '__invoke']);
     Route::post('/posts/{post}/like', [LikeController::class, 'like']);
     Route::post('/posts/{post}/unlike', [LikeController::class, 'unlike']);
+});
+
 // Logout routes (with session middleware)
 Route::middleware(['web'])->group(function () {
     Route::post('/user/logout', function (\Illuminate\Http\Request $request) {
