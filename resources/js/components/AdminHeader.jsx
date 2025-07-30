@@ -26,7 +26,7 @@ const AdminHeader = ({ title = "Admin Dashboard", showBackButton = false, backTo
         }
       }
     } catch (error) {
-      console.error('Admin Logout error:', error);
+      // Silent fail for logout errors
     } finally {
       // Always clear tokens and user state
       localStorage.removeItem('auth_token');

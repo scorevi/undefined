@@ -124,7 +124,6 @@ const Main = () => {
       }
     } catch (err) {
       setError('Error submitting post');
-      console.error(err);
     } finally {
       setLoading(false);
     }

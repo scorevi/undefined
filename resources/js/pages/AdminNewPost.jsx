@@ -51,17 +51,6 @@ const AdminNewPost = () => {
       formData.append('is_featured', isFeatured ? '1' : '0');
       if (image) formData.append('image', image);
 
-      // Debug logging
-      console.log('Creating post with:', {
-        title,
-        category,
-        isFeatured,
-        is_featured_value: isFeatured ? '1' : '0',
-        hasImage: !!image,
-        token: token ? 'Present' : 'Missing',
-        tokenLength: token ? token.length : 0
-      });
-
       const response = await fetch('/api/posts', {
         method: 'POST',
         headers: {
@@ -72,8 +61,6 @@ const AdminNewPost = () => {
         body: formData,
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
       const data = await response.json();
       if (!response.ok) {
         const errorMsg = data.errors ? Object.values(data.errors).flat().join(', ') : (data.error || data.message || 'Failed to create post');

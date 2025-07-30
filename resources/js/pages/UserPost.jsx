@@ -177,7 +177,6 @@ const UserPost = () => {
       if (editImage) formData.append('image', editImage);
       formData.append('_method', 'PUT'); // Laravel expects this for method spoofing
       const url = `/api/posts/${id}`;
-      console.log('Editing post, URL:', url); // Debug log
       const response = await fetch(url, {
         method: 'POST', // Use POST for FormData with file upload
         headers: {

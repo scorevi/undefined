@@ -77,17 +77,14 @@ class PostController extends Controller
     // Create a new post
     public function store(Request $request)
     {
-        // Debug authentication
-        \Log::info('Post store request', [
-            'has_auth_header' => $request->hasHeader('Authorization'),
-            'auth_header' => $request->header('Authorization'),
-            'user' => Auth::user() ? Auth::user()->id : null,
-            'guard' => Auth::getDefaultDriver()
-        ]);
-
         $user = Auth::user();
         if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        // Only admin users can create posts
+        if ($user->role !== 'admin') {
+            return response()->json(['error' => 'Only admin users can create posts'], 403);
         }
         try {
             $validated = $request->validate([
@@ -121,13 +118,6 @@ class PostController extends Controller
         if ($user->role === 'admin' && isset($validated['is_featured'])) {
             // Convert string to boolean properly
             $isFeatured = filter_var($validated['is_featured'], FILTER_VALIDATE_BOOLEAN);
-            // Log for debugging
-            \Log::info('Post creation - is_featured value', [
-                'user_role' => $user->role,
-                'is_featured_input' => $validated['is_featured'],
-                'is_featured_final' => $isFeatured,
-                'has_image' => $request->hasFile('image')
-            ]);
         }
 
         $post = Post::create([
@@ -137,13 +127,6 @@ class PostController extends Controller
             'category' => $validated['category'] ?? 'news',
             'is_featured' => $isFeatured,
             'image' => $imagePath,
-        ]);
-
-        // Log the created post for debugging
-        \Log::info('Post created', [
-            'post_id' => $post->id,
-            'is_featured' => $post->is_featured,
-            'has_image' => $post->image ? true : false
         ]);
 
         $post->load('user');

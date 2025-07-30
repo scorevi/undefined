@@ -1,16 +1,58 @@
+# Dependencies
 node_modules
 vendor
+
+# Git files
 .git
 .gitignore
+
+# Documentation
 README.md
-.env
+*.md
+!README.md
+
+# Environment files
+.env.local
+.env.development
 .env.example
+
+# Docker files
 docker-compose.yml
+docker-compose.override.yml
+docker-compose.prod.yml
 Dockerfile
 .dockerignore
+
+# Cache and temporary files
 storage/logs/*
 storage/framework/cache/*
 storage/framework/sessions/*
 storage/framework/views/*
 storage/app/*
-bootstrap/cache/* 
+bootstrap/cache/*
+*.log
+*.tmp
+*.temp
+
+# Development files
+.vscode
+.idea
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Development scripts
+docker-setup.sh
+start-all.bat
+deploy-production.sh
+deploy-production.bat
+
+# Test files
+/tests
+phpunit.xml
+
+# Build artifacts
+public/hot
+public/build/*
+!public/build/.gitkeep 

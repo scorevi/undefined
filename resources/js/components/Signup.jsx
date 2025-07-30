@@ -58,7 +58,6 @@ const Signup = () => {
                 }
             }
         } catch (err) {
-            console.error('Registration error:', err);
             setError('Network error occurred. Please check your connection and try again.');
         } finally {
             setLoading(false);

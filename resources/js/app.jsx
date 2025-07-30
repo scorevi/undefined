@@ -39,10 +39,9 @@ const AdminRoute = ({ children }) => {
 // Public Route Wrapper
 const PublicRoute = ({ children }) => {
   const { user } = useAuth();
-  console.log('PublicRoute user:', user);
   if (user) {
-    if (user.role === 'admin') return <Navigate to="/admin" replace />;
-    if (user.role === 'user') return <Navigate to="/blog" replace />;
+    const redirectPath = user.role === 'admin' ? '/admin' : '/blog';
+    return <Navigate to={redirectPath} replace />;
   }
   return children;
 };

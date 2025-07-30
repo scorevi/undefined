@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  app:
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - LOG_LEVEL=error
+    volumes:
+      - ./:/var/www
+      - ./docker/php/production.ini:/usr/local/etc/php/conf.d/local.ini
+
+  nginx:
+    ports:
+      - "80:80"
+
+  db:
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-secure_root_password}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secure_password}

@@ -27,7 +27,6 @@ const AdminDashboard = () => {
         const token = localStorage.getItem('auth_token');
 
         if (!token) {
-            console.error('No auth token found');
             navigate('/login');
             return;
         }
@@ -56,22 +55,16 @@ const AdminDashboard = () => {
             setLoading(false);
         })
         .catch(error => {
-            console.error('Authentication error:', error);
             navigate('/login');
         });
     }, []); // Removed navigate from dependency array
 
     const handleViewPost = (e, postId) => {
-        console.log('View button clicked! Post ID:', postId);
         e.preventDefault();
         e.stopPropagation();
 
-        // Simple alert to test if the function is called
-        alert(`Viewing post ID: ${postId}`);
-
-        // Try navigation instead of window.open for now
+        // Navigate to the post view
         const url = `/blog/post/${postId}`;
-        console.log('Navigating to:', url);
         navigate(url);
     };
 
