@@ -339,7 +339,7 @@ const UserPost = () => {
               src={getPostImageUrl(post.image)}
             alt="Post cover"
             className="blog-image"
-            onError={e => { 
+            onError={e => {
               e.target.style.display = 'none'; // Hide broken images instead of showing fallback
             }}
           />
@@ -371,16 +371,16 @@ const UserPost = () => {
           </div>
 
           <hr />
-          
+
           {editing ? (
             <div className="edit-container">
               <input className="edit-title" type="text" value={editTitle} onChange={e=>setEditTitle(e.target.value)} required/>
 
               <textarea className="edit-content" value={editContent} onChange={e=>setEditContent(e.target.value)} required rows={6} />
-              
+
               <input className="edit-file" type="file" accept="image/*" onChange={e=>setEditImage(e.target.files[0])} />
               {editError && <div className="user-error-message">{editError}</div>}
-              
+
               <div className="edit-btns">
                 <button className="save-btn" type="button" onClick={handleEditSave} disabled={editLoading}>{editLoading ? 'Saving...' : 'Save'}</button>
                 <button className="cancel-btn" type="button" onClick={cancelEdit}>Cancel</button>
@@ -405,7 +405,7 @@ const UserPost = () => {
         </div>
 
           {/* Comments Section */}
-          
+
         <div className="comments-container">
           <h3 className="comments-header">Comments ({commentsTotal})</h3>
           {commentError && <div className="user-error-message">{commentError}</div>}
@@ -441,7 +441,7 @@ const UserPost = () => {
                 />
                 <div style={{flex:1}}>
                   <div className="comment-top">
-                    <div className='comment-details'> 
+                    <div className='comment-details'>
                       <span className='comment-name'>{comment.user?.name || comment.user?.email || 'Anonymous'}</span>
                       <span className='comment-date'>At {new Date(comment.created_at).toLocaleString()}</span>
                     </div>
@@ -469,7 +469,7 @@ const UserPost = () => {
                   ) : (
                     <div style={{fontSize:'0.97rem',color:'#333',margin:'2px 0 4px 0'}}>{comment.content}</div>
                   )}
-                  
+
                 </div>
               </div>
             ))}

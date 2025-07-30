@@ -97,7 +97,7 @@ class PostController extends Controller
         if (!$user || ($user->id !== $post->user_id && $user->role !== 'admin')) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
-        
+
         try {
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
@@ -111,7 +111,7 @@ class PostController extends Controller
                 'errors' => $e->errors()
             ], 422);
         }
-        
+
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             // Double-check MIME type server-side
@@ -122,21 +122,21 @@ class PostController extends Controller
                     'error' => 'Only JPEG, PNG, GIF, or WEBP images are allowed.'
                 ], 422);
             }
-            
+
             // Delete old image if exists
             if ($post->image) {
                 Storage::disk('public')->delete($post->image);
             }
             $post->image = $file->store('posts', 'public');
         }
-        
+
         $post->title = $validated['title'];
         $post->content = $validated['content'];
         $post->save();
         $post->load('user');
-        
+
         return response()->json([
-            'success' => true, 
+            'success' => true,
             'post' => $post,
             'message' => 'Post updated successfully.'
         ]);
@@ -150,14 +150,14 @@ class PostController extends Controller
         if (!$user || ($user->id !== $post->user_id && $user->role !== 'admin')) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
-        
+
         // Delete associated image if exists
         if ($post->image) {
             Storage::disk('public')->delete($post->image);
         }
-        
+
         $post->delete();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Post deleted successfully.'

@@ -114,7 +114,7 @@ const Posts = ({ refresh }) => {
       <div className="recent-posts">
         <div className="section-header">
           <h2>Recent Posts ({postsTotal})</h2>
-          
+
           <div className="sort-section">
             <button className="sort-btn"><FaSort /> Sort </button>
 
@@ -135,11 +135,11 @@ const Posts = ({ refresh }) => {
         {Array.isArray(posts) && posts.map((post) => (
           <div className="recent-post-card" key={post.id}>
             {post.image && getPostImageUrl(post.image) && (
-              <img 
-                src={getPostImageUrl(post.image)} 
-                alt="post" 
+              <img
+                src={getPostImageUrl(post.image)}
+                alt="post"
                 className="post-img"
-                onError={e => { 
+                onError={e => {
                   e.target.style.display = 'none'; // Hide broken images instead of showing fallback
                 }}
               />

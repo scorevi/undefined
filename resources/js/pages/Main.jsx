@@ -227,11 +227,11 @@ const Main = () => {
               <Link to={`/blog/post/${post.id}`}>
                 <div className="slide-card">
                   {post.image && getPostImageUrl(post.image) && (
-                    <img 
-                      src={getPostImageUrl(post.image)} 
-                      alt={post.title} 
+                    <img
+                      src={getPostImageUrl(post.image)}
+                      alt={post.title}
                       className="slide-image"
-                      onError={e => { 
+                      onError={e => {
                         e.target.style.display = 'none'; // Hide broken images
                       }}
                     />

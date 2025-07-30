@@ -74,19 +74,19 @@ const AdminEditPostPage = () => {
     try {
       // Get CSRF cookie
       await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
-      
+
       // Get CSRF token from cookie
       const csrfToken = document.cookie
         .split('; ')
         .find(row => row.startsWith('XSRF-TOKEN='))
         ?.split('=')[1];
-      
+
       const formData = new FormData();
       formData.append('title', title);
       formData.append('content', content);
       if (image) formData.append('image', image);
       formData.append('_method', 'PUT');
-      
+
       const response = await fetch(`/api/posts/${id}`, {
         method: 'POST',
         headers: {
@@ -119,13 +119,13 @@ const AdminEditPostPage = () => {
     try {
       // Get CSRF cookie
       await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
-      
+
       // Get CSRF token from cookie
       const csrfToken = document.cookie
         .split('; ')
         .find(row => row.startsWith('XSRF-TOKEN='))
         ?.split('=')[1];
-      
+
       const res = await fetch(`/api/posts/${id}`, {
         method: 'DELETE',
         headers: {
