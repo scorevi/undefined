@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../authContext';
 import { FaCamera } from 'react-icons/fa';
@@ -24,12 +24,27 @@ const Main = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [refreshPosts, setRefreshPosts] = useState(0);
+  const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);
+  const [clickCounter, setClickCounter] = useState(0);
+  const fileInputRef = useRef(null);
 
+  // Add focus event to detect when user returns to the page (dialog closed)
   useEffect(() => {
-    // No longer needed - featured posts handled by Posts component
-  }, [refreshPosts]); // depend on refreshPosts
+    const handleFocus = () => {
+      // Reset dialog state when user returns to page (dialog was closed)
+      if (isFileDialogOpen) {
+        setTimeout(() => setIsFileDialogOpen(false), 100);
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [isFileDialogOpen]);
 
   const handleImageChange = (e) => {
+    // Always reset the dialog flag when file input changes (including cancellation)
+    setIsFileDialogOpen(false);
+
     const file = e.target.files[0];
     if (!file) {
       setImage(null);
@@ -52,6 +67,45 @@ const Main = () => {
     setImage(file);
     setImagePreview(URL.createObjectURL(file));
   };
+
+  const handleUploadClick = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // DEBUG: Increment click counter
+    setClickCounter(prev => prev + 1);
+    console.log(`🔵 Upload click #${clickCounter + 1} detected!`);
+
+    // Double-check if already processing
+    if (isFileDialogOpen || loading) {
+      console.log(`🚫 Click #${clickCounter + 1} blocked - dialog already open or loading`);
+      return false;
+    }
+
+    console.log(`✅ Click #${clickCounter + 1} proceeding - opening file dialog`);
+    // Set flag immediately to prevent rapid clicks
+    setIsFileDialogOpen(true);
+
+    // Trigger file input with a small delay to ensure state is set
+    const timer = setTimeout(() => {
+      if (fileInputRef.current && !loading) {
+        fileInputRef.current.click();
+        console.log(`📁 File dialog triggered by click #${clickCounter + 1}`);
+      }
+    }, 50);
+
+    // Cleanup and reset flag after dialog interaction
+    const resetTimer = setTimeout(() => {
+      setIsFileDialogOpen(false);
+      console.log(`🔄 Dialog state reset after click #${clickCounter + 1}`);
+    }, 3000);
+
+    // Cleanup function
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(resetTimer);
+    };
+  }, [isFileDialogOpen, loading, clickCounter]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -176,10 +230,21 @@ const Main = () => {
               </select>
 
               <div className="post-actions">
-                <label htmlFor="image-upload" className="custom-upload-btn">
-                  <FaCamera /> Upload Image
-                </label>
+                <button
+                  type="button"
+                  className="custom-upload-btn"
+                  onClick={handleUploadClick}
+                  disabled={loading || isFileDialogOpen}
+                  style={{
+                    opacity: (loading || isFileDialogOpen) ? 0.6 : 1,
+                    cursor: (loading || isFileDialogOpen) ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  <FaCamera /> {isFileDialogOpen ? 'Opening...' : 'Upload Image'}
+                  {clickCounter > 0 && <span style={{marginLeft: '8px', backgroundColor: 'red', color: 'white', padding: '2px 6px', borderRadius: '10px', fontSize: '12px'}}>Clicks: {clickCounter}</span>}
+                </button>
                 <input
+                  ref={fileInputRef}
                   id="image-upload"
                   type="file"
                   accept="image/*"

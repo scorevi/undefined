@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FaCloudUploadAlt, FaTimes } from 'react-icons/fa';
 import './Styles/ImageUpload.css';
 
@@ -13,7 +13,20 @@ const ImageUpload = ({
   className = ""
 }) => {
   const [dragActive, setDragActive] = useState(false);
+  const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);
   const inputRef = useRef(null);
+
+  // Reset dialog state when window regains focus (user closed dialog)
+  useEffect(() => {
+    const handleFocus = () => {
+      if (isFileDialogOpen) {
+        setIsFileDialogOpen(false);
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [isFileDialogOpen]);
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -40,6 +53,8 @@ const ImageUpload = ({
 
   const handleChange = (e) => {
     e.preventDefault();
+    setIsFileDialogOpen(false); // Reset dialog state when file is selected
+
     if (disabled) return;
 
     const files = e.target.files;
@@ -62,13 +77,52 @@ const ImageUpload = ({
     onChange(file);
   };
 
-  const handleClick = () => {
-    if (!disabled && inputRef.current) {
-      inputRef.current.click();
-    }
-  };
+  const handleClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-  const formatFileSize = (bytes) => {
+    // DEBUG: Increment click counter first
+    setClickCounter(prev => prev + 1);
+    console.log(`🔴 Admin ImageUpload click #${clickCounter + 1} detected!`);
+
+    if (disabled) {
+      console.log(`🚫 Admin click blocked - component disabled`);
+      return;
+    }
+
+    if (isFileDialogOpen) {
+      console.log(`🚫 Admin click blocked - dialog already open`);
+      return;
+    }
+
+    console.log(`✅ Admin click proceeding - opening file dialog`);
+
+    // Set dialog state
+    setIsFileDialogOpen(true);
+
+    // Trigger file input with immediate execution
+    console.log('🔍 Input ref:', inputRef.current);
+    console.log('🔍 Input disabled:', inputRef.current?.disabled);
+
+    if (inputRef.current && !inputRef.current.disabled) {
+      try {
+        inputRef.current.click();
+        console.log(`📁 File dialog triggered successfully`);
+      } catch (error) {
+        console.error('❌ Error triggering file dialog:', error);
+        setIsFileDialogOpen(false);
+      }
+    } else {
+      console.error('❌ Cannot trigger - input ref is null or disabled');
+      setIsFileDialogOpen(false);
+    }
+
+    // Reset flag after timeout as backup
+    setTimeout(() => {
+      setIsFileDialogOpen(false);
+      console.log(`🔄 Dialog state reset after timeout`);
+    }, 3000);
+  };  const formatFileSize = (bytes) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB'];
@@ -78,6 +132,16 @@ const ImageUpload = ({
 
   return (
     <div className={`image-upload-container ${className}`}>
+      {/* Hidden File Input - Completely separate from UI */}
+      <input
+        ref={inputRef}
+        type="file"
+        accept={accept}
+        onChange={handleChange}
+        disabled={disabled}
+        style={{ display: 'none' }}
+      />
+
       {/* Image Preview */}
       {imagePreview && (
         <div className="image-preview-container">
@@ -102,26 +166,34 @@ const ImageUpload = ({
 
       {/* Upload Area */}
       <div
-        className={`image-upload-area ${dragActive ? 'drag-active' : ''} ${imagePreview ? 'has-image' : ''}`}
+        className={`image-upload-area ${dragActive ? 'drag-active' : ''} ${imagePreview ? 'has-image' : ''} ${isFileDialogOpen ? 'dialog-open' : ''}`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
         onDrop={handleDrop}
         onClick={handleClick}
+        style={{
+          opacity: isFileDialogOpen ? 0.6 : 1,
+          cursor: isFileDialogOpen ? 'wait' : 'pointer'
+        }}
       >
-        <input
-          ref={inputRef}
-          type="file"
-          accept={accept}
-          onChange={handleChange}
-          disabled={disabled}
-          className="image-upload-input"
-        />
-
         <div className="image-upload-content">
           <FaCloudUploadAlt className="image-upload-icon" />
           <div className="image-upload-text">
-            {imagePreview ? 'Replace Image' : 'Upload Image'}
+            {isFileDialogOpen ? 'Opening...' : (imagePreview ? 'Replace Image' : 'Upload Image')}
+            {clickCounter > 0 && (
+              <span style={{
+                marginLeft: '8px',
+                backgroundColor: 'red',
+                color: 'white',
+                padding: '2px 8px',
+                borderRadius: '12px',
+                fontSize: '12px',
+                fontWeight: 'bold'
+              }}>
+                Admin Clicks: {clickCounter}
+              </span>
+            )}
           </div>
           <div className="image-upload-subtext">
             {imagePreview
