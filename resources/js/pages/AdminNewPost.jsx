@@ -106,23 +106,23 @@ const AdminNewPost = () => {
         </div>
         <div className="mb-4">
           <label className="block font-medium mb-2">Image (optional)</label>
-          
+
           {/* Image Preview */}
           {imagePreview && (
             <div className="mb-3">
-              <img 
-                src={imagePreview} 
-                alt="Image preview" 
+              <img
+                src={imagePreview}
+                alt="Image preview"
                 style={{
                   maxWidth: '200px',
                   maxHeight: '200px',
                   borderRadius: '8px',
                   border: '2px solid #e5e7eb'
-                }} 
+                }}
               />
             </div>
           )}
-          
+
           {/* Image Upload Area */}
           <div style={{
             border: '2px dashed #d1d5db',
@@ -132,10 +132,10 @@ const AdminNewPost = () => {
             backgroundColor: imagePreview ? '#f9fafb' : '#fafafa',
             transition: 'all 0.2s ease'
           }}>
-            <input 
-              type="file" 
-              accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" 
-              onChange={handleImageChange} 
+            <input
+              type="file"
+              accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+              onChange={handleImageChange}
               disabled={loading}
               style={{
                 width: '100%',
@@ -155,11 +155,11 @@ const AdminNewPost = () => {
               Maximum file size: 50MB
             </div>
           </div>
-          
+
           {/* Remove Image Button */}
           {imagePreview && (
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={() => {
                 setImage(null);
                 setImagePreview(null);
