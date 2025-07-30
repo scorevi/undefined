@@ -4,7 +4,13 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "dev:docker": "DOCKER_ENV=true vite",
+        "preview": "vite preview",
+        "setup:local": "setup-local.bat",
+        "setup:docker": "setup-docker.bat",
+        "start:local": "start-all.bat",
+        "start:docker": "start-docker.bat"
     },
     "devDependencies": {
         "@rollup/rollup-linux-x64-gnu": "^4.46.2",

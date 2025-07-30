@@ -30,39 +30,45 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy existing application directory contents (excluding problematic symlinks)
-COPY --chown=www-data:www-data . /var/www
-
-# Remove Windows-specific storage symlink if it exists
-RUN rm -f /var/www/public/storage
-
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
-
-# Install Node.js dependencies and build assets
-RUN npm ci && npm run build
-
-# Create Laravel storage directories if they don't exist
-RUN mkdir -p /var/www/storage/app/public
-
-# Copy and set permissions for startup script
-COPY docker/scripts/start-laravel.sh /usr/local/bin/start-laravel.sh
-RUN chmod +x /usr/local/bin/start-laravel.sh
-
-# Create a development user with proper shell access
+# Create Laravel user and group
 RUN groupadd -g 1000 laravel && \
     useradd -u 1000 -g laravel -m -s /bin/bash laravel && \
     usermod -a -G www-data laravel
 
-# Set proper ownership for development
-# Laravel user owns the files, but www-data group has access for web server
+# Copy existing application directory contents
+COPY --chown=laravel:www-data . /var/www
+
+# Remove Windows-specific storage symlink if it exists
+RUN rm -f /var/www/public/storage
+
+# Create Laravel storage directories if they don't exist
+RUN mkdir -p /var/www/storage/framework/{sessions,views,cache} \
+    /var/www/storage/logs \
+    /var/www/storage/app/public
+
+# Set proper permissions
 RUN chown -R laravel:www-data /var/www && \
     chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
-# For development, we'll run as the laravel user instead of www-data
-# This allows for proper terminal access in VS Code
+# Switch to laravel user for dependency installation
 USER laravel
 
-# Expose port 9000 and start php-fpm server
-EXPOSE 9000
+# Install PHP dependencies
+RUN composer install --optimize-autoloader
+
+# Install Node.js dependencies (don't build in development)
+RUN npm ci
+
+# Copy startup script and set permissions (as root)
+USER root
+COPY docker/scripts/start-laravel.sh /usr/local/bin/start-laravel.sh
+RUN chmod +x /usr/local/bin/start-laravel.sh
+
+# Switch back to laravel user for runtime
+USER laravel
+
+# Expose ports
+EXPOSE 9000 5173
+
+# Start the application
 CMD ["/usr/local/bin/start-laravel.sh"]

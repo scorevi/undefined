@@ -4,24 +4,49 @@ A modern blog platform built with Laravel, React, and Docker.
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- Docker and Docker Compose
-- Git
+> **📖 For detailed setup instructions, see [DEVELOPMENT.md](DEVELOPMENT.md)**
 
-### Run the Application
+### Option 1: Docker (Recommended)
+
+**Prerequisites:** Docker Desktop and Git
 
 ```bash
 git clone https://github.com/scorevi/undefined.git
 cd undefined
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+# Windows
+setup-docker.bat
+
+# Linux/Mac
+./setup-docker.sh
 ```
 
-**Access**: http://localhost:8000
+**Access**: http://localhost:5173 (Frontend) • http://localhost:8000 (API)
 
-### Stop Services
+### Option 2: Local Development
+
+**Prerequisites:** PHP 8.2+, Composer, Node.js 18+
+
 ```bash
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml down
+git clone https://github.com/scorevi/undefined.git
+cd undefined
+
+# Windows
+setup-local.bat
+
+# Linux/Mac
+./setup-local.sh
 ```
+
+**Access**: http://localhost:5173 (Frontend) • http://localhost:8000 (API)
+# Terminal 1: Laravel server
+php artisan serve
+
+# Terminal 2: Vite dev server  
+npm run dev
+```
+
+**Access**: http://localhost:8000 (Laravel) + http://localhost:5173 (Vite HMR)
 
 ## 🐳 Docker Hub
 
@@ -32,6 +57,15 @@ docker pull seancaintic/undefined-app:latest
 
 *Note: Docker Hub image requires full stack setup above for web server and database.*
 
+## ⚡ Development Approaches
+
+| Method | Pros | Cons |
+|--------|------|------|
+| **Docker** | ✅ Consistent environment<br>✅ Includes DB/Redis<br>✅ Easy deployment | ❌ Slower startup<br>❌ Resource heavy |
+| **Local** | ✅ Faster development<br>✅ Native performance<br>✅ Direct debugging | ❌ Environment differences<br>❌ Manual DB setup |
+
+**Recommendation**: Use **Local** for development, **Docker** for deployment.
+
 ## ✨ Features
 
 - User Authentication & Management
@@ -41,19 +75,41 @@ docker pull seancaintic/undefined-app:latest
 - Responsive Design (Tailwind CSS)
 - File Upload Support
 
-## 🛠️ Development
+## 🛠️ Development Commands
 
+### Docker Development
 ```bash
-# Alternative setup
+# Alternative Docker setup
 start-all.bat  # Windows
 ./docker-setup.sh  # Linux/Mac
 
-# Manual setup
-cp .env.example .env
+# Manual Docker setup
 docker-compose up -d
-docker-compose exec app bash
-composer install && npm install
-php artisan key:generate && php artisan migrate --seed
+docker-compose exec app composer install
+docker-compose exec app npm install
+docker-compose exec app php artisan key:generate
+docker-compose exec app php artisan migrate --seed
+docker-compose exec app npm run dev  # In container
+```
+
+### Local Development
+```bash
+# Install/update dependencies
+composer install
+npm install
+
+# Laravel commands
+php artisan migrate:fresh --seed
+php artisan cache:clear
+php artisan config:clear
+
+# Asset building
+npm run dev    # Development with HMR
+npm run build  # Production build
+npm run watch  # Watch for changes
+
+# Testing
+php artisan test
 ```
 
 ## 📁 Project Structure
