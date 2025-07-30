@@ -23,3 +23,5 @@ Layouts should be consistent across the site. Use the following guidelines to en
 - **Version Control**: Use Git for version control. Commit changes regularly with clear messages describing the changes made. Use branches for new features or fixes, and merge them into the main branch after thorough testing.
 - **Documentation**: Keep documentation up to date with any changes made to the layouts or development processes. This includes updating the README files and any other relevant documentation in the repository.
 - **Code Reviews**: Before merging changes, conduct code reviews to ensure quality and adherence to the layout guidelines. Use pull requests for this purpose.
+
+And most of all, don't rush changes. Take your time to ensure that the layouts are consistent, functional, and visually appealing. Quality over speed is key to maintaining a professional and user-friendly site. If you encounter issues, take the time to resolve them properly rather than applying quick fixes that may lead to further problems down the line.

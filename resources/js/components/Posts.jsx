@@ -94,94 +94,164 @@ const Posts = ({ refresh }) => {
   }, [refresh]);
 
   return (
-    <div className="posts-section">
+    <div className="posts-page">
+      <div className="posts-container">
+        <div className="posts-section">
+          {/* Categories Sidebar */}
+          <div className="category-cont">
+            <h3>Categories</h3>
+            <div className="category-list">
+              <a href="#" className="category-link active">
+                <span className="category-name">All Posts</span>
+                <span className="category-count">{postsTotal}</span>
+              </a>
+              <a href="#" className="category-link">
+                <span className="category-name">Technology</span>
+                <span className="category-count">12</span>
+              </a>
+              <a href="#" className="category-link">
+                <span className="category-name">Lifestyle</span>
+                <span className="category-count">8</span>
+              </a>
+              <a href="#" className="category-link">
+                <span className="category-name">Travel</span>
+                <span className="category-count">5</span>
+              </a>
+              <a href="#" className="category-link">
+                <span className="category-name">Food</span>
+                <span className="category-count">3</span>
+              </a>
+            </div>
+          </div>
 
-      <div className="category-cont">
-        <h2>Post Categories</h2>
-
-        <div className="post-categories">
-          <ul className='categories'>
-            <li>News</li>
-            <li>Review</li>
-            <li>Podcast</li>
-            <li>Opinion</li>
-            <li>Lifestyle</li>
-          </ul>
-        </div>
-
-      </div>
-
-      <div className="recent-posts">
-        <div className="section-header">
-          <h2>Recent Posts ({postsTotal})</h2>
-          
-          <div className="sort-section">
-            <button className="sort-btn"><FaSort /> Sort </button>
-
-            <div className="dropdown"> {/* feel free to add, remove, or change*/}
-              <span className='latest'>Latest</span>
-              <span className='oldest'>Oldest</span>
-              <span className='most-views'>Most viewed</span>
-              <span className='author'>Author</span>
+          {/* Main Posts Section */}
+          <div className="recent-posts">
+            <div className="section-header">
+              <h2>Recent Posts</h2>
+              <div className="sort-section">
+                <button className="sort-btn">
+                  <FaSort />
+                  Latest
+                </button>
+              </div>
             </div>
 
-          </div>
-        </div>
-        {loading && <div className="user-loading">Loading posts...</div>}
-        {error && <div className="user-error-message">{error}</div>}
-        {!loading && !error && posts.length === 0 && (
-          <div style={{margin:'1rem 0', color:'#888'}}>No posts yet.</div>
-        )}
-        {Array.isArray(posts) && posts.map((post) => (
-          <div className="recent-post-card" key={post.id}>
-            {post.image && (
-              <img src={getPostImageUrl(post.image)} alt="post" className="post-img"
-              onError={e => { e.target.onerror = null; e.target.src = 'https://picsum.photos/400?random=5'; }}
-            />
-            )}
-            <div className="post-details" style={{flex:1,minWidth:0}}>
-              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:2}}>
-                <Link to={`/blog/post/${post.id}`} style={{fontWeight:600,fontSize:'1.05rem',color:'#222',textDecoration:'none',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',maxWidth:'60%'}}>{post.title}</Link>
-                <span style={{color:'#888',fontSize:'0.92rem'}}>| {post.user?.name || 'Unknown'}</span>
-                <span style={{color:'#bbb',fontSize:'0.9rem'}}>| {new Date(post.created_at).toLocaleDateString()}</span>
-                {post.views !== undefined && (
-                  <span style={{color:'#bbb',fontSize:'0.9rem'}}>| {post.views} views</span>
+            {loading && posts.length === 0 ? (
+              <div className="loading-state">
+                <div className="loading-spinner"></div>
+                <p>Loading posts...</p>
+              </div>
+            ) : error ? (
+              <div className="error-state">
+                <p>{error}</p>
+              </div>
+            ) : posts.length === 0 ? (
+              <div className="empty-state">
+                <i className="fas fa-newspaper"></i>
+                <h3>No posts yet</h3>
+                <p>Be the first to share something!</p>
+              </div>
+            ) : (
+              <div className="posts-list">
+                {posts.map((post) => (
+                  <article key={post.id} className="recent-post-card">
+                    {post.image && (
+                      <div className="post-image-container">
+                        <img
+                          src={getPostImageUrl(post.image)}
+                          alt={post.title}
+                          className="post-img"
+                          onError={(e) => {
+                            e.target.src = 'https://picsum.photos/400?random=' + post.id;
+                          }}
+                        />
+                      </div>
+                    )}
+                    <div className="post-details">
+                      <div className="post-header">
+                        <div className="author-info">
+                          <img
+                            src={`https://i.pravatar.cc/40?u=${post.user?.email || 'default'}`}
+                            alt="Author"
+                            className="author-avatar"
+                          />
+                          <div>
+                            <p className="author-name">{post.user?.name || 'Anonymous'}</p>
+                            <p className="post-date">
+                              {post.created_at
+                                ? new Date(post.created_at).toLocaleDateString()
+                                : 'Unknown date'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <Link to={`/blog/post/${post.id}`} className="post-link">
+                        <h3 className="post-title">{post.title}</h3>
+                        <p className="post-content">
+                          {post.content?.substring(0, 150)}
+                          {post.content?.length > 150 ? '...' : ''}
+                        </p>
+                      </Link>
+
+                      <div className="post-engagement">
+                        <div className="engagement-stats">
+                          <div className="engagement-item">
+                            <FaHeart />
+                            {post.likes_count || 0}
+                          </div>
+                          <div className="engagement-item">
+                            <FaComment />
+                            {post.comments_count || 0}
+                          </div>
+                          <div className="engagement-item">
+                            <i className="fas fa-eye"></i>
+                            {post.views || 0}
+                          </div>
+                        </div>
+                        <Link to={`/blog/post/${post.id}`} className="read-more">
+                          Read More <FaChevronRight />
+                        </Link>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+
+                {postsLoadingMore && (
+                  <div className="loading-more">
+                    <div className="loading-spinner"></div>
+                    <p>Loading more posts...</p>
+                  </div>
                 )}
               </div>
-              <p style={{margin:'2px 0 0 0',fontSize:'0.97rem',color:'#444',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',maxWidth:'100%'}}>{post.content.length > 80 ? post.content.slice(0, 80) + '...' : post.content}</p>
-              <div className="engagement">
-                <span className="likes"><FaHeart /> {post.likes_count ?? 0}</span>
-                <span className="comments"><FaComment /> {post.comments_count ?? 0}</span>
-              </div>
-            </div>
+            )}
           </div>
-        ))}
-        {postsPage < postsLastPage && (
-          <button onClick={loadMorePosts} disabled={postsLoadingMore} style={{margin:'16px auto',display:'block',background:'#f3f4f6',color:'#222',border:'none',borderRadius:6,padding:'10px 24px',fontWeight:500,cursor:'pointer'}}>
-            {postsLoadingMore ? 'Loading...' : 'Load more posts'}
-          </button>
-        )}
-      </div>
 
-      <div className="trending-posts">
-        <h2>Trending</h2>
-
-        {trending.length === 0 && <div style={{color:'#888'}}>No trending posts yet.</div>}
-
-        {Array.isArray(trending) && trending.map((item) => (
-          <div className="trending-card" key={item.id}>
-            <div className="trend-content">
-              <Link to={`/blog/post/${item.id}`}><h4>{item.title}</h4></Link>
-              <p>{item.content.length > 80 ? item.content.slice(0, 80) + '...' : item.content}</p>
-              <div className="trend-engagement">
-                <span className="likes"><FaHeart />{item.likes_count}</span>
-                <span style={{marginLeft:8}}><FaComment />0</span>
-                <span style={{marginLeft:8, color:'#bbb', fontSize:'0.95rem'}}>{item.views} views</span>
+          {/* Trending Sidebar */}
+          <div className="trending-posts">
+            <h3>Trending Posts</h3>
+            {trending.length > 0 ? (
+              <div className="trending-list">
+                {trending.map((post, index) => (
+                  <Link key={post.id} to={`/blog/post/${post.id}`} className="trending-item">
+                    <div className="trending-rank">#{index + 1}</div>
+                    <div className="trending-content">
+                      <h4 className="trending-title">{post.title}</h4>
+                      <div className="trending-stats">
+                        <span><FaHeart /> {post.likes_count || 0}</span>
+                        <span><i className="fas fa-eye"></i> {post.views || 0}</span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
               </div>
-            </div>
-            <FaChevronRight className="chevron" />
+            ) : (
+              <div className="empty-trending">
+                <p>No trending posts yet</p>
+              </div>
+            )}
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );

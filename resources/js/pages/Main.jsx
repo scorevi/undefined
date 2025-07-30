@@ -3,13 +3,12 @@ import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import { useAuth } from '../authContext';
-import { FaCamera } from 'react-icons/fa';
+import { FaCamera, FaImage, FaHeart, FaComment, FaEye, FaShare } from 'react-icons/fa';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
 
 import './styles/main.css';
-import './styles/featured.css';
 import Posts from '../components/Posts';
 import Navbar from '../components/NavBar';
 
@@ -20,7 +19,7 @@ function getPostImageUrl(image) {
 }
 
 const Main = () => {
-  document.title = "Home";
+  document.title = "Blog Dashboard";
   const { user } = useAuth();
   const [content, setContent] = useState('');
   const [image, setImage] = useState(null);
@@ -28,48 +27,82 @@ const Main = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [stats, setStats] = useState({ posts: 0, views: 0, likes: 0, comments: 0 });
   const [featuredPosts, setFeaturedPosts] = useState([]);
   const [refreshPosts, setRefreshPosts] = useState(0);
 
-  useEffect(() => {
-    // Fetch top 3 most recent posts for the featured carousel
-    const fetchFeatured = async () => {
-      try {
-        const response = await fetch('/api/posts', {
-          credentials: 'include',
-          headers: {
-            'X-XSRF-TOKEN': decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || ''),
-          }
-        });
-        if (!response.ok) throw new Error('Failed to fetch posts');
-        const data = await response.json();
-        setFeaturedPosts((data.data || []).slice(0, 3));
-      } catch (err) {
-        setFeaturedPosts([]);
-      }
-    };
-    fetchFeatured();
-  }, []);
+  // Helper function to get CSRF token
+  const getCSRFToken = () => {
+    // Try XSRF token first (for Laravel Sanctum)
+    const xsrfToken = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='));
+    if (xsrfToken) {
+      return decodeURIComponent(xsrfToken.split('=')[1]);
+    }
+
+    // Fallback to meta tag
+    const metaToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    return metaToken || '';
+  };
 
   useEffect(() => {
-    // Fetch top 3 most recent posts for the featured carousel
-    const fetchFeatured = async () => {
+    // Initialize CSRF cookie first
+    const initAndFetchData = async () => {
       try {
-        const response = await fetch('/api/posts', {
+        // Initialize CSRF cookie
+        await fetch('/sanctum/csrf-cookie', {
+          method: 'GET',
           credentials: 'include',
-          headers: {
-            'X-XSRF-TOKEN': decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || ''),
-          }
         });
-        if (!response.ok) throw new Error('Failed to fetch posts');
-        const data = await response.json();
-        setFeaturedPosts((data.data || []).slice(0, 3));
-      } catch (err) {
-        setFeaturedPosts([]);
+
+        // Then fetch data
+        await fetchAllData();
+      } catch (error) {
+        console.error('Error initializing CSRF or fetching data:', error);
+        // Try fetching data anyway
+        fetchAllData();
       }
     };
-    fetchFeatured();
-  }, [refreshPosts]); // depend on refreshPosts
+
+    initAndFetchData();
+  }, [refreshPosts]);
+
+  const fetchAllData = async () => {
+    try {
+      const csrfToken = getCSRFToken();
+
+      // Fetch featured posts
+      const featuredResponse = await fetch('/api/posts/featured', {
+        credentials: 'include',
+        headers: {
+          'X-XSRF-TOKEN': csrfToken,
+          'Accept': 'application/json',
+        }
+      });
+      if (featuredResponse.ok) {
+        const featuredData = await featuredResponse.json();
+        setFeaturedPosts(featuredData || []);
+      }
+
+      // Fetch stats
+      const statsResponse = await fetch('/api/posts/stats', {
+        credentials: 'include',
+        headers: {
+          'X-XSRF-TOKEN': csrfToken,
+          'Accept': 'application/json',
+        }
+      });
+      if (statsResponse.ok) {
+        const statsData = await statsResponse.json();
+        setStats(statsData || { posts: 0, views: 0, likes: 0, comments: 0 });
+      }
+    } catch (err) {
+      console.error('Error fetching data:', err);
+      setFeaturedPosts([]);
+      setStats({ posts: 0, views: 0, likes: 0, comments: 0 });
+    }
+  };
+
+
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -122,11 +155,12 @@ const Main = () => {
       if (image) {
         formData.append('image', image);
       }
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+      const csrfToken = getCSRFToken();
       const response = await fetch('/api/posts', {
         method: 'POST',
         headers: {
-          'X-XSRF-TOKEN': decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || ''),
+          'X-XSRF-TOKEN': csrfToken,
           'Accept': 'application/json'
         },
         credentials: 'include',
@@ -160,90 +194,188 @@ const Main = () => {
 
   return (
     <>
-    <Navbar name={user?.name || user?.email || 'John'}/>
-    <div className="container">
+      <Navbar />
+      <div className="main-page">
+        {/* Page Header */}
+        <div className="main-header">
+          <h1>Welcome to Your Blog Dashboard</h1>
+          <p>Share your thoughts and connect with the community</p>
+        </div>
 
-      {/* Post something, text field, or something to be able to post */}
-      <form className="post-form" onSubmit={handleSubmit}>
+        <div className="main-container">
+          <div className="main-content">
 
-        <img
-          src={user?.avatar || 'https://i.pravatar.cc/300'}
-          alt="Avatar"
-          className="avatar" />
+            {/* Post Creation Form */}
+            <div className="post-form">
+              <div className="post-form-header">
+                <img
+                  src={user?.avatar || 'https://i.pravatar.cc/150'}
+                  alt="Avatar"
+                  className="avatar"
+                />
+                <div className="user-info">
+                  <p className="user-name">{user?.name || user?.email || 'User'}</p>
+                  <p className="user-subtitle">What's on your mind?</p>
+                </div>
+              </div>
 
-        <div className="post-input-section">
-          <textarea
-            placeholder="Share your thoughts!"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            disabled={loading}
-          />
+              <form onSubmit={handleSubmit}>
+                <textarea
+                  className="post-textarea"
+                  placeholder="Share your thoughts with the community..."
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  disabled={loading}
+                  required
+                />
 
-          <div className="post-actions">
-            <label htmlFor="image-upload" className="custom-upload-btn">
-              <FaCamera /> Upload Image
-            </label>
-            <input
-              id="image-upload"
-              type="file"
-              accept="image/*"
-              style={{ display: 'none' }}
-              onChange={handleImageChange}
-              disabled={loading}
-            />
-            <span className="file-name">
-              {image ? image.name : ""}
-            </span>
-            <button type="submit" disabled={loading}>{loading ? 'Posting...' : 'Post'}</button>
+                {imagePreview && (
+                  <div className="image-preview-container">
+                    <img src={imagePreview} alt="Preview" className="image-preview" />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImage(null);
+                        setImagePreview(null);
+                      }}
+                      className="remove-image-btn"
+                    >
+                      ×
+                    </button>
+                  </div>
+                )}
+
+                <div className="post-actions">
+                  <div className="post-tools">
+                    <label htmlFor="image-upload" className="image-upload-btn">
+                      <FaImage />
+                      Add Photo
+                    </label>
+                    <input
+                      id="image-upload"
+                      type="file"
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      onChange={handleImageChange}
+                      disabled={loading}
+                    />
+                  </div>
+                  <button type="submit" className="post-submit-btn" disabled={loading || !content.trim()}>
+                    {loading ? 'Posting...' : 'Share Post'}
+                  </button>
+                </div>
+
+                {error && <div className="error-message">{error}</div>}
+                {success && <div className="success-message">{success}</div>}
+              </form>
+            </div>
+
+            {/* Featured Posts Carousel */}
+            {featuredPosts.length > 0 && (
+              <div className="featured-section">
+                <h2 className="section-title">Featured Posts</h2>
+                <Swiper
+                  modules={[Navigation]}
+                  navigation={true}
+                  spaceBetween={30}
+                  slidesPerView={1}
+                  className="featured-carousel"
+                >
+                  {featuredPosts.map((post) => (
+                    <SwiperSlide key={post.id}>
+                      <div className="featured-post">
+                        <div className="featured-post-image">
+                          <img
+                            src={getPostImageUrl(post.image)}
+                            alt={post.title}
+                            onError={(e) => {
+                              e.target.src = 'https://picsum.photos/800/400?random=' + post.id;
+                            }}
+                          />
+                        </div>
+                        <div className="featured-post-content">
+                          <h3 className="featured-post-title">{post.title}</h3>
+                          <p className="featured-post-excerpt">
+                            {post.content?.substring(0, 150)}...
+                          </p>
+                          <div className="featured-post-meta">
+                            <span className="post-author">By {post.user?.name || 'Anonymous'}</span>
+                            <div className="post-stats">
+                              <span><FaEye /> {post.views || 0}</span>
+                              <span><FaHeart /> {post.likes_count || 0}</span>
+                              <span><FaComment /> {post.comments_count || 0}</span>
+                            </div>
+                          </div>
+                          <Link to={`/blog/post/${post.id}`} className="read-more-btn">
+                            Read More
+                          </Link>
+                        </div>
+                      </div>
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              </div>
+            )}
+
+            {/* Posts Section */}
+            <div className="posts-section">
+              <div className="posts-header">
+                <h2 className="posts-title">Recent Posts</h2>
+                <p className="posts-subtitle">Discover what's trending in our community</p>
+              </div>
+              <Posts key={refreshPosts} />
+            </div>
           </div>
 
-          {imagePreview && (
-            <div style={{marginTop:8}}>
-              <img src={imagePreview} alt="Preview" style={{maxWidth:200, maxHeight:200, borderRadius:8, boxShadow:'0 2px 8px #ccc'}} />
-            </div>
-          )}
-          {error && <div className="user-error-message">{error}</div>}
-          {success && <div className="user-success-message" style={{color:'#22c55e',marginTop:8}}>{success}</div>}
-        </div>
-      </form>
-
-    <hr />
-
-      {/* Carousel  */}
-      <div className="featured-posts">
-
-        <h1>Featured Posts</h1>
-
-        <Swiper
-          modules={[Navigation]}
-          navigation={true}
-          spaceBetween={30}
-          slidesPerView={1}
-          className="mySwiper"
-        >
-
-          {featuredPosts.map((post) => (
-            <SwiperSlide key={post.id}>
-              <Link to={`/blog/post/${post.id}`}>
-                <div className="slide-card">
-                  <img src={getPostImageUrl(post.image)} alt={post.title} className="slide-image" />
-                  <div className="slide-overlay">
-                    <h3 className="slide-title">{post.title}</h3>
-                    <p>{post.content.length > 120 ? post.content.slice(0, 120) + '...' : post.content}</p>
-                  </div>
+          {/* Sidebar */}
+          <div className="sidebar">
+            <div className="sidebar-card">
+              <h3>Quick Stats</h3>
+              <div className="stats-grid">
+                <div className="stat-item">
+                  <span className="stat-number">{stats.posts || 0}</span>
+                  <span className="stat-label">Posts</span>
                 </div>
-              </Link>
-            </SwiperSlide>
-          ))}
+                <div className="stat-item">
+                  <span className="stat-number">{stats.likes || 0}</span>
+                  <span className="stat-label">Likes</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-number">{stats.comments || 0}</span>
+                  <span className="stat-label">Comments</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-number">{stats.views > 1000 ? `${(stats.views / 1000).toFixed(1)}k` : stats.views || 0}</span>
+                  <span className="stat-label">Views</span>
+                </div>
+              </div>
+            </div>
 
-        </Swiper>
+            <div className="sidebar-card">
+              <h3>Categories</h3>
+              <div className="category-list">
+                <a href="#" className="category-item">Technology</a>
+                <a href="#" className="category-item">Lifestyle</a>
+                <a href="#" className="category-item">Travel</a>
+                <a href="#" className="category-item">Food</a>
+                <a href="#" className="category-item">Sports</a>
+              </div>
+            </div>
 
+            <div className="sidebar-card">
+              <h3>Popular Tags</h3>
+              <div className="tags-cloud">
+                <span className="tag">#javascript</span>
+                <span className="tag">#react</span>
+                <span className="tag">#php</span>
+                <span className="tag">#laravel</span>
+                <span className="tag">#webdev</span>
+                <span className="tag">#coding</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <hr />
-      <Posts refresh={refreshPosts} />
-
-
-    </div>
     </>
   );
 };

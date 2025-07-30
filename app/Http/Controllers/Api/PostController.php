@@ -11,15 +11,33 @@ use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
-    // List all posts
+    // List all posts with filters
     public function index(Request $request)
     {
         $perPage = (int) $request->query('per_page', 10);
-        $posts = Post::with('user')
+        $category = $request->query('category');
+        $search = $request->query('search');
+
+        $query = Post::with('user')
             ->withCount('likes')
-            ->withCount('comments')
-            ->orderBy('created_at', 'desc')
+            ->withCount('comments');
+
+        // Category filter (based on tags or content)
+        if ($category && $category !== 'all') {
+            $query->where('content', 'like', '%' . $category . '%');
+        }
+
+        // Search filter
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                  ->orWhere('content', 'like', '%' . $search . '%');
+            });
+        }
+
+        $posts = $query->orderBy('created_at', 'desc')
             ->paginate($perPage);
+
         $postsArr = $posts->items();
         return response()->json([
             'data' => $postsArr,
@@ -141,5 +159,51 @@ class PostController extends Controller
             ->take(5)
             ->get();
         return response()->json($posts);
+    }
+
+    // Featured posts (most viewed this week)
+    public function featured()
+    {
+        $posts = Post::with('user')
+            ->withCount('likes')
+            ->withCount('comments')
+            ->where('created_at', '>=', now()->subWeek())
+            ->orderByDesc('views')
+            ->orderByDesc('likes_count')
+            ->take(3)
+            ->get();
+        return response()->json($posts);
+    }
+
+    // Get categories (based on content analysis)
+    public function categories()
+    {
+        // Simple category extraction from content
+        $categories = [
+            ['name' => 'All Posts', 'slug' => 'all', 'count' => Post::count()],
+            ['name' => 'Technology', 'slug' => 'technology', 'count' => Post::where('content', 'like', '%technology%')->count()],
+            ['name' => 'Lifestyle', 'slug' => 'lifestyle', 'count' => Post::where('content', 'like', '%lifestyle%')->count()],
+            ['name' => 'Business', 'slug' => 'business', 'count' => Post::where('content', 'like', '%business%')->count()],
+            ['name' => 'Travel', 'slug' => 'travel', 'count' => Post::where('content', 'like', '%travel%')->count()],
+            ['name' => 'Food', 'slug' => 'food', 'count' => Post::where('content', 'like', '%food%')->count()],
+        ];
+
+        return response()->json($categories);
+    }
+
+    // Get post stats for dashboard
+    public function stats()
+    {
+        $totalPosts = Post::count();
+        $totalViews = Post::sum('views');
+        $totalLikes = DB::table('likes')->count();
+        $totalComments = DB::table('comments')->count();
+
+        return response()->json([
+            'posts' => $totalPosts,
+            'views' => $totalViews,
+            'likes' => $totalLikes,
+            'comments' => $totalComments,
+        ]);
     }
 }
