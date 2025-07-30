@@ -724,7 +724,8 @@ const UserPost = () => {
             alignItems: 'center',
             justifyContent: 'center',
             padding: '20px',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            overflow: 'hidden'
           }}
         >
           <div
@@ -732,8 +733,10 @@ const UserPost = () => {
             onClick={(e) => e.stopPropagation()}
             style={{
               position: 'relative',
-              maxWidth: '90vw',
-              maxHeight: '90vh',
+              width: '100%',
+              height: '100%',
+              maxWidth: '95vw',
+              maxHeight: '95vh',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
@@ -743,11 +746,14 @@ const UserPost = () => {
               src={viewerImageSrc}
               alt={viewerImageAlt}
               style={{
+                width: 'auto',
+                height: 'auto',
                 maxWidth: '100%',
                 maxHeight: '100%',
                 objectFit: 'contain',
                 borderRadius: '8px',
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)'
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
+                display: 'block'
               }}
               onClick={(e) => e.stopPropagation()}
             />

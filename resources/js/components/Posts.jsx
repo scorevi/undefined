@@ -362,9 +362,7 @@ const Posts = ({ refresh }) => {
                     {post.category && (
                       <span style={{background:'#f0f9ff',color:'#0369a1',padding:'2px 8px',borderRadius:'12px',fontSize:'0.8rem',fontWeight:500,flexShrink:0}}>{post.category}</span>
                     )}
-                    {post.is_featured && (
-                      <span style={{background:'#fef3c7',color:'#d97706',padding:'2px 8px',borderRadius:'12px',fontSize:'0.8rem',fontWeight:500,flexShrink:0}}>Featured</span>
-                    )}
+
                   </div>
                   <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4,flexWrap:'wrap'}}>
                     <span style={{color:'#888',fontSize:'0.92rem'}}>👤 {post.user?.name || 'Unknown'}</span>
@@ -426,7 +424,8 @@ const Posts = ({ refresh }) => {
             alignItems: 'center',
             justifyContent: 'center',
             padding: '20px',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            overflow: 'hidden'
           }}
         >
           <div
@@ -434,8 +433,10 @@ const Posts = ({ refresh }) => {
             onClick={(e) => e.stopPropagation()}
             style={{
               position: 'relative',
-              maxWidth: '90vw',
-              maxHeight: '90vh',
+              width: '100%',
+              height: '100%',
+              maxWidth: '95vw',
+              maxHeight: '95vh',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
@@ -445,11 +446,14 @@ const Posts = ({ refresh }) => {
               src={viewerImageSrc}
               alt={viewerImageAlt}
               style={{
+                width: 'auto',
+                height: 'auto',
                 maxWidth: '100%',
                 maxHeight: '100%',
                 objectFit: 'contain',
                 borderRadius: '8px',
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)'
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
+                display: 'block'
               }}
               onClick={(e) => e.stopPropagation()}
             />
