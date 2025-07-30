@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import './styles/adminsettings.css';
 
 const AdminSettings = () => {
   const [email, setEmail] = useState('');
@@ -13,24 +12,50 @@ const AdminSettings = () => {
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [error, setError] = useState('');
+  const [activeTab, setActiveTab] = useState('account');
   const navigate = useNavigate();
 
+  // Get CSRF token helper
+  const getCSRFToken = () => {
+    try {
+      return decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || '');
+    } catch (e) {
+      return '';
+    }
+  };
+
   useEffect(() => {
-    setLoading(true);
-    setError('');
-    // Fetch current admin info and site settings
-    fetch('/api/dashboard', { credentials: 'include' })
-      .then(res => res.json())
-      .then(data => {
-        setEmail(data.user?.email || '');
-        setSiteName(data.stats?.site_name || '');
-        setSiteDescription(data.stats?.site_description || '');
-        setLoading(false);
-      })
-      .catch(() => {
+    const fetchSettings = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const csrfToken = getCSRFToken();
+        const response = await fetch('/api/admin/dashboard', {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Accept': 'application/json',
+            'X-XSRF-TOKEN': csrfToken,
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to load settings');
+        }
+
+        const data = await response.json();
+        setEmail(data?.user?.email || '');
+        setSiteName(data?.stats?.site_name || 'Erikanoelvi\'s Blog');
+        setSiteDescription(data?.stats?.site_description || 'A modern blog platform');
+      } catch (err) {
+        console.error('Settings fetch error:', err);
         setError('Failed to load settings');
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchSettings();
   }, []);
 
   const handleSaveEmail = async (e) => {
@@ -38,22 +63,29 @@ const AdminSettings = () => {
     setSaving(true);
     setFeedback('');
     setError('');
+
     try {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-      const res = await fetch('/api/admin/email', {
+      const csrfToken = getCSRFToken();
+      const response = await fetch('/api/admin/email', {
         method: 'POST',
         headers: {
-          'X-CSRF-TOKEN': csrfToken,
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'X-XSRF-TOKEN': csrfToken,
         },
         credentials: 'include',
         body: JSON.stringify({ email }),
       });
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || data.message || 'Failed to update email');
-      setFeedback('Email updated!');
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || data.message || 'Failed to update email');
+      }
+
+      setFeedback('Email updated successfully!');
     } catch (err) {
+      console.error('Email update error:', err);
       setError(err.message || 'Failed to update email');
     } finally {
       setSaving(false);
@@ -65,30 +97,47 @@ const AdminSettings = () => {
     setSaving(true);
     setFeedback('');
     setError('');
+
     if (newPassword !== confirmPassword) {
       setError('Passwords do not match.');
       setSaving(false);
       return;
     }
+
+    if (newPassword.length < 8) {
+      setError('Password must be at least 8 characters long.');
+      setSaving(false);
+      return;
+    }
+
     try {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-      const res = await fetch('/api/admin/password', {
+      const csrfToken = getCSRFToken();
+      const response = await fetch('/api/admin/password', {
         method: 'POST',
         headers: {
-          'X-CSRF-TOKEN': csrfToken,
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'X-XSRF-TOKEN': csrfToken,
         },
         credentials: 'include',
-        body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
+        body: JSON.stringify({
+          current_password: currentPassword,
+          new_password: newPassword
+        }),
       });
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || data.message || 'Failed to update password');
-      setFeedback('Password updated!');
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || data.message || 'Failed to update password');
+      }
+
+      setFeedback('Password updated successfully!');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (err) {
+      console.error('Password update error:', err);
       setError(err.message || 'Failed to update password');
     } finally {
       setSaving(false);
@@ -100,174 +149,506 @@ const AdminSettings = () => {
     setSaving(true);
     setFeedback('');
     setError('');
+
     try {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-      const res = await fetch('/api/admin/site-settings', {
+      const csrfToken = getCSRFToken();
+      const response = await fetch('/api/admin/site-settings', {
         method: 'POST',
         headers: {
-          'X-CSRF-TOKEN': csrfToken,
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'X-XSRF-TOKEN': csrfToken,
         },
         credentials: 'include',
-        body: JSON.stringify({ site_name: siteName, site_description: siteDescription }),
+        body: JSON.stringify({
+          site_name: siteName,
+          site_description: siteDescription
+        }),
       });
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || data.message || 'Failed to update site settings');
-      setFeedback('Site settings updated!');
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || data.message || 'Failed to update site settings');
+      }
+
+      setFeedback('Site settings updated successfully!');
     } catch (err) {
+      console.error('Site settings update error:', err);
       setError(err.message || 'Failed to update site settings');
     } finally {
       setSaving(false);
     }
   };
 
-  return (
-    <div className="admin-settings-container">
-      <div className="admin-settings-header">
-        <h2>Admin Settings</h2>
-        <p>Manage your account and site configuration</p>
+  // Facebook-style horizontal layout styles
+  const styles = {
+    container: {
+      display: 'flex',
+      minHeight: '100vh',
+      backgroundColor: '#f0f2f5',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+    },
+    sidebar: {
+      width: '280px',
+      backgroundColor: '#ffffff',
+      borderRight: '1px solid #e4e6ea',
+      padding: '20px 0',
+      boxShadow: '0 0 0 1px rgba(0, 0, 0, 0.06)',
+    },
+    sidebarHeader: {
+      padding: '0 20px 20px',
+      borderBottom: '1px solid #e4e6ea',
+      marginBottom: '20px',
+    },
+    sidebarTitle: {
+      fontSize: '24px',
+      fontWeight: '700',
+      color: '#1c1e21',
+      margin: '0 0 8px 0',
+    },
+    sidebarSubtitle: {
+      fontSize: '15px',
+      color: '#65676b',
+      margin: '0',
+    },
+    tabList: {
+      listStyle: 'none',
+      padding: '0',
+      margin: '0',
+    },
+    tab: {
+      display: 'flex',
+      alignItems: 'center',
+      padding: '12px 20px',
+      color: '#1c1e21',
+      textDecoration: 'none',
+      fontSize: '15px',
+      fontWeight: '500',
+      cursor: 'pointer',
+      transition: 'background-color 0.2s',
+      borderLeft: '3px solid transparent',
+    },
+    tabActive: {
+      backgroundColor: '#e7f3ff',
+      borderLeftColor: '#1877f2',
+      color: '#1877f2',
+    },
+    tabIcon: {
+      marginRight: '12px',
+      fontSize: '18px',
+    },
+    mainContent: {
+      flex: '1',
+      padding: '20px 40px',
+      maxWidth: '600px',
+    },
+    contentHeader: {
+      marginBottom: '32px',
+    },
+    contentTitle: {
+      fontSize: '28px',
+      fontWeight: '700',
+      color: '#1c1e21',
+      margin: '0 0 8px 0',
+    },
+    contentSubtitle: {
+      fontSize: '15px',
+      color: '#65676b',
+      margin: '0',
+    },
+    backButton: {
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '8px',
+      background: '#e4e6ea',
+      color: '#1c1e21',
+      border: 'none',
+      padding: '10px 16px',
+      borderRadius: '6px',
+      cursor: 'pointer',
+      fontSize: '14px',
+      fontWeight: '500',
+      marginBottom: '20px',
+      textDecoration: 'none',
+      transition: 'background-color 0.2s',
+    },
+    section: {
+      background: '#ffffff',
+      borderRadius: '8px',
+      padding: '24px',
+      marginBottom: '16px',
+      border: '1px solid #e4e6ea',
+    },
+    sectionTitle: {
+      fontSize: '20px',
+      fontWeight: '700',
+      color: '#1c1e21',
+      marginBottom: '16px',
+    },
+    formRow: {
+      display: 'flex',
+      gap: '16px',
+      marginBottom: '16px',
+      alignItems: 'flex-start',
+    },
+    formGroup: {
+      flex: '1',
+      marginBottom: '16px',
+    },
+    formGroupHalf: {
+      flex: '0 0 48%',
+    },
+    label: {
+      display: 'block',
+      fontSize: '15px',
+      fontWeight: '600',
+      color: '#1c1e21',
+      marginBottom: '6px',
+    },
+    input: {
+      width: '100%',
+      padding: '12px 16px',
+      border: '1px solid #dddfe2',
+      borderRadius: '6px',
+      fontSize: '15px',
+      backgroundColor: '#ffffff',
+      transition: 'border-color 0.2s',
+      boxSizing: 'border-box',
+    },
+    inputFocus: {
+      borderColor: '#1877f2',
+      outline: 'none',
+    },
+    textarea: {
+      width: '100%',
+      padding: '12px 16px',
+      border: '1px solid #dddfe2',
+      borderRadius: '6px',
+      fontSize: '15px',
+      backgroundColor: '#ffffff',
+      transition: 'border-color 0.2s',
+      boxSizing: 'border-box',
+      resize: 'vertical',
+      minHeight: '100px',
+    },
+    button: {
+      background: '#1877f2',
+      color: 'white',
+      border: 'none',
+      padding: '10px 20px',
+      borderRadius: '6px',
+      fontSize: '15px',
+      fontWeight: '600',
+      cursor: 'pointer',
+      transition: 'background-color 0.2s',
+    },
+    buttonSecondary: {
+      background: '#e4e6ea',
+      color: '#1c1e21',
+    },
+    buttonDisabled: {
+      background: '#e4e6ea',
+      color: '#bcc0c4',
+      cursor: 'not-allowed',
+    },
+    alert: {
+      padding: '12px 16px',
+      borderRadius: '6px',
+      fontSize: '14px',
+      fontWeight: '500',
+      marginTop: '16px',
+    },
+    alertSuccess: {
+      background: '#d4edda',
+      color: '#155724',
+      border: '1px solid #c3e6cb',
+    },
+    alertError: {
+      background: '#f8d7da',
+      color: '#721c24',
+      border: '1px solid #f5c6cb',
+    },
+    loading: {
+      textAlign: 'center',
+      padding: '60px 20px',
+      color: '#65676b',
+    },
+    spinner: {
+      width: '40px',
+      height: '40px',
+      border: '3px solid #e4e6ea',
+      borderTop: '3px solid #1877f2',
+      borderRadius: '50%',
+      animation: 'spin 1s linear infinite',
+      margin: '0 auto 16px',
+    },
+  };
+
+  if (loading) {
+    return (
+      <div style={styles.container}>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+        <div style={styles.loading}>
+          <div style={styles.spinner}></div>
+          <p>Loading settings...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const renderAccountTab = () => (
+    <>
+      <div style={styles.section}>
+        <h3 style={styles.sectionTitle}>Email Settings</h3>
+        <form onSubmit={handleSaveEmail}>
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Email Address</label>
+            <input
+              type="email"
+              style={styles.input}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={saving}
+              required
+              placeholder="Enter your email address"
+              onFocus={(e) => e.target.style.borderColor = '#1877f2'}
+              onBlur={(e) => e.target.style.borderColor = '#dddfe2'}
+            />
+          </div>
+          <button
+            type="submit"
+            style={{
+              ...styles.button,
+              ...(saving ? styles.buttonDisabled : {})
+            }}
+            disabled={saving}
+            onMouseEnter={(e) => !saving && (e.target.style.backgroundColor = '#166fe5')}
+            onMouseLeave={(e) => !saving && (e.target.style.backgroundColor = '#1877f2')}
+          >
+            {saving ? 'Updating...' : 'Update Email'}
+          </button>
+        </form>
       </div>
 
-      <div className="admin-settings-content">
-        <div className="back-btn-container">
-          <button onClick={() => navigate('/admin')} className="back-btn">&larr; Back to Dashboard</button>
+      <div style={styles.section}>
+        <h3 style={styles.sectionTitle}>Password Settings</h3>
+        <form onSubmit={handleSavePassword}>
+          <div style={styles.formRow}>
+            <div style={styles.formGroupHalf}>
+              <label style={styles.label}>Current Password</label>
+              <input
+                type="password"
+                style={styles.input}
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                disabled={saving}
+                required
+                placeholder="Enter current password"
+                onFocus={(e) => e.target.style.borderColor = '#1877f2'}
+                onBlur={(e) => e.target.style.borderColor = '#dddfe2'}
+              />
+            </div>
+            <div style={styles.formGroupHalf}>
+              <label style={styles.label}>New Password</label>
+              <input
+                type="password"
+                style={styles.input}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                disabled={saving}
+                required
+                placeholder="Enter new password"
+                onFocus={(e) => e.target.style.borderColor = '#1877f2'}
+                onBlur={(e) => e.target.style.borderColor = '#dddfe2'}
+              />
+            </div>
+          </div>
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Confirm New Password</label>
+            <input
+              type="password"
+              style={styles.input}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              disabled={saving}
+              required
+              placeholder="Confirm new password"
+              onFocus={(e) => e.target.style.borderColor = '#1877f2'}
+              onBlur={(e) => e.target.style.borderColor = '#dddfe2'}
+            />
+          </div>
+          <button
+            type="submit"
+            style={{
+              ...styles.button,
+              ...(saving ? styles.buttonDisabled : {})
+            }}
+            disabled={saving}
+            onMouseEnter={(e) => !saving && (e.target.style.backgroundColor = '#166fe5')}
+            onMouseLeave={(e) => !saving && (e.target.style.backgroundColor = '#1877f2')}
+          >
+            {saving ? 'Updating...' : 'Update Password'}
+          </button>
+        </form>
+      </div>
+    </>
+  );
+
+  const renderSiteTab = () => (
+    <div style={styles.section}>
+      <h3 style={styles.sectionTitle}>Site Configuration</h3>
+      <form onSubmit={handleSaveSite}>
+        <div style={styles.formRow}>
+          <div style={styles.formGroupHalf}>
+            <label style={styles.label}>Site Name</label>
+            <input
+              type="text"
+              style={styles.input}
+              value={siteName}
+              onChange={(e) => setSiteName(e.target.value)}
+              disabled={saving}
+              placeholder="Enter site name"
+              onFocus={(e) => e.target.style.borderColor = '#1877f2'}
+              onBlur={(e) => e.target.style.borderColor = '#dddfe2'}
+            />
+          </div>
+          <div style={styles.formGroupHalf}>
+            <label style={styles.label}>Site Description</label>
+            <textarea
+              style={styles.textarea}
+              value={siteDescription}
+              onChange={(e) => setSiteDescription(e.target.value)}
+              disabled={saving}
+              placeholder="Enter site description"
+              rows={3}
+              onFocus={(e) => e.target.style.borderColor = '#1877f2'}
+              onBlur={(e) => e.target.style.borderColor = '#dddfe2'}
+            />
+          </div>
+        </div>
+        <button
+          type="submit"
+          style={{
+            ...styles.button,
+            ...(saving ? styles.buttonDisabled : {})
+          }}
+          disabled={saving}
+          onMouseEnter={(e) => !saving && (e.target.style.backgroundColor = '#166fe5')}
+          onMouseLeave={(e) => !saving && (e.target.style.backgroundColor = '#1877f2')}
+        >
+          {saving ? 'Updating...' : 'Update Site Settings'}
+        </button>
+      </form>
+    </div>
+  );
+
+  if (loading) {
+    return (
+      <div style={styles.container}>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+        <div style={styles.loading}>
+          <div style={styles.spinner}></div>
+          <p>Loading settings...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={styles.container}>
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+
+      {/* Sidebar Navigation */}
+      <div style={styles.sidebar}>
+        <div style={styles.sidebarHeader}>
+          <h1 style={styles.sidebarTitle}>Settings</h1>
+          <p style={styles.sidebarSubtitle}>Manage your account and site</p>
         </div>
 
-        {loading ? (
-          <div className="loading-container">
-            <span className="loading-spinner">⟳</span>
-            Loading settings...
+        <ul style={styles.tabList}>
+          <li
+            style={{
+              ...styles.tab,
+              ...(activeTab === 'account' ? styles.tabActive : {})
+            }}
+            onClick={() => setActiveTab('account')}
+            onMouseEnter={(e) => activeTab !== 'account' && (e.target.style.backgroundColor = '#f2f3f5')}
+            onMouseLeave={(e) => activeTab !== 'account' && (e.target.style.backgroundColor = 'transparent')}
+          >
+            <span style={styles.tabIcon}>👤</span>
+            Account Settings
+          </li>
+          <li
+            style={{
+              ...styles.tab,
+              ...(activeTab === 'site' ? styles.tabActive : {})
+            }}
+            onClick={() => setActiveTab('site')}
+            onMouseEnter={(e) => activeTab !== 'site' && (e.target.style.backgroundColor = '#f2f3f5')}
+            onMouseLeave={(e) => activeTab !== 'site' && (e.target.style.backgroundColor = 'transparent')}
+          >
+            <span style={styles.tabIcon}>⚙️</span>
+            Site Settings
+          </li>
+        </ul>
+
+        <div style={{padding: '20px', borderTop: '1px solid #e4e6ea', marginTop: '20px'}}>
+          <button
+            onClick={() => navigate('/admin')}
+            style={{
+              ...styles.backButton,
+              width: '100%',
+              justifyContent: 'center'
+            }}
+            onMouseEnter={(e) => e.target.style.backgroundColor = '#d8dadf'}
+            onMouseLeave={(e) => e.target.style.backgroundColor = '#e4e6ea'}
+          >
+            ← Back to Dashboard
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div style={styles.mainContent}>
+        <div style={styles.contentHeader}>
+          <h2 style={styles.contentTitle}>
+            {activeTab === 'account' ? 'Account Settings' : 'Site Settings'}
+          </h2>
+          <p style={styles.contentSubtitle}>
+            {activeTab === 'account'
+              ? 'Manage your email and password settings'
+              : 'Configure your site name and description'
+            }
+          </p>
+        </div>
+
+        {activeTab === 'account' ? renderAccountTab() : renderSiteTab()}
+
+        {/* Feedback Messages */}
+        {feedback && (
+          <div style={{...styles.alert, ...styles.alertSuccess}}>
+            {feedback}
           </div>
-        ) : (
-          <div className="settings-grid">
-            {/* Email Settings Section */}
-            <div className="settings-section">
-              <h3>
-                <svg className="icon" viewBox="0 0 20 20">
-                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
-                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
-                </svg>
-                Email Settings
-              </h3>
-              <div className="settings-section-content">
-                <form onSubmit={handleSaveEmail}>
-                  <div className="form-group">
-                    <label className="form-label">Email Address</label>
-                    <input
-                      type="email"
-                      className="form-input"
-                      value={email}
-                      onChange={e=>setEmail(e.target.value)}
-                      disabled={saving}
-                      required
-                      placeholder="Enter your email address"
-                    />
-                  </div>
-                  <button type="submit" className="submit-btn" disabled={saving}>
-                    {saving ? 'Saving...' : 'Update Email'}
-                  </button>
-                </form>
-              </div>
-            </div>
-
-            {/* Password Settings Section */}
-            <div className="settings-section">
-              <h3>
-                <svg className="icon" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/>
-                </svg>
-                Password Settings
-              </h3>
-              <div className="settings-section-content">
-                <form onSubmit={handleSavePassword}>
-                  <div className="form-group">
-                    <label className="form-label">Current Password</label>
-                    <input
-                      type="password"
-                      className="form-input"
-                      placeholder="Enter your current password"
-                      value={currentPassword}
-                      onChange={e=>setCurrentPassword(e.target.value)}
-                      disabled={saving}
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">New Password</label>
-                    <input
-                      type="password"
-                      className="form-input"
-                      placeholder="Enter your new password"
-                      value={newPassword}
-                      onChange={e=>setNewPassword(e.target.value)}
-                      disabled={saving}
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Confirm New Password</label>
-                    <input
-                      type="password"
-                      className="form-input"
-                      placeholder="Confirm your new password"
-                      value={confirmPassword}
-                      onChange={e=>setConfirmPassword(e.target.value)}
-                      disabled={saving}
-                      required
-                    />
-                  </div>
-                  <button type="submit" className="submit-btn" disabled={saving}>
-                    {saving ? 'Updating...' : 'Update Password'}
-                  </button>
-                </form>
-              </div>
-            </div>
-
-            {/* Site Settings Section */}
-            <div className="settings-section">
-              <h3>
-                <svg className="icon" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd"/>
-                </svg>
-                Site Settings
-              </h3>
-              <div className="settings-section-content">
-                <form onSubmit={handleSaveSite}>
-                  <div className="form-group">
-                    <label className="form-label">Site Name</label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder="Enter your site name"
-                      value={siteName}
-                      onChange={e=>setSiteName(e.target.value)}
-                      disabled={saving}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Site Description</label>
-                    <textarea
-                      className="form-textarea"
-                      placeholder="Enter your site description"
-                      value={siteDescription}
-                      onChange={e=>setSiteDescription(e.target.value)}
-                      disabled={saving}
-                      rows={4}
-                    />
-                  </div>
-                  <button type="submit" className="submit-btn" disabled={saving}>
-                    {saving ? 'Saving...' : 'Update Site Settings'}
-                  </button>
-                </form>
-              </div>
-            </div>
-
-            {/* Feedback Messages */}
-            <div className="feedback-messages">
-              {feedback && <div className="alert alert-success">{feedback}</div>}
-              {error && <div className="alert alert-error">{error}</div>}
-            </div>
+        )}
+        {error && (
+          <div style={{...styles.alert, ...styles.alertError}}>
+            {error}
           </div>
         )}
       </div>

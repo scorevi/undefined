@@ -507,8 +507,8 @@ const Main = () => {
               )}
 
               <div style={fbStyles.postActions}>
-                <label 
-                  htmlFor="image-upload" 
+                <label
+                  htmlFor="image-upload"
                   style={fbStyles.imageUploadBtn}
                   onMouseEnter={(e) => e.target.style.backgroundColor = '#f0f2f5'}
                   onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
@@ -524,9 +524,9 @@ const Main = () => {
                   onChange={handleImageChange}
                   disabled={loading}
                 />
-                
-                <button 
-                  type="submit" 
+
+                <button
+                  type="submit"
                   style={{
                     ...fbStyles.submitBtn,
                     opacity: loading || !content.trim() ? 0.6 : 1,
@@ -596,8 +596,8 @@ const Main = () => {
                             </span>
                           </div>
                         </div>
-                        <Link 
-                          to={`/blog/post/${post.id}`} 
+                        <Link
+                          to={`/blog/post/${post.id}`}
                           style={fbStyles.readMoreBtn}
                           onMouseEnter={(e) => e.target.style.backgroundColor = '#166fe5'}
                           onMouseLeave={(e) => e.target.style.backgroundColor = '#1877f2'}
@@ -651,40 +651,40 @@ const Main = () => {
               Categories
             </h3>
             <div style={fbStyles.categoryList}>
-              <a 
-                href="#" 
+              <a
+                href="#"
                 style={fbStyles.categoryItem}
                 onMouseEnter={(e) => e.target.style.backgroundColor = '#f0f2f5'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
               >
                 Technology
               </a>
-              <a 
-                href="#" 
+              <a
+                href="#"
                 style={fbStyles.categoryItem}
                 onMouseEnter={(e) => e.target.style.backgroundColor = '#f0f2f5'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
               >
                 Lifestyle
               </a>
-              <a 
-                href="#" 
+              <a
+                href="#"
                 style={fbStyles.categoryItem}
                 onMouseEnter={(e) => e.target.style.backgroundColor = '#f0f2f5'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
               >
                 Travel
               </a>
-              <a 
-                href="#" 
+              <a
+                href="#"
                 style={fbStyles.categoryItem}
                 onMouseEnter={(e) => e.target.style.backgroundColor = '#f0f2f5'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
               >
                 Food
               </a>
-              <a 
-                href="#" 
+              <a
+                href="#"
                 style={fbStyles.categoryItem}
                 onMouseEnter={(e) => e.target.style.backgroundColor = '#f0f2f5'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
