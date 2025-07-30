@@ -1,4 +1,4 @@
-# ScoreVI - Blog Platform
+# Undefined - Blog Platform
 
 A modern blog platform built with Laravel, React, and Docker.
 
