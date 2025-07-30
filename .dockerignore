@@ -58,4 +58,4 @@ public/build/*
 !public/build/.gitkeep
 
 # Windows symlink (will be recreated in container)
-public/storage 
+public/storage

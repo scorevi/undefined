@@ -11,48 +11,62 @@ class UserAuthController extends Controller
 {
     public function register(Request $request)
     {
-        // Ensure session is started
-        if (!$request->session()->isStarted()) {
-            $request->session()->start();
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8|confirmed',
+            ]);
+
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => bcrypt($validated['password']),
+                'role' => 'user',
+            ]);
+
+            Auth::login($user);
+
+            // Removed session regeneration for Docker compatibility
+
+            return response()->json(['success' => true, 'user' => $user, 'redirect' => '/dashboard']);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed.',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Registration error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Registration failed. Please try again.'], 500);
         }
-
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
-
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => bcrypt($validated['password']),
-            'role' => 'user',
-        ]);
-
-        Auth::login($user);
-        $request->session()->regenerate();
-        return response()->json(['success' => true, 'user' => $user, 'redirect' => '/dashboard']);
     }
 
     public function login(Request $request)
     {
-        // Ensure session is started
-        if (!$request->session()->isStarted()) {
-            $request->session()->start();
-        }
+        try {
+            // Validate input
+            $validated = $request->validate([
+                'email' => 'required|email',
+                'password' => 'required|min:1',
+            ]);
 
-        Auth::logout(); // Always clear any existing session first
+            $credentials = $request->only(['email', 'password']);
+            if (Auth::attempt($credentials)) {
+                $user = Auth::user();
 
-        $credentials = $request->only(['email', 'password']);
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            $user = Auth::user();
-            if ($user->role !== 'user') {
-                Auth::logout();
-                return response()->json(['success' => false, 'message' => 'You do not have user access.'], 403);
+                if ($user->role !== 'user') {
+                    Auth::logout();
+                    return response()->json(['success' => false, 'message' => 'You do not have user access.'], 403);
+                }
+
+                return response()->json(['success' => true, 'user' => $user, 'redirect' => '/dashboard']);
             }
-            return response()->json(['success' => true, 'user' => $user, 'redirect' => '/dashboard']);
+
+            return response()->json(['success' => false, 'message' => 'Invalid credentials'], 401);
+        } catch (\Exception $e) {
+            \Log::error('Login error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Login failed. Please try again.'], 500);
         }
-        return response()->json(['success' => false, 'message' => 'Invalid credentials'], 401);
     }
 }

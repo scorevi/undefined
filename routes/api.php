@@ -17,11 +17,13 @@ Route::get('/posts/trending', [PostController::class, 'trending']);
 Route::get('/posts/featured', [PostController::class, 'featured']);
 Route::get('/posts/categories', [PostController::class, 'categories']);
 
-// Authentication Routes (no middleware, open access)
-Route::post('/user/login', [UserAuthController::class, 'login'])->name('user.login.post');
-Route::post('/user/register', [UserAuthController::class, 'register'])->name('user.register.post');
-Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
-Route::post('/register', [AdminAuthController::class, 'register'])->name('register.post');
+// Authentication Routes (with proper session middleware for Docker compatibility)
+Route::middleware(['api', 'web'])->group(function () {
+    Route::post('/user/login', [UserAuthController::class, 'login'])->name('user.login.post');
+    Route::post('/user/register', [UserAuthController::class, 'register'])->name('user.register.post');
+    Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
+    Route::post('/register', [AdminAuthController::class, 'register'])->name('register.post');
+});
 
 // Protected API Routes (requires Sanctum token authentication - for Admin)
 Route::middleware('auth:sanctum')->group(function () {
@@ -49,21 +51,22 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/user/dashboard', [UserDashboardController::class, '__invoke']);
     Route::post('/posts/{post}/like', [LikeController::class, 'like']);
     Route::post('/posts/{post}/unlike', [LikeController::class, 'unlike']);
-});// User Logout API route
-Route::middleware(['api'])->post('/user/logout', function (\Illuminate\Http\Request $request) {
-    if (Auth::check()) {
-        Auth::user()->currentAccessToken()->delete();
-    }
-    return response()->json(['success' => true, 'redirect' => '/']);
-})->name('user.logout');
+// Logout routes (with session middleware)
+Route::middleware(['web'])->group(function () {
+    Route::post('/user/logout', function (\Illuminate\Http\Request $request) {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return response()->json(['success' => true, 'redirect' => '/']);
+    })->name('user.logout');
 
-// Admin Logout API route
-Route::middleware(['api'])->post('/logout', function (\Illuminate\Http\Request $request) {
-    if (Auth::check()) {
-        Auth::user()->currentAccessToken()->delete();
-    }
-    return response()->json(['success' => true, 'redirect' => '/']);
-})->name('logout');
+    Route::post('/logout', function (\Illuminate\Http\Request $request) {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return response()->json(['success' => true, 'redirect' => '/']);
+    })->name('logout');
+});
 
 // Blog Post API Routes
 Route::get('/posts', [PostController::class, 'index']);

@@ -96,4 +96,4 @@ const HiddenAdminAccess = () => {
     );
 };
 
-export default HiddenAdminAccess; 
+export default HiddenAdminAccess;
