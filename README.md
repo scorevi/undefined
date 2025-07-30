@@ -13,23 +13,54 @@ A modern blog platform built with Laravel, React, and Docker by Erika, Noelle, a
 - **File Uploads**: Image upload support for posts
 - **Docker Support**: Easy deployment with Docker containers
 
-## Development Setup
+## 🐳 Docker Usage
 
 ### Prerequisites
 
 - Docker and Docker Compose
-- Node.js (for local development)
-- Git
+- Git (for cloning the repository)
 
-### Quick Start (Development)
+### Quick Start (Recommended)
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd scorevi
+   git clone https://github.com/scorevi/undefined.git
+   cd undefined
    ```
 
-2. **Start development environment**
+2. **Start the complete application stack**
+   ```bash
+   docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+   ```
+
+3. **Access the application**
+   - Website: http://localhost:8000
+   - Admin Dashboard: http://localhost:8000/admin
+
+### Using Docker Hub Image
+
+Our Docker image is available on Docker Hub as `seancaintic/undefined-app`:
+
+```bash
+# Pull the latest image
+docker pull seancaintic/undefined-app:latest
+
+# Or pull a specific version
+docker pull seancaintic/undefined-app:v1.0.0
+```
+
+**Note**: The Docker Hub image contains only the Laravel application. For a complete working setup with web server, database, and caching, use the Docker Compose method above.
+
+### Automated Docker Builds
+
+This repository includes GitHub Actions that automatically build and push Docker images to Docker Hub:
+- **Triggers**: On push to `master` branch and on new tags
+- **Images**: `seancaintic/undefined-app:latest` and version tags
+- **Platforms**: Supports both AMD64 and ARM64 architectures
+
+### Alternative Development Setup
+
+1. **Start development environment**
    ```bash
    # Windows
    start-all.bat
@@ -38,9 +69,21 @@ A modern blog platform built with Laravel, React, and Docker by Erika, Noelle, a
    ./docker-setup.sh
    ```
 
-3. **Access the application**
+2. **Access the application**
    - Website: http://localhost:8000
    - Admin Dashboard: http://localhost:8000/admin
+
+### Stop Services
+
+```bash
+# Stop all Docker services
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml down
+
+# Or for development setup
+docker-compose down
+```
+
+## Development Setup
 
 ### Manual Development Setup
 
