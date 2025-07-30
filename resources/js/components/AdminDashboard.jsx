@@ -143,21 +143,18 @@ const AdminDashboard = () => {
         <div className="quick-act-cont">
             <h2>Admin Quick Actions</h2>
             <div className="quick-act-grid">
-                <button className='action-btn'>
-                <Link to="/admin/posts/new">
-
+                <Link to="/admin/posts/new" className='action-btn'>
                     New Post
-                </Link></button>
-                <button className='action-btn'>
-                <Link to="/admin/posts" >
+                </Link>
+                <Link to="/admin/posts" className='action-btn'>
                     Edit Posts
-                </Link></button>
-                <button className='action-btn'><Link to="/admin/comments">
+                </Link>
+                <Link to="/admin/comments" className='action-btn'>
                     Manage Comments
-                </Link></button>
-                <button className='action-btn'><Link to="/admin/settings">
+                </Link>
+                <Link to="/admin/settings" className='action-btn'>
                     Admin Settings
-                </Link></button>
+                </Link>
             </div>
         </div>
 

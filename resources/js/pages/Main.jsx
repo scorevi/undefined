@@ -1,15 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation } from 'swiper/modules';
 import { useAuth } from '../authContext';
 import { FaCamera } from 'react-icons/fa';
 
-import 'swiper/css';
-import 'swiper/css/navigation';
-
 import './styles/main.css';
-import './styles/featured.css';
 import Posts from '../components/Posts';
 import Navbar from '../components/NavBar';
 
@@ -28,7 +22,6 @@ const Main = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [featuredPosts, setFeaturedPosts] = useState([]);
   const [refreshPosts, setRefreshPosts] = useState(0);
 
   useEffect(() => {
@@ -52,23 +45,7 @@ const Main = () => {
   }, []);
 
   useEffect(() => {
-    // Fetch top 3 most recent posts for the featured carousel
-    const fetchFeatured = async () => {
-      try {
-        const response = await fetch('/api/posts', {
-          credentials: 'include',
-          headers: {
-            'X-XSRF-TOKEN': decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || ''),
-          }
-        });
-        if (!response.ok) throw new Error('Failed to fetch posts');
-        const data = await response.json();
-        setFeaturedPosts((data.data || []).slice(0, 3));
-      } catch (err) {
-        setFeaturedPosts([]);
-      }
-    };
-    fetchFeatured();
+    // No longer needed - featured posts handled by Posts component
   }, [refreshPosts]); // depend on refreshPosts
 
   const handleImageChange = (e) => {
@@ -209,46 +186,11 @@ const Main = () => {
 
     <hr />
 
-      {/* Carousel  */}
-      <div className="featured-posts">
+      {/* Featured Posts Carousel Removed - Now handled in Posts component */}
 
-        <h1>Featured Posts</h1>
+      <Posts refresh={refreshPosts} />
+      {/* Featured Posts Carousel Removed - Now handled in Posts component */}
 
-        <Swiper
-          modules={[Navigation]}
-          navigation={true}
-          spaceBetween={30}
-          slidesPerView={1}
-          className="mySwiper"
-        >
-
-          {featuredPosts.map((post) => (
-            <SwiperSlide key={post.id}>
-              <Link to={`/blog/post/${post.id}`}>
-                <div className="slide-card">
-                  {post.image && getPostImageUrl(post.image) && (
-                    <img
-                      src={getPostImageUrl(post.image)}
-                      alt={post.title}
-                      className="slide-image"
-                      onError={e => {
-                        e.target.style.display = 'none'; // Hide broken images
-                      }}
-                    />
-                  )}
-                  <div className="slide-overlay">
-                    <h3 className="slide-title">{post.title}</h3>
-                    <p>{post.content.length > 120 ? post.content.slice(0, 120) + '...' : post.content}</p>
-                  </div>
-                </div>
-              </Link>
-            </SwiperSlide>
-          ))}
-
-        </Swiper>
-
-      </div>
-      <hr />
       <Posts refresh={refreshPosts} />
 
 

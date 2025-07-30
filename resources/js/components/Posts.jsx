@@ -15,6 +15,10 @@ const Posts = ({ refresh }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [trending, setTrending] = useState([]);
+  const [featuredPosts, setFeaturedPosts] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [sortBy, setSortBy] = useState('created_at');
+  const [sortOrder, setSortOrder] = useState('desc');
   const [postsPage, setPostsPage] = useState(1);
   const [postsLastPage, setPostsLastPage] = useState(1);
   const [postsTotal, setPostsTotal] = useState(0);
@@ -26,7 +30,18 @@ const Posts = ({ refresh }) => {
       setLoading(true);
       setError('');
       try {
-        const response = await fetch(`/api/posts?page=${page}&per_page=10`);
+        const params = new URLSearchParams({
+          page: page,
+          per_page: 10,
+          sort_by: sortBy,
+          sort_order: sortOrder
+        });
+
+        if (selectedCategory && selectedCategory !== 'all') {
+          params.append('category', selectedCategory);
+        }
+
+        const response = await fetch(`/api/posts?${params}`);
         if (!response.ok) throw new Error('Failed to fetch posts');
         const data = await response.json();
         if (append) {
@@ -45,7 +60,7 @@ const Posts = ({ refresh }) => {
       }
     };
     fetchPosts(1, false);
-  }, [refresh]);
+  }, [refresh, sortBy, sortOrder, selectedCategory]);
 
   // Load more posts
   const loadMorePosts = async () => {
@@ -53,7 +68,18 @@ const Posts = ({ refresh }) => {
     setPostsLoadingMore(true);
     try {
       const nextPage = postsPage + 1;
-      const response = await fetch(`/api/posts?page=${nextPage}&per_page=10`);
+      const params = new URLSearchParams({
+        page: nextPage,
+        per_page: 10,
+        sort_by: sortBy,
+        sort_order: sortOrder
+      });
+
+      if (selectedCategory && selectedCategory !== 'all') {
+        params.append('category', selectedCategory);
+      }
+
+      const response = await fetch(`/api/posts?${params}`);
       if (!response.ok) throw new Error('Failed to fetch posts');
       const data = await response.json();
       setPosts((prev) => [...prev, ...data.data]);
@@ -93,36 +119,174 @@ const Posts = ({ refresh }) => {
     fetchTrending();
   }, [refresh]);
 
+  // Fetch featured posts
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const response = await fetch('/api/posts/featured');
+        if (!response.ok) throw new Error('Failed to fetch featured posts');
+        const data = await response.json();
+        setFeaturedPosts(data);
+      } catch (err) {
+        setFeaturedPosts([]);
+      }
+    };
+    fetchFeatured();
+  }, [refresh]);
+
   return (
-    <div className="posts-section">
+    <>
+      <div className="posts-section">
 
-      <div className="category-cont">
-        <h2>Post Categories</h2>
-
-        <div className="post-categories">
-          <ul className='categories'>
-            <li>News</li>
-            <li>Review</li>
-            <li>Podcast</li>
-            <li>Opinion</li>
-            <li>Lifestyle</li>
-          </ul>
+        {/* Featured Posts Section */}
+      <div className="featured-posts">
+        <div className="featured-header">
+          <h2>Featured Posts</h2>
+          <p className="featured-subtitle">Hand-picked posts highlighted by our editorial team</p>
         </div>
-
+        {featuredPosts.length > 0 ? (
+          <div className="featured-posts-grid">
+            {featuredPosts.map((post) => (
+              <div className="featured-post-card" key={post.id}>
+                {post.image && getPostImageUrl(post.image) ? (
+                  <img
+                    src={getPostImageUrl(post.image)}
+                    alt="featured post"
+                    className="featured-post-img"
+                    onError={e => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                ) : (
+                  <div className="featured-post-no-image">
+                    <div className="no-image-placeholder">
+                      <span>📝</span>
+                    </div>
+                  </div>
+                )}
+                <div className="featured-post-details">
+                  <div className="featured-post-header">
+                    <Link to={`/blog/post/${post.id}`} className="featured-post-title">{post.title}</Link>
+                    <div className="featured-badges">
+                      <span className="featured-post-category">{post.category}</span>
+                      <span className="featured-badge">⭐ Featured</span>
+                    </div>
+                  </div>
+                  <p className="featured-post-content">{post.content.length > 120 ? post.content.slice(0, 120) + '...' : post.content}</p>
+                  <div className="featured-post-meta">
+                    <div className="meta-left">
+                      <span className="author">👤 {post.user?.name || 'Unknown'}</span>
+                      <span className="date">📅 {new Date(post.created_at).toLocaleDateString()}</span>
+                    </div>
+                    <div className="meta-right">
+                      <span className="views">👁️ {post.views} views</span>
+                      <span className="likes">❤️ {post.likes_count || 0} likes</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="featured-empty">
+            <div className="empty-icon">⭐</div>
+            <h3>No Featured Posts Yet</h3>
+            <p>Our editorial team hasn't selected any featured posts at the moment. Check back soon for hand-picked content that stands out from the crowd!</p>
+            <div className="empty-actions">
+              <span className="empty-hint">💡 Featured posts are selected by administrators to highlight exceptional content</span>
+            </div>
+          </div>
+        )}
       </div>
+
+      <div className="posts-main-content">
+        <div className="category-cont">
+          <h2>Post Categories</h2>
+
+          <div className="post-categories">
+            <ul className='categories'>
+              <li
+                className={selectedCategory === 'all' ? 'active' : ''}
+                onClick={() => setSelectedCategory('all')}
+              >
+                All
+              </li>
+              <li
+                className={selectedCategory === 'news' ? 'active' : ''}
+                onClick={() => setSelectedCategory('news')}
+              >
+                News
+              </li>
+              <li
+                className={selectedCategory === 'review' ? 'active' : ''}
+                onClick={() => setSelectedCategory('review')}
+              >
+                Review
+              </li>
+              <li
+                className={selectedCategory === 'podcast' ? 'active' : ''}
+                onClick={() => setSelectedCategory('podcast')}
+              >
+                Podcast
+              </li>
+              <li
+                className={selectedCategory === 'opinion' ? 'active' : ''}
+                onClick={() => setSelectedCategory('opinion')}
+              >
+                Opinion
+              </li>
+              <li
+                className={selectedCategory === 'lifestyle' ? 'active' : ''}
+                onClick={() => setSelectedCategory('lifestyle')}
+              >
+                Lifestyle
+              </li>
+            </ul>
+          </div>
+
+        </div>
 
       <div className="recent-posts">
         <div className="section-header">
           <h2>Recent Posts ({postsTotal})</h2>
 
           <div className="sort-section">
-            <button className="sort-btn"><FaSort /> Sort </button>
+            <button className="sort-btn" onClick={() => {
+              const dropdown = document.querySelector('.dropdown');
+              dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            }}>
+              <FaSort /> Sort
+            </button>
 
-            <div className="dropdown"> {/* feel free to add, remove, or change*/}
-              <span className='latest'>Latest</span>
-              <span className='oldest'>Oldest</span>
-              <span className='most-views'>Most viewed</span>
-              <span className='author'>Author</span>
+            <div className="dropdown" style={{display: 'none', position: 'absolute', background: 'white', border: '1px solid #ddd', borderRadius: '4px', padding: '8px', zIndex: 1000, minWidth: '120px'}}>
+              <span
+                className={`latest ${sortBy === 'created_at' && sortOrder === 'desc' ? 'active' : ''}`}
+                onClick={() => {setSortBy('created_at'); setSortOrder('desc'); document.querySelector('.dropdown').style.display = 'none';}}
+                style={{display: 'block', padding: '4px 8px', cursor: 'pointer', borderBottom: '1px solid #eee'}}
+              >
+                Latest
+              </span>
+              <span
+                className={`oldest ${sortBy === 'created_at' && sortOrder === 'asc' ? 'active' : ''}`}
+                onClick={() => {setSortBy('created_at'); setSortOrder('asc'); document.querySelector('.dropdown').style.display = 'none';}}
+                style={{display: 'block', padding: '4px 8px', cursor: 'pointer', borderBottom: '1px solid #eee'}}
+              >
+                Oldest
+              </span>
+              <span
+                className={`most-views ${sortBy === 'views' ? 'active' : ''}`}
+                onClick={() => {setSortBy('views'); setSortOrder('desc'); document.querySelector('.dropdown').style.display = 'none';}}
+                style={{display: 'block', padding: '4px 8px', cursor: 'pointer', borderBottom: '1px solid #eee'}}
+              >
+                Most viewed
+              </span>
+              <span
+                className={`most-liked ${sortBy === 'likes' ? 'active' : ''}`}
+                onClick={() => {setSortBy('likes'); setSortOrder('desc'); document.querySelector('.dropdown').style.display = 'none';}}
+                style={{display: 'block', padding: '4px 8px', cursor: 'pointer'}}
+              >
+                Most liked
+              </span>
             </div>
 
           </div>
@@ -147,6 +311,12 @@ const Posts = ({ refresh }) => {
             <div className="post-details" style={{flex:1,minWidth:0}}>
               <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:2}}>
                 <Link to={`/blog/post/${post.id}`} style={{fontWeight:600,fontSize:'1.05rem',color:'#222',textDecoration:'none',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',maxWidth:'60%'}}>{post.title}</Link>
+                {post.category && (
+                  <span style={{background:'#f0f9ff',color:'#0369a1',padding:'2px 8px',borderRadius:'12px',fontSize:'0.8rem',fontWeight:500}}>{post.category}</span>
+                )}
+                {post.is_featured && (
+                  <span style={{background:'#fef3c7',color:'#d97706',padding:'2px 8px',borderRadius:'12px',fontSize:'0.8rem',fontWeight:500}}>Featured</span>
+                )}
                 <span style={{color:'#888',fontSize:'0.92rem'}}>| {post.user?.name || 'Unknown'}</span>
                 <span style={{color:'#bbb',fontSize:'0.9rem'}}>| {new Date(post.created_at).toLocaleDateString()}</span>
                 {post.views !== undefined && (
@@ -168,27 +338,29 @@ const Posts = ({ refresh }) => {
         )}
       </div>
 
-      <div className="trending-posts">
-        <h2>Trending</h2>
+        <div className="trending-posts">
+          <h2>Trending</h2>
 
-        {trending.length === 0 && <div style={{color:'#888'}}>No trending posts yet.</div>}
+          {trending.length === 0 && <div style={{color:'#888'}}>No trending posts yet.</div>}
 
-        {Array.isArray(trending) && trending.map((item) => (
-          <div className="trending-card" key={item.id}>
-            <div className="trend-content">
-              <Link to={`/blog/post/${item.id}`}><h4>{item.title}</h4></Link>
-              <p>{item.content.length > 80 ? item.content.slice(0, 80) + '...' : item.content}</p>
-              <div className="trend-engagement">
-                <span className="likes"><FaHeart />{item.likes_count}</span>
-                <span style={{marginLeft:8}}><FaComment />0</span>
-                <span style={{marginLeft:8, color:'#bbb', fontSize:'0.95rem'}}>{item.views} views</span>
+          {Array.isArray(trending) && trending.map((item) => (
+            <div className="trending-card" key={item.id}>
+              <div className="trend-content">
+                <Link to={`/blog/post/${item.id}`}><h4>{item.title}</h4></Link>
+                <p>{item.content.length > 80 ? item.content.slice(0, 80) + '...' : item.content}</p>
+                <div className="trend-engagement">
+                  <span className="likes"><FaHeart />{item.likes_count}</span>
+                  <span style={{marginLeft:8}}><FaComment />0</span>
+                  <span style={{marginLeft:8, color:'#bbb', fontSize:'0.95rem'}}>{item.views} views</span>
+                </div>
               </div>
+              <FaChevronRight className="chevron" />
             </div>
-            <FaChevronRight className="chevron" />
-          </div>
-        ))}
+          ))}
+        </div>
+      </div> {/* Close posts-main-content */}
       </div>
-    </div>
+    </>
   );
 };
 

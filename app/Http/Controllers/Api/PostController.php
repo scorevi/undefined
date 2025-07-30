@@ -15,12 +15,40 @@ class PostController extends Controller
     public function index(Request $request)
     {
         $perPage = (int) $request->query('per_page', 10);
-        $posts = Post::with('user')
-            ->withCount('likes')
-            ->withCount('comments')
-            ->orderBy('created_at', 'desc')
-            ->paginate($perPage);
+        $sortBy = $request->query('sort', 'created_at'); // created_at, views, likes, trending
+        $category = $request->query('category');
+
+        $query = Post::with('user')->withCount('likes')->withCount('comments');
+
+        // Filter by category if provided
+        if ($category && $category !== 'all') {
+            $query->where('category', $category);
+        }
+
+        // Apply sorting
+        switch ($sortBy) {
+            case 'views':
+                $query->orderByDesc('views');
+                break;
+            case 'likes':
+                $query->orderByDesc('likes_count');
+                break;
+            case 'trending':
+                // Simple trending algorithm: combine recent posts with high engagement
+                $query->selectRaw('*, (likes_count * 2 + comments_count + views/10 + (CASE WHEN created_at > DATE("now", "-7 days") THEN 10 ELSE 0 END)) as trending_score')
+                      ->orderByDesc('trending_score');
+                break;
+            case 'oldest':
+                $query->orderBy('created_at');
+                break;
+            default: // 'created_at' or 'latest'
+                $query->orderByDesc('created_at');
+                break;
+        }
+
+        $posts = $query->paginate($perPage);
         $postsArr = $posts->items();
+
         return response()->json([
             'data' => $postsArr,
             'current_page' => $posts->currentPage(),
@@ -57,6 +85,8 @@ class PostController extends Controller
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
                 'content' => 'required|string',
+                'category' => 'required|string|in:news,review,podcast,opinion,lifestyle',
+                'is_featured' => 'sometimes|boolean',
                 'image' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp|max:51200', // 50MB
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -78,10 +108,18 @@ class PostController extends Controller
             $imagePath = $file->store('posts', 'public');
         }
 
+        // Only admins can set is_featured
+        $isFeatured = false;
+        if ($user->role === 'admin' && isset($validated['is_featured'])) {
+            $isFeatured = $validated['is_featured'];
+        }
+
         $post = Post::create([
             'user_id' => $user->id,
             'title' => $validated['title'],
             'content' => $validated['content'],
+            'category' => $validated['category'] ?? 'news',
+            'is_featured' => $isFeatured,
             'image' => $imagePath,
         ]);
 
@@ -102,6 +140,8 @@ class PostController extends Controller
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
                 'content' => 'required|string',
+                'category' => 'sometimes|string|in:news,review,podcast,opinion,lifestyle',
+                'is_featured' => 'sometimes|boolean',
                 'image' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp|max:51200', // 50MB
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -132,6 +172,13 @@ class PostController extends Controller
 
         $post->title = $validated['title'];
         $post->content = $validated['content'];
+        if (isset($validated['category'])) {
+            $post->category = $validated['category'];
+        }
+        // Only admins can set is_featured
+        if (isset($validated['is_featured']) && $user->role === 'admin') {
+            $post->is_featured = $validated['is_featured'];
+        }
         $post->save();
         $post->load('user');
 
@@ -164,15 +211,69 @@ class PostController extends Controller
         ]);
     }
 
-    // Trending posts by most likes, then views
+    // Trending posts with improved algorithm
     public function trending()
     {
         $posts = Post::with('user')
             ->withCount('likes')
-            ->orderByDesc('likes_count')
-            ->orderByDesc('views')
-            ->take(5)
+            ->withCount('comments')
+            ->selectRaw('*, (
+                likes_count * 3 +
+                comments_count * 2 +
+                views / 20 +
+                (CASE WHEN created_at > DATE("now", "-7 days") THEN 15 ELSE 0 END) +
+                (CASE WHEN created_at > DATE("now", "-1 day") THEN 10 ELSE 0 END)
+            ) as trending_score')
+            ->orderByDesc('trending_score')
+            ->orderByDesc('created_at') // Secondary sort for ties
+            ->take(10)
             ->get();
         return response()->json($posts);
+    }
+
+    // Featured posts endpoint
+    public function featured()
+    {
+        $posts = Post::with('user')
+            ->withCount('likes')
+            ->withCount('comments')
+            ->where('is_featured', true)
+            ->orWhere(function($query) {
+                // Auto-feature posts with high engagement if no manual featured posts
+                $query->selectRaw('*, (likes_count * 2 + comments_count + views/10) as engagement_score')
+                      ->orderByDesc('engagement_score')
+                      ->limit(5);
+            })
+            ->orderByDesc('created_at')
+            ->take(5)
+            ->get();
+
+        // If no featured posts found, get recent high-engagement posts
+        if ($posts->isEmpty()) {
+            $posts = Post::with('user')
+                ->withCount('likes')
+                ->withCount('comments')
+                ->where('image', '!=', null) // Prefer posts with images for featured
+                ->orderByDesc('views')
+                ->orderByDesc('likes_count')
+                ->take(5)
+                ->get();
+        }
+
+        return response()->json($posts);
+    }
+
+    // Get categories
+    public function categories()
+    {
+        $categories = Post::select('category')
+            ->groupBy('category')
+            ->orderBy('category')
+            ->pluck('category')
+            ->toArray();
+
+        return response()->json([
+            'categories' => $categories
+        ]);
     }
 }

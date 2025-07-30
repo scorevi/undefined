@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 const AdminNewPost = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [category, setCategory] = useState('news');
+  const [isFeatured, setIsFeatured] = useState(false);
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -58,6 +60,8 @@ const AdminNewPost = () => {
       const formData = new FormData();
       formData.append('title', title);
       formData.append('content', content);
+      formData.append('category', category);
+      formData.append('is_featured', isFeatured ? '1' : '0');
       if (image) formData.append('image', image);
 
       const response = await fetch('/api/posts', {
@@ -80,6 +84,8 @@ const AdminNewPost = () => {
         setSuccess('Post created successfully!');
         setTitle('');
         setContent('');
+        setCategory('news');
+        setIsFeatured(false);
         setImage(null);
         setImagePreview(null);
         setTimeout(() => navigate('/admin/posts'), 1200);
@@ -103,6 +109,34 @@ const AdminNewPost = () => {
         <div className="mb-4">
           <label className="block font-medium mb-1">Content</label>
           <textarea className="w-full border rounded px-3 py-2" rows={6} value={content} onChange={e=>setContent(e.target.value)} disabled={loading} required />
+        </div>
+        <div className="mb-4">
+          <label className="block font-medium mb-1">Category</label>
+          <select
+            className="w-full border rounded px-3 py-2"
+            value={category}
+            onChange={e=>setCategory(e.target.value)}
+            disabled={loading}
+          >
+            <option value="news">News</option>
+            <option value="review">Review</option>
+            <option value="podcast">Podcast</option>
+            <option value="opinion">Opinion</option>
+            <option value="lifestyle">Lifestyle</option>
+          </select>
+        </div>
+        <div className="mb-4">
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              className="mr-2"
+              checked={isFeatured}
+              onChange={e=>setIsFeatured(e.target.checked)}
+              disabled={loading}
+            />
+            <span className="font-medium">Featured Post</span>
+          </label>
+          <p className="text-sm text-gray-600 mt-1">Featured posts will be highlighted on the homepage.</p>
         </div>
         <div className="mb-4">
           <label className="block font-medium mb-2">Image (optional)</label>

@@ -13,6 +13,8 @@ class Post extends Model
         'user_id',
         'title',
         'content',
+        'category',
+        'is_featured',
         'image',
         'views',
     ];

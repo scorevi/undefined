@@ -182,6 +182,13 @@ hr {
   cursor: pointer;
   transition: all 0.2s;
   text-align: center;
+  text-decoration: none; /* Remove link underline */
+  display: block; /* Make the entire area clickable */
+  width: 100%;
+  min-height: 60px; /* Ensure consistent button height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .action-btn:hover {
@@ -189,14 +196,19 @@ hr {
   border-color: #9ca3af;
   transform: translateY(-1px);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  color: #374151; /* Maintain text color on hover */
+  text-decoration: none; /* Ensure no underline on hover */
 }
 
-.action-btn a {
-  color: inherit;
+.action-btn:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
   text-decoration: none;
-  display: block;
-  width: 100%;
-  height: 100%;
+}
+
+.action-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
 }
 
 /* Table */

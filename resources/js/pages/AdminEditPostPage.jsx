@@ -6,6 +6,8 @@ const AdminEditPostPage = () => {
   const [post, setPost] = useState(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [category, setCategory] = useState('news');
+  const [isFeatured, setIsFeatured] = useState(false);
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,6 +25,8 @@ const AdminEditPostPage = () => {
         setPost(data);
         setTitle(data.title || '');
         setContent(data.content || '');
+        setCategory(data.category || 'news');
+        setIsFeatured(data.is_featured || false);
         setImagePreview(data.image ? `/storage/${data.image}` : null);
         setLoading(false);
       })
@@ -84,6 +88,8 @@ const AdminEditPostPage = () => {
       const formData = new FormData();
       formData.append('title', title);
       formData.append('content', content);
+      formData.append('category', category);
+      formData.append('is_featured', isFeatured ? '1' : '0');
       if (image) formData.append('image', image);
       formData.append('_method', 'PUT');
 
@@ -162,6 +168,34 @@ const AdminEditPostPage = () => {
         <div className="mb-4">
           <label className="block font-medium mb-1">Content</label>
           <textarea className="w-full border rounded px-3 py-2" rows={8} value={content} onChange={e=>setContent(e.target.value)} disabled={saving} required />
+        </div>
+        <div className="mb-4">
+          <label className="block font-medium mb-1">Category</label>
+          <select
+            className="w-full border rounded px-3 py-2"
+            value={category}
+            onChange={e=>setCategory(e.target.value)}
+            disabled={saving}
+          >
+            <option value="news">News</option>
+            <option value="review">Review</option>
+            <option value="podcast">Podcast</option>
+            <option value="opinion">Opinion</option>
+            <option value="lifestyle">Lifestyle</option>
+          </select>
+        </div>
+        <div className="mb-4">
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              className="mr-2"
+              checked={isFeatured}
+              onChange={e=>setIsFeatured(e.target.checked)}
+              disabled={saving}
+            />
+            <span className="font-medium">Featured Post</span>
+          </label>
+          <p className="text-sm text-gray-600 mt-1">Featured posts will be highlighted on the homepage.</p>
         </div>
         <div className="mb-4">
           <label className="block font-medium mb-2">Image</label>

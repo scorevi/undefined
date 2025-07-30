@@ -14,6 +14,8 @@ use App\Http\Controllers\Api\CommentController;
 // Public API Routes
 Route::middleware(['api'])->group(function () {
     Route::get('/posts/trending', [PostController::class, 'trending']);
+    Route::get('/posts/featured', [PostController::class, 'featured']);
+    Route::get('/posts/categories', [PostController::class, 'categories']);
 });
 
 // Authentication Routes
