@@ -335,10 +335,16 @@ const UserPost = () => {
     setCommentError('');
     setCommentLoading(true);
     try {
+      // First get CSRF cookie
+      await fetch('/sanctum/csrf-cookie', {
+        credentials: 'include',
+      });
+
       const xsrfToken = (() => {
         const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
         return match ? decodeURIComponent(match[1]) : '';
       })();
+
       const response = await fetch(`/api/posts/${id}/comments`, {
         method: 'POST',
         headers: {
@@ -367,10 +373,16 @@ const UserPost = () => {
     if (!window.confirm('Delete this comment?')) return;
     setCommentError('');
     try {
+      // First get CSRF cookie
+      await fetch('/sanctum/csrf-cookie', {
+        credentials: 'include',
+      });
+
       const xsrfToken = (() => {
         const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
         return match ? decodeURIComponent(match[1]) : '';
       })();
+
       const response = await fetch(`/api/posts/${id}/comments/${commentId}`, {
         method: 'DELETE',
         headers: {
@@ -401,10 +413,16 @@ const UserPost = () => {
     setCommentError('');
     setCommentLoading(true);
     try {
+      // First get CSRF cookie
+      await fetch('/sanctum/csrf-cookie', {
+        credentials: 'include',
+      });
+
       const xsrfToken = (() => {
         const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
         return match ? decodeURIComponent(match[1]) : '';
       })();
+
       const response = await fetch(`/api/posts/${id}/comments/${commentId}`, {
         method: 'PATCH',
         headers: {
