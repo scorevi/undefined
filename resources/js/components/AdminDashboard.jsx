@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../authContext';
+import AdminHeader from './AdminHeader';
 import './Styles/admindashboard.css';
 
 const AdminDashboard = () => {
@@ -59,42 +60,6 @@ const AdminDashboard = () => {
             navigate('/login');
         });
     }, []); // Removed navigate from dependency array
-
-    const handleLogout = async () => {
-        console.log('Admin Logout clicked');
-        try {
-            const token = localStorage.getItem('auth_token');
-
-            if (token) {
-                const response = await fetch('/api/logout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                        'Accept': 'application/json',
-                    }
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    // Clear the token from localStorage
-                    localStorage.removeItem('auth_token');
-                    logout();
-                    window.location.href = '/';
-                }
-            } else {
-                // No token found, just redirect
-                logout();
-                window.location.href = '/';
-            }
-        } catch (error) {
-            console.error('Admin Logout error:', error);
-            // Even if logout fails, clear token and redirect
-            localStorage.removeItem('auth_token');
-            logout();
-            window.location.href = '/';
-        }
-    };
 
     const handleViewPost = (e, postId) => {
         console.log('View button clicked! Post ID:', postId);
@@ -174,21 +139,7 @@ const AdminDashboard = () => {
     return (
     <div className="admin-dashboard">
     {/* Navigation */}
-    <nav className="admin-navbar">
-        <Link to="/" className="admin-title">
-            Admin Dashboard
-        </Link>
-        <div className="admin-logout" style={{zIndex:2, position:'relative'}}>
-            <span className="welcome-text">
-                Welcome, {user?.name || 'Admin'}
-            </span>
-                <button
-                    onClick={handleLogout}
-                    className="logout-btn">
-                        Logout
-            </button>
-        </div>
-    </nav>
+    <AdminHeader />
 
     {/* Main Content */}
     <div className="container">

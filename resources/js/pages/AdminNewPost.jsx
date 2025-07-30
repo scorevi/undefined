@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import AdminHeader from '../components/AdminHeader';
 
 const AdminNewPost = () => {
   const [title, setTitle] = useState('');
@@ -98,8 +99,9 @@ const AdminNewPost = () => {
   };
 
   return (
-    <div style={{maxWidth:600,margin:'40px auto',background:'#fff',padding:32,borderRadius:12,boxShadow:'0 2px 12px #e0e0e0'}}>
-      <button onClick={() => navigate(-1)} className="mb-4 text-blue-600 hover:underline">&larr; Back</button>
+    <div>
+      <AdminHeader showBackButton={true} backText="Back" />
+      <div style={{maxWidth:600,margin:'40px auto',background:'#fff',padding:32,borderRadius:12,boxShadow:'0 2px 12px #e0e0e0'}}>
       <h2 className="text-xl font-bold mb-4">Create New Post</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
@@ -219,6 +221,7 @@ const AdminNewPost = () => {
         {success && <div style={{color:'#22c55e',marginBottom:8}}>{success}</div>}
         <button type="submit" className="bg-blue-600 text-white px-5 py-2 rounded font-semibold" disabled={loading}>{loading ? 'Creating...' : 'Create Post'}</button>
       </form>
+    </div>
     </div>
   );
 };

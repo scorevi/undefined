@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import AdminHeader from "../components/AdminHeader";
 
 const AdminSettings = () => {
   const [email, setEmail] = useState('');
@@ -212,8 +213,9 @@ const AdminSettings = () => {
   };
 
   return (
-    <div style={{maxWidth:600,margin:'40px auto',background:'#fff',padding:32,borderRadius:12,boxShadow:'0 2px 12px #e0e0e0'}}>
-      <button onClick={() => navigate('/admin')} className="mb-4 text-blue-600 hover:underline">&larr; Back to Dashboard</button>
+    <div>
+      <AdminHeader showBackButton={true} />
+      <div style={{maxWidth:600,margin:'40px auto',background:'#fff',padding:32,borderRadius:12,boxShadow:'0 2px 12px #e0e0e0'}}>
       <h2 className="text-xl font-bold mb-4">Admin Settings</h2>
       {loading ? <div>Loading...</div> : (
         <>
@@ -239,6 +241,7 @@ const AdminSettings = () => {
           {error && <div style={{color:'#dc2626',marginBottom:8}}>{error}</div>}
         </>
       )}
+    </div>
     </div>
   );
 };
