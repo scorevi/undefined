@@ -76,4 +76,4 @@ networks:
 
 volumes:
   dbdata:
-    driver: local 
+    driver: local

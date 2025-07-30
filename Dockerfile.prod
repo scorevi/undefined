@@ -35,7 +35,12 @@ RUN rm -f /var/www/public/storage
 RUN composer install --no-dev --optimize-autoloader
 
 # Install Node.js dependencies and build assets
-RUN npm ci && npm run build
+# Clean install to avoid optional dependency issues with rollup native binaries
+RUN rm -rf node_modules package-lock.json && \
+    npm cache clean --force && \
+    npm install --no-optional && \
+    npm install --force && \
+    npm run build
 
 # Create Laravel storage link and set proper permissions
 RUN php artisan storage:link
