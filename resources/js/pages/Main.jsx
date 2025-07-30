@@ -247,7 +247,7 @@ const Main = () => {
                 </div>
               )}
               {error && <div className="user-error-message">{error}</div>}
-              {success && <div className="user-success-message" style={{color:'#22c55e',marginTop:8}}>{success}</div>}
+              {success && <div className="user-success-message">{success}</div>}
             </div>
           </form>
           <hr />

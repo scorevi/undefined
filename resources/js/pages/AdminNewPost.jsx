@@ -136,7 +136,7 @@ const AdminNewPost = () => {
             disabled={loading}
           />
         </div>
-        {error && <div style={{color:'#dc2626',marginBottom:8}}>{error}</div>}
+        {error && <div className="error-message">{error}</div>}
         {success && <div style={{color:'#22c55e',marginBottom:8}}>{success}</div>}
         <button type="submit" className="bg-blue-600 text-white px-5 py-2 rounded font-semibold" disabled={loading}>{loading ? 'Creating...' : 'Create Post'}</button>
       </form>

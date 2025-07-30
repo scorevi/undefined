@@ -10,14 +10,14 @@
       <stop offset="100%" style="stop-color:#5e4ae3;stop-opacity:1" />
     </linearGradient>
   </defs>
-  
+
   <!-- Background circle -->
   <circle cx="150" cy="150" r="150" fill="url(#bgGradient)"/>
-  
+
   <!-- User icon silhouette -->
   <!-- Head -->
   <circle cx="150" cy="110" r="45" fill="url(#userGradient)"/>
-  
+
   <!-- Body/Shoulders -->
   <path d="M 75 250 Q 75 180 150 180 Q 225 180 225 250 L 225 300 L 75 300 Z" fill="url(#userGradient)"/>
 </svg>

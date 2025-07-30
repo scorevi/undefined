@@ -222,7 +222,7 @@ const AdminEditPostPage = () => {
             <div className="w-full border rounded px-3 py-2 bg-gray-100">{post.likes_count ?? 0}</div>
           </div>
         </div>
-        {error && <div style={{color:'#dc2626',marginBottom:8}}>{error}</div>}
+        {error && <div className="error-message">{error}</div>}
         {success && <div style={{color:'#22c55e',marginBottom:8}}>{success}</div>}
         <div className="flex gap-4 mt-6">
           <button type="submit" className="bg-blue-600 text-white px-5 py-2 rounded font-semibold" disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</button>

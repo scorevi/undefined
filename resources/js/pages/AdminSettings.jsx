@@ -238,7 +238,7 @@ const AdminSettings = () => {
             <button type="submit" className="bg-blue-600 text-white px-5 py-2 rounded font-semibold" disabled={saving}>Save Site Settings</button>
           </form>
           {feedback && <div style={{color:'#22c55e',marginBottom:8}}>{feedback}</div>}
-          {error && <div style={{color:'#dc2626',marginBottom:8}}>{error}</div>}
+          {error && <div className="error-message">{error}</div>}
         </>
       )}
     </div>

@@ -54,6 +54,18 @@ const AdminHeader = ({ title = "Admin Dashboard", showBackButton = false, backTo
         )}
       </div>
       <div className="admin-logout">
+        <Link to="/blog" className="view-blog-btn" style={{
+          marginRight: '1rem',
+          padding: '0.5rem 1rem',
+          backgroundColor: '#5e4ae3',
+          color: 'white',
+          borderRadius: '6px',
+          textDecoration: 'none',
+          fontSize: '0.9rem',
+          fontWeight: '500'
+        }}>
+          View Blog
+        </Link>
         <span className="welcome-text">
           Welcome, {user?.name || 'Admin'}
         </span>

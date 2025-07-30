@@ -64,12 +64,26 @@ export default function Navbar() {
       <nav className="navbar">
         <div className="nav-left">
           <FaBookOpen className="icon" />
-          <Link to={user ? "/blog" : "/"} className="title">Blog Site</Link>
+          <Link to={user ? (user.role === 'admin' ? "/admin" : "/blog") : "/"} className="title">Blog Site</Link>
         </div>
         <div className="nav-center">
           {user ? `Welcome, ${user.name || user.email}!` : 'Welcome!'}
         </div>
         <div className="nav-right">
+          {user?.role === 'admin' && (
+            <Link to="/admin" style={{
+              marginRight: '1rem',
+              padding: '0.5rem 1rem',
+              backgroundColor: '#5e4ae3',
+              color: 'white',
+              borderRadius: '6px',
+              textDecoration: 'none',
+              fontSize: '0.9rem',
+              fontWeight: '500'
+            }}>
+              Admin Panel
+            </Link>
+          )}
           {user && (
             <button className="logout-btn" onClick={handleLogout}>
               Log out
