@@ -309,21 +309,36 @@ const Posts = ({ refresh }) => {
               />
             )}
             <div className="post-details" style={{flex:1,minWidth:0}}>
-              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:2}}>
-                <Link to={`/blog/post/${post.id}`} style={{fontWeight:600,fontSize:'1.05rem',color:'#222',textDecoration:'none',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',maxWidth:'60%'}}>{post.title}</Link>
+              <div style={{display:'flex',alignItems:'flex-start',gap:8,marginBottom:2,flexWrap:'wrap'}}>
+                <Link
+                  to={`/blog/post/${post.id}`}
+                  style={{
+                    fontWeight:600,
+                    fontSize:'1.05rem',
+                    color:'#222',
+                    textDecoration:'none',
+                    flexShrink:0,
+                    cursor:'pointer',
+                    zIndex:10
+                  }}
+                >
+                  {post.title}
+                </Link>
                 {post.category && (
-                  <span style={{background:'#f0f9ff',color:'#0369a1',padding:'2px 8px',borderRadius:'12px',fontSize:'0.8rem',fontWeight:500}}>{post.category}</span>
+                  <span style={{background:'#f0f9ff',color:'#0369a1',padding:'2px 8px',borderRadius:'12px',fontSize:'0.8rem',fontWeight:500,flexShrink:0}}>{post.category}</span>
                 )}
                 {post.is_featured && (
-                  <span style={{background:'#fef3c7',color:'#d97706',padding:'2px 8px',borderRadius:'12px',fontSize:'0.8rem',fontWeight:500}}>Featured</span>
-                )}
-                <span style={{color:'#888',fontSize:'0.92rem'}}>| {post.user?.name || 'Unknown'}</span>
-                <span style={{color:'#bbb',fontSize:'0.9rem'}}>| {new Date(post.created_at).toLocaleDateString()}</span>
-                {post.views !== undefined && (
-                  <span style={{color:'#bbb',fontSize:'0.9rem'}}>| {post.views} views</span>
+                  <span style={{background:'#fef3c7',color:'#d97706',padding:'2px 8px',borderRadius:'12px',fontSize:'0.8rem',fontWeight:500,flexShrink:0}}>Featured</span>
                 )}
               </div>
-              <p style={{margin:'2px 0 0 0',fontSize:'0.97rem',color:'#444',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',maxWidth:'100%'}}>{post.content.length > 80 ? post.content.slice(0, 80) + '...' : post.content}</p>
+              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4,flexWrap:'wrap'}}>
+                <span style={{color:'#888',fontSize:'0.92rem'}}>👤 {post.user?.name || 'Unknown'}</span>
+                <span style={{color:'#bbb',fontSize:'0.9rem'}}>📅 {new Date(post.created_at).toLocaleDateString()}</span>
+                {post.views !== undefined && (
+                  <span style={{color:'#bbb',fontSize:'0.9rem'}}>👁️ {post.views} views</span>
+                )}
+              </div>
+              <p style={{margin:'2px 0 0 0',fontSize:'0.97rem',color:'#444',lineHeight:'1.4'}}>{post.content.length > 80 ? post.content.slice(0, 80) + '...' : post.content}</p>
               <div className="engagement">
                 <span className="likes"><FaHeart /> {post.likes_count ?? 0}</span>
                 <span className="comments"><FaComment /> {post.comments_count ?? 0}</span>
@@ -350,7 +365,7 @@ const Posts = ({ refresh }) => {
                 <p>{item.content.length > 80 ? item.content.slice(0, 80) + '...' : item.content}</p>
                 <div className="trend-engagement">
                   <span className="likes"><FaHeart />{item.likes_count}</span>
-                  <span style={{marginLeft:8}}><FaComment />0</span>
+                  <span style={{marginLeft:8}}><FaComment />{item.comments_count ?? 0}</span>
                   <span style={{marginLeft:8, color:'#bbb', fontSize:'0.95rem'}}>{item.views} views</span>
                 </div>
               </div>

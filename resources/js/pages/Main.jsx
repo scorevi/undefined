@@ -25,26 +25,6 @@ const Main = () => {
   const [refreshPosts, setRefreshPosts] = useState(0);
 
   useEffect(() => {
-    // Fetch top 3 most recent posts for the featured carousel
-    const fetchFeatured = async () => {
-      try {
-        const response = await fetch('/api/posts', {
-          credentials: 'include',
-          headers: {
-            'X-XSRF-TOKEN': decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || ''),
-          }
-        });
-        if (!response.ok) throw new Error('Failed to fetch posts');
-        const data = await response.json();
-        setFeaturedPosts((data.data || []).slice(0, 3));
-      } catch (err) {
-        setFeaturedPosts([]);
-      }
-    };
-    fetchFeatured();
-  }, []);
-
-  useEffect(() => {
     // No longer needed - featured posts handled by Posts component
   }, [refreshPosts]); // depend on refreshPosts
 
@@ -186,9 +166,6 @@ const Main = () => {
 
     <hr />
 
-      {/* Featured Posts Carousel Removed - Now handled in Posts component */}
-
-      <Posts refresh={refreshPosts} />
       {/* Featured Posts Carousel Removed - Now handled in Posts component */}
 
       <Posts refresh={refreshPosts} />
