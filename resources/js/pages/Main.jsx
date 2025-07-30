@@ -86,13 +86,20 @@ const Main = () => {
       if (image) {
         formData.append('image', image);
       }
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+      // Use Bearer token authentication for admin users
+      const headers = {};
+      if (user?.role === 'admin') {
+        const token = localStorage.getItem('auth_token');
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+      }
+      headers['Accept'] = 'application/json';
+
       const response = await fetch('/api/posts', {
         method: 'POST',
-        headers: {
-          'X-XSRF-TOKEN': decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || ''),
-          'Accept': 'application/json'
-        },
+        headers,
         credentials: 'include',
         body: formData,
       });
@@ -128,75 +135,77 @@ const Main = () => {
     <Navbar name={user?.name || user?.email || 'John'}/>
     <div className="container">
 
-      {/* Post something, text field, or something to be able to post */}
-      <form className="post-form" onSubmit={handleSubmit}>
+      {/* Only show post creation form for admin users */}
+      {user?.role === 'admin' && (
+        <>
+          <form className="post-form" onSubmit={handleSubmit}>
+            <img
+              src={user?.avatar || 'https://i.pravatar.cc/300'}
+              alt="Avatar"
+              className="avatar" />
 
-        <img
-          src={user?.avatar || 'https://i.pravatar.cc/300'}
-          alt="Avatar"
-          className="avatar" />
+            <div className="post-input-section">
+              <textarea
+                placeholder="Share your thoughts!"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                disabled={loading}
+              />
 
-        <div className="post-input-section">
-          <textarea
-            placeholder="Share your thoughts!"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            disabled={loading}
-          />
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                disabled={loading}
+                style={{
+                  width: '100%',
+                  padding: '0.8rem 2rem',
+                  marginBottom: '0.5rem',
+                  borderRadius: '12px',
+                  border: '0.2rem solid #5e4ae354',
+                  backgroundColor: 'white',
+                  fontSize: '1rem',
+                  fontFamily: 'Nunito',
+                  boxShadow: '0.3rem 0.3rem 8px #b7b5c9'
+                }}
+              >
+                <option value="">Select a category...</option>
+                <option value="news">📰 News</option>
+                <option value="review">⭐ Review</option>
+                <option value="podcast">🎧 Podcast</option>
+                <option value="opinion">💭 Opinion</option>
+                <option value="lifestyle">🌟 Lifestyle</option>
+              </select>
 
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            disabled={loading}
-            style={{
-              width: '100%',
-              padding: '0.8rem 2rem',
-              marginBottom: '0.5rem',
-              borderRadius: '12px',
-              border: '0.2rem solid #5e4ae354',
-              backgroundColor: 'white',
-              fontSize: '1rem',
-              fontFamily: 'Nunito',
-              boxShadow: '0.3rem 0.3rem 8px #b7b5c9'
-            }}
-          >
-            <option value="">Select a category...</option>
-            <option value="news">📰 News</option>
-            <option value="review">⭐ Review</option>
-            <option value="podcast">🎧 Podcast</option>
-            <option value="opinion">💭 Opinion</option>
-            <option value="lifestyle">🌟 Lifestyle</option>
-          </select>
+              <div className="post-actions">
+                <label htmlFor="image-upload" className="custom-upload-btn">
+                  <FaCamera /> Upload Image
+                </label>
+                <input
+                  id="image-upload"
+                  type="file"
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  onChange={handleImageChange}
+                  disabled={loading}
+                />
+                <span className="file-name">
+                  {image ? image.name : ""}
+                </span>
+                <button type="submit" disabled={loading}>{loading ? 'Posting...' : 'Post'}</button>
+              </div>
 
-          <div className="post-actions">
-            <label htmlFor="image-upload" className="custom-upload-btn">
-              <FaCamera /> Upload Image
-            </label>
-            <input
-              id="image-upload"
-              type="file"
-              accept="image/*"
-              style={{ display: 'none' }}
-              onChange={handleImageChange}
-              disabled={loading}
-            />
-            <span className="file-name">
-              {image ? image.name : ""}
-            </span>
-            <button type="submit" disabled={loading}>{loading ? 'Posting...' : 'Post'}</button>
-          </div>
-
-          {imagePreview && (
-            <div style={{marginTop:8}}>
-              <img src={imagePreview} alt="Preview" style={{maxWidth:200, maxHeight:200, borderRadius:8, boxShadow:'0 2px 8px #ccc'}} />
+              {imagePreview && (
+                <div style={{marginTop:8}}>
+                  <img src={imagePreview} alt="Preview" style={{maxWidth:200, maxHeight:200, borderRadius:8, boxShadow:'0 2px 8px #ccc'}} />
+                </div>
+              )}
+              {error && <div className="user-error-message">{error}</div>}
+              {success && <div className="user-success-message" style={{color:'#22c55e',marginTop:8}}>{success}</div>}
             </div>
-          )}
-          {error && <div className="user-error-message">{error}</div>}
-          {success && <div className="user-success-message" style={{color:'#22c55e',marginTop:8}}>{success}</div>}
-        </div>
-      </form>
-
-    <hr />
+          </form>
+          <hr />
+        </>
+      )}
 
       {/* Featured Posts Carousel Removed - Now handled in Posts component */}
 

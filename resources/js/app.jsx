@@ -55,12 +55,29 @@ const App = () => {
   useEffect(() => {
     if (!user) return; // Only fetch if user is logged in
     NProgress.start();
-    fetch(user.role === 'admin' ? '/api/admin/dashboard' : '/api/user/dashboard', {
+
+    // Configure request based on user role
+    const endpoint = user.role === 'admin' ? '/api/admin/dashboard' : '/api/user/dashboard';
+    const requestConfig = {
       credentials: 'include',
-      headers: {
-        'X-XSRF-TOKEN': decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || ''),
+      headers: {}
+    };
+
+    // Admin uses Bearer token, users use session auth
+    if (user.role === 'admin') {
+      const token = localStorage.getItem('auth_token');
+      if (token) {
+        requestConfig.headers['Authorization'] = `Bearer ${token}`;
       }
-    })
+    } else {
+      // For regular users, include CSRF token for session authentication
+      const csrfToken = decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || '');
+      if (csrfToken) {
+        requestConfig.headers['X-XSRF-TOKEN'] = csrfToken;
+      }
+    }
+
+    fetch(endpoint, requestConfig)
       .then(res => res.json())
       .then(data => {
         const name = data.stats?.site_name || 'Erikanoelvi\'s Blog';

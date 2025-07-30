@@ -77,6 +77,14 @@ class PostController extends Controller
     // Create a new post
     public function store(Request $request)
     {
+        // Debug authentication
+        \Log::info('Post store request', [
+            'has_auth_header' => $request->hasHeader('Authorization'),
+            'auth_header' => $request->header('Authorization'),
+            'user' => Auth::user() ? Auth::user()->id : null,
+            'guard' => Auth::getDefaultDriver()
+        ]);
+
         $user = Auth::user();
         if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -231,15 +239,16 @@ class PostController extends Controller
     public function trending()
     {
         $posts = Post::with('user')
-            ->withCount('likes')
-            ->withCount('comments')
-            ->selectRaw('*, (
-                likes_count * 3 +
-                comments_count * 2 +
-                views / 20 +
-                (CASE WHEN created_at > DATE("now", "-7 days") THEN 15 ELSE 0 END) +
-                (CASE WHEN created_at > DATE("now", "-1 day") THEN 10 ELSE 0 END)
-            ) as trending_score')
+            ->selectRaw('posts.*,
+                (select count(*) from likes where posts.id = likes.post_id) as likes_count,
+                (select count(*) from comments where posts.id = comments.post_id) as comments_count,
+                (
+                    (select count(*) from likes where posts.id = likes.post_id) * 3 +
+                    (select count(*) from comments where posts.id = comments.post_id) * 2 +
+                    COALESCE(views, 0) / 20 +
+                    (CASE WHEN created_at > DATE("now", "-7 days") THEN 15 ELSE 0 END) +
+                    (CASE WHEN created_at > DATE("now", "-1 day") THEN 10 ELSE 0 END)
+                ) as trending_score')
             ->orderByDesc('trending_score')
             ->orderByDesc('created_at') // Secondary sort for ties
             ->take(10)

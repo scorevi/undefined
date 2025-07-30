@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\Api\AdminDashboardController;
@@ -11,26 +12,28 @@ use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Api\CommentController;
 
-// Public API Routes
-Route::middleware(['api'])->group(function () {
-    Route::get('/posts/trending', [PostController::class, 'trending']);
-    Route::get('/posts/featured', [PostController::class, 'featured']);
-    Route::get('/posts/categories', [PostController::class, 'categories']);
-});
+// Public API Routes (no authentication required)
+Route::get('/posts/trending', [PostController::class, 'trending']);
+Route::get('/posts/featured', [PostController::class, 'featured']);
+Route::get('/posts/categories', [PostController::class, 'categories']);
 
-// Authentication Routes - moved to use proper API middleware
-Route::middleware(['web'])->group(function () {
-    Route::post('/user/login', [UserAuthController::class, 'login'])->name('user.login.post');
-    Route::post('/user/register', [UserAuthController::class, 'register'])->name('user.register.post');
+// Authentication Routes (no middleware, open access)
+Route::post('/user/login', [UserAuthController::class, 'login'])->name('user.login.post');
+Route::post('/user/register', [UserAuthController::class, 'register'])->name('user.register.post');
+Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
+Route::post('/register', [AdminAuthController::class, 'register'])->name('register.post');
 
-    // Admin authentication routes
-    Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
-    Route::post('/register', [AdminAuthController::class, 'register'])->name('register.post');
-});
+// Protected API Routes (requires Sanctum token authentication - for Admin)
+Route::middleware('auth:sanctum')->group(function () {
+    // Test route for token authentication
+    Route::get('/test-auth', function (Request $request) {
+        return response()->json([
+            'authenticated' => true,
+            'user' => auth()->user(),
+            'token_valid' => true
+        ]);
+    });
 
-// Protected API Routes (requires authentication)
-Route::middleware(['api', 'auth:sanctum'])->group(function () {
-    Route::get('/user/dashboard', [UserDashboardController::class, '__invoke']);
     Route::get('/admin/dashboard', [AdminDashboardController::class, '__invoke']);
     Route::get('/admin/settings', [AdminController::class, 'getSettings']);
     Route::post('/admin/site-settings', [AdminController::class, 'updateSiteSettings']);
@@ -39,11 +42,14 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
     Route::post('/posts', [PostController::class, 'store']);
     Route::put('/posts/{id}', [PostController::class, 'update']);
     Route::delete('/posts/{id}', [PostController::class, 'destroy']);
-    Route::post('/posts/{post}/like', [LikeController::class, 'like']);
-    Route::post('/posts/{post}/unlike', [LikeController::class, 'unlike']);
 });
 
-// User Logout API route
+// Protected API Routes (requires session authentication - for Users)
+Route::middleware(['web', 'auth'])->group(function () {
+    Route::get('/user/dashboard', [UserDashboardController::class, '__invoke']);
+    Route::post('/posts/{post}/like', [LikeController::class, 'like']);
+    Route::post('/posts/{post}/unlike', [LikeController::class, 'unlike']);
+});// User Logout API route
 Route::middleware(['api'])->post('/user/logout', function (\Illuminate\Http\Request $request) {
     if (Auth::check()) {
         Auth::user()->currentAccessToken()->delete();
