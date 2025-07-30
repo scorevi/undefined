@@ -37,8 +37,45 @@ const UserPost = () => {
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingCommentContent, setEditingCommentContent] = useState('');
 
+  // Image viewer state
+  const [imageViewerOpen, setImageViewerOpen] = useState(false);
+  const [viewerImageSrc, setViewerImageSrc] = useState('');
+  const [viewerImageAlt, setViewerImageAlt] = useState('');
+
   const canEdit = user && post && (user.id === post.user_id || user.role === 'admin');
   const navigate = useNavigate();
+
+  // Image viewer functions
+  const openImageViewer = (src, alt = 'Image') => {
+    setViewerImageSrc(src);
+    setViewerImageAlt(alt);
+    setImageViewerOpen(true);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeImageViewer = () => {
+    setImageViewerOpen(false);
+    setViewerImageSrc('');
+    setViewerImageAlt('');
+    document.body.style.overflow = 'unset';
+  };
+
+  // Close viewer on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && imageViewerOpen) {
+        closeImageViewer();
+      }
+    };
+
+    if (imageViewerOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [imageViewerOpen]);
 
   const startEdit = () => {
     setEditTitle(post.title);
@@ -339,6 +376,8 @@ const UserPost = () => {
               src={getPostImageUrl(post.image)}
             alt="Post cover"
             className="blog-image"
+            style={{ cursor: 'pointer' }}
+            onClick={() => openImageViewer(getPostImageUrl(post.image), post.title)}
             onError={e => {
               e.target.style.display = 'none'; // Hide broken images instead of showing fallback
             }}
@@ -481,6 +520,123 @@ const UserPost = () => {
           </div>
         </div>
       </div>
+
+      {/* Image Viewer Modal */}
+      {imageViewerOpen && (
+        <div
+          className="image-viewer-overlay"
+          onClick={closeImageViewer}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px',
+            cursor: 'pointer'
+          }}
+        >
+          <div
+            className="image-viewer-container"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: 'relative',
+              maxWidth: '90vw',
+              maxHeight: '90vh',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <img
+              src={viewerImageSrc}
+              alt={viewerImageAlt}
+              style={{
+                maxWidth: '100%',
+                maxHeight: '100%',
+                objectFit: 'contain',
+                borderRadius: '8px',
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)'
+              }}
+              onClick={(e) => e.stopPropagation()}
+            />
+
+            {/* Close button */}
+            <button
+              onClick={closeImageViewer}
+              style={{
+                position: 'absolute',
+                top: '-10px',
+                right: '-10px',
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                border: 'none',
+                fontSize: '20px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = 'white';
+                e.target.style.transform = 'scale(1.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+                e.target.style.transform = 'scale(1)';
+              }}
+            >
+              ×
+            </button>
+
+            {/* Image title/caption */}
+            {viewerImageAlt && (
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: '-50px',
+                  left: '0',
+                  right: '0',
+                  textAlign: 'center',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '500',
+                  textShadow: '0 2px 4px rgba(0, 0, 0, 0.7)',
+                  padding: '10px'
+                }}
+              >
+                {viewerImageAlt}
+              </div>
+            )}
+
+            {/* Instructions */}
+            <div
+              style={{
+                position: 'absolute',
+                top: '-50px',
+                left: '0',
+                right: '0',
+                textAlign: 'center',
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontSize: '14px',
+                textShadow: '0 2px 4px rgba(0, 0, 0, 0.7)'
+              }}
+            >
+              Click outside to close • Press ESC to close
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

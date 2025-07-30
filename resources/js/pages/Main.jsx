@@ -17,6 +17,7 @@ const Main = () => {
   document.title = "Home";
   const { user } = useAuth();
   const [content, setContent] = useState('');
+  const [category, setCategory] = useState('');
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -62,6 +63,11 @@ const Main = () => {
       setLoading(false);
       return;
     }
+    if (!category.trim()) {
+      setError('Please select a category.');
+      setLoading(false);
+      return;
+    }
     if (image && !image.type.startsWith('image/')) {
       setError('Only image files are allowed.');
       setLoading(false);
@@ -76,6 +82,7 @@ const Main = () => {
       const formData = new FormData();
       formData.append('title', content.slice(0, 40) + (content.length > 40 ? '...' : ''));
       formData.append('content', content);
+      formData.append('category', category);
       if (image) {
         formData.append('image', image);
       }
@@ -103,6 +110,7 @@ const Main = () => {
       } else {
         setSuccess('Post submitted!');
         setContent('');
+        setCategory('');
         setImage(null);
         setImagePreview(null);
         setRefreshPosts(r => r + 1); // trigger posts refresh
@@ -135,6 +143,30 @@ const Main = () => {
             onChange={(e) => setContent(e.target.value)}
             disabled={loading}
           />
+
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            disabled={loading}
+            style={{
+              width: '100%',
+              padding: '0.8rem 2rem',
+              marginBottom: '0.5rem',
+              borderRadius: '12px',
+              border: '0.2rem solid #5e4ae354',
+              backgroundColor: 'white',
+              fontSize: '1rem',
+              fontFamily: 'Nunito',
+              boxShadow: '0.3rem 0.3rem 8px #b7b5c9'
+            }}
+          >
+            <option value="">Select a category...</option>
+            <option value="news">📰 News</option>
+            <option value="review">⭐ Review</option>
+            <option value="podcast">🎧 Podcast</option>
+            <option value="opinion">💭 Opinion</option>
+            <option value="lifestyle">🌟 Lifestyle</option>
+          </select>
 
           <div className="post-actions">
             <label htmlFor="image-upload" className="custom-upload-btn">
