@@ -27,10 +27,14 @@ const AdminEditPosts = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this post?')) return;
     try {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      // Get auth token for admin operations
+      const token = localStorage.getItem('auth_token');
       const res = await fetch(`/api/posts/${id}`, {
         method: 'DELETE',
-        headers: { 'X-CSRF-TOKEN': csrfToken },
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+        },
         credentials: 'include',
       });
       if (!res.ok) throw new Error();

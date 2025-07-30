@@ -26,10 +26,14 @@ const AdminComments = () => {
   const handleDelete = async (comment) => {
     if (!window.confirm('Are you sure you want to delete this comment?')) return;
     try {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      // Get auth token for admin operations
+      const token = localStorage.getItem('auth_token');
       const res = await fetch(`/api/posts/${comment.post_id}/comments/${comment.id}`, {
         method: 'DELETE',
-        headers: { 'X-CSRF-TOKEN': csrfToken },
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+        },
         credentials: 'include',
       });
       if (!res.ok) throw new Error();
@@ -42,11 +46,12 @@ const AdminComments = () => {
   const handleEdit = (comment) => {
     const newContent = prompt('Edit comment:', comment.content);
     if (newContent === null || newContent.trim() === '' || newContent === comment.content) return;
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    // Get auth token for admin operations
+    const token = localStorage.getItem('auth_token');
     fetch(`/api/posts/${comment.post_id}/comments/${comment.id}`, {
       method: 'PATCH',
       headers: {
-        'X-CSRF-TOKEN': csrfToken,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       credentials: 'include',

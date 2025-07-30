@@ -24,14 +24,23 @@ const Signup = () => {
         }
 
         try {
+            // First get CSRF cookie
+            await fetch('/sanctum/csrf-cookie', {
+                credentials: 'include',
+            });
+
+            // Get CSRF token from cookie
+            const csrfCookie = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='));
+            const csrfToken = csrfCookie ? decodeURIComponent(csrfCookie.split('=')[1]) : '';
+
             const response = await fetch('/api/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                    'X-XSRF-TOKEN': csrfToken,
                     'Accept': 'application/json',
                 },
-                credentials: 'same-origin',
+                credentials: 'include',
                 body: JSON.stringify({
                     name,
                     email,

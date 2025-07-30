@@ -17,13 +17,23 @@ const Login = () => {
         setError('');
 
         try {
+            // First get CSRF cookie
+            await fetch('/sanctum/csrf-cookie', {
+                credentials: 'include',
+            });
+
+            // Get CSRF token from cookie
+            const csrfCookie = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='));
+            const csrfToken = csrfCookie ? decodeURIComponent(csrfCookie.split('=')[1]) : '';
+
             const response = await fetch('/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
+                    'X-XSRF-TOKEN': csrfToken,
                 },
-                credentials: 'same-origin',
+                credentials: 'include',
                 body: JSON.stringify({ email, password }),
             });
 
