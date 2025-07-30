@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import AdminHeader from '../components/AdminHeader';
+import ImageUpload from '../components/ImageUpload';
 
 const AdminEditPostPage = () => {
   const { id } = useParams();
@@ -36,25 +38,7 @@ const AdminEditPostPage = () => {
       });
   }, [id]);
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) {
-      setImage(null);
-      setImagePreview(post?.image ? `/storage/${post.image}` : null);
-      return;
-    }
-    if (!file.type.startsWith('image/')) {
-      setError('Only image files are allowed.');
-      setImage(null);
-      setImagePreview(post?.image ? `/storage/${post.image}` : null);
-      return;
-    }
-    if (file.size > 50 * 1024 * 1024) {
-      setError('Image size must be less than 50MB.');
-      setImage(null);
-      setImagePreview(post?.image ? `/storage/${post.image}` : null);
-      return;
-    }
+  const handleImageChange = (file) => {
     setError('');
     setImage(file);
     setImagePreview(URL.createObjectURL(file));
@@ -157,8 +141,9 @@ const AdminEditPostPage = () => {
   if (error) return <div style={{padding:40, color:'#dc2626'}}>{error}</div>;
 
   return (
-    <div style={{maxWidth:700,margin:'40px auto',background:'#fff',padding:32,borderRadius:12,boxShadow:'0 2px 12px #e0e0e0'}}>
-      <button onClick={() => navigate('/admin/posts')} className="mb-4 text-blue-600 hover:underline">&larr; Back to Manage Posts</button>
+    <div>
+      <AdminHeader showBackButton={true} backText="Back to Manage Posts" />
+      <div style={{maxWidth:700,margin:'40px auto',background:'#fff',padding:32,borderRadius:12,boxShadow:'0 2px 12px #e0e0e0'}}>
       <h2 className="text-xl font-bold mb-4">Edit Post</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
@@ -199,77 +184,13 @@ const AdminEditPostPage = () => {
         </div>
         <div className="mb-4">
           <label className="block font-medium mb-2">Image</label>
-
-          {/* Current Image Preview */}
-          {imagePreview && (
-            <div className="mb-3">
-              <img
-                src={imagePreview}
-                alt="Current image"
-                style={{
-                  maxWidth: '200px',
-                  maxHeight: '200px',
-                  borderRadius: '8px',
-                  border: '2px solid #e5e7eb'
-                }}
-              />
-            </div>
-          )}
-
-          {/* Image Upload Area */}
-          <div style={{
-            border: '2px dashed #d1d5db',
-            borderRadius: '8px',
-            padding: '16px',
-            textAlign: 'center',
-            backgroundColor: imagePreview ? '#f9fafb' : '#fafafa',
-            transition: 'all 0.2s ease'
-          }}>
-            <input
-              type="file"
-              accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-              onChange={handleImageChange}
-              disabled={saving}
-              style={{
-                width: '100%',
-                padding: '8px',
-                border: '1px solid #d1d5db',
-                borderRadius: '4px',
-                backgroundColor: '#fff'
-              }}
-            />
-            <div style={{
-              marginTop: '8px',
-              fontSize: '0.875rem',
-              color: '#6b7280'
-            }}>
-              {imagePreview ? 'Choose a new image to replace the current one' : 'Choose an image file (JPEG, PNG, GIF, WEBP)'}
-              <br />
-              Maximum file size: 50MB
-            </div>
-          </div>
-
-          {/* Remove Image Button */}
-          {imagePreview && (
-            <button
-              type="button"
-              onClick={handleRemoveImage}
-              disabled={saving}
-              style={{
-                marginTop: '8px',
-                padding: '6px 12px',
-                backgroundColor: '#fee2e2',
-                color: '#dc2626',
-                border: '1px solid #fecaca',
-                borderRadius: '4px',
-                fontSize: '0.875rem',
-                cursor: saving ? 'not-allowed' : 'pointer',
-                opacity: saving ? 0.6 : 1
-              }}
-            >
-              Remove Current Image
-            </button>
-          )}
+          <ImageUpload
+            image={image}
+            imagePreview={imagePreview}
+            onChange={handleImageChange}
+            onRemove={handleRemoveImage}
+            disabled={saving}
+          />
         </div>
         <div className="mb-4">
           <label className="block font-medium mb-1">Author</label>
@@ -297,6 +218,7 @@ const AdminEditPostPage = () => {
           <button type="button" className="bg-red-600 text-white px-5 py-2 rounded font-semibold ml-auto" onClick={handleDelete} disabled={saving}>Delete Post</button>
         </div>
       </form>
+    </div>
     </div>
   );
 };

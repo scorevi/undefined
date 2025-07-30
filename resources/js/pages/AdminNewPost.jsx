@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminHeader from '../components/AdminHeader';
+import ImageUpload from '../components/ImageUpload';
 
 const AdminNewPost = () => {
   const [title, setTitle] = useState('');
@@ -14,28 +15,15 @@ const AdminNewPost = () => {
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) {
-      setImage(null);
-      setImagePreview(null);
-      return;
-    }
-    if (!file.type.startsWith('image/')) {
-      setError('Only image files are allowed.');
-      setImage(null);
-      setImagePreview(null);
-      return;
-    }
-    if (file.size > 50 * 1024 * 1024) {
-      setError('Image size must be less than 50MB.');
-      setImage(null);
-      setImagePreview(null);
-      return;
-    }
+  const handleImageChange = (file) => {
     setError('');
     setImage(file);
     setImagePreview(URL.createObjectURL(file));
+  };
+
+  const handleRemoveImage = () => {
+    setImage(null);
+    setImagePreview(null);
   };
 
   const handleSubmit = async (e) => {
@@ -142,80 +130,13 @@ const AdminNewPost = () => {
         </div>
         <div className="mb-4">
           <label className="block font-medium mb-2">Image (optional)</label>
-
-          {/* Image Preview */}
-          {imagePreview && (
-            <div className="mb-3">
-              <img
-                src={imagePreview}
-                alt="Image preview"
-                style={{
-                  maxWidth: '200px',
-                  maxHeight: '200px',
-                  borderRadius: '8px',
-                  border: '2px solid #e5e7eb'
-                }}
-              />
-            </div>
-          )}
-
-          {/* Image Upload Area */}
-          <div style={{
-            border: '2px dashed #d1d5db',
-            borderRadius: '8px',
-            padding: '16px',
-            textAlign: 'center',
-            backgroundColor: imagePreview ? '#f9fafb' : '#fafafa',
-            transition: 'all 0.2s ease'
-          }}>
-            <input
-              type="file"
-              accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-              onChange={handleImageChange}
-              disabled={loading}
-              style={{
-                width: '100%',
-                padding: '8px',
-                border: '1px solid #d1d5db',
-                borderRadius: '4px',
-                backgroundColor: '#fff'
-              }}
-            />
-            <div style={{
-              marginTop: '8px',
-              fontSize: '0.875rem',
-              color: '#6b7280'
-            }}>
-              {imagePreview ? 'Image selected successfully' : 'Choose an image file (JPEG, PNG, GIF, WEBP)'}
-              <br />
-              Maximum file size: 50MB
-            </div>
-          </div>
-
-          {/* Remove Image Button */}
-          {imagePreview && (
-            <button
-              type="button"
-              onClick={() => {
-                setImage(null);
-                setImagePreview(null);
-              }}
-              disabled={loading}
-              style={{
-                marginTop: '8px',
-                padding: '6px 12px',
-                backgroundColor: '#fee2e2',
-                color: '#dc2626',
-                border: '1px solid #fecaca',
-                borderRadius: '4px',
-                fontSize: '0.875rem',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                opacity: loading ? 0.6 : 1
-              }}
-            >
-              Remove Image
-            </button>
-          )}
+          <ImageUpload
+            image={image}
+            imagePreview={imagePreview}
+            onChange={handleImageChange}
+            onRemove={handleRemoveImage}
+            disabled={loading}
+          />
         </div>
         {error && <div style={{color:'#dc2626',marginBottom:8}}>{error}</div>}
         {success && <div style={{color:'#22c55e',marginBottom:8}}>{success}</div>}

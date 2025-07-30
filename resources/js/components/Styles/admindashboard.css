@@ -53,7 +53,7 @@
 }
 
 .logout-btn {
-  background: none;
+  background: gray;
   border: none;
   color: #64748b; /* muted gray */
   cursor: pointer;
