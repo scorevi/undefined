@@ -716,16 +716,17 @@ const UserPost = () => {
             position: 'fixed',
             top: 0,
             left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(0, 0, 0, 0.85)',
             zIndex: 1000,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '20px',
+            padding: '40px',
             cursor: 'pointer',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            boxSizing: 'border-box'
           }}
         >
           <div
@@ -733,27 +734,27 @@ const UserPost = () => {
             onClick={(e) => e.stopPropagation()}
             style={{
               position: 'relative',
-              width: '100%',
-              height: '100%',
-              maxWidth: '95vw',
-              maxHeight: '95vh',
+              maxWidth: '75vw',
+              maxHeight: '75vh',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              cursor: 'default'
             }}
           >
             <img
               src={viewerImageSrc}
               alt={viewerImageAlt}
               style={{
-                width: 'auto',
-                height: 'auto',
                 maxWidth: '100%',
                 maxHeight: '100%',
+                width: 'auto',
+                height: 'auto',
                 objectFit: 'contain',
                 borderRadius: '8px',
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
-                display: 'block'
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6)',
+                display: 'block',
+                cursor: 'default'
               }}
               onClick={(e) => e.stopPropagation()}
             />
