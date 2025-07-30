@@ -14,7 +14,7 @@ const Welcome = () => {
     >
       <div className='welcome-cont'>
         <div className="welcome-header">
-          <h1>Erikanoelvi&apos;s Blog</h1>
+          <h1>Undefined&apos;s Blog</h1>
           <h2 style={{ fontSize: 28, fontWeight: 700, color: '#222', marginBottom: 16 }}>
             A modern blog platform for the DWP Subject.
           </h2>

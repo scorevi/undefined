@@ -79,7 +79,7 @@ const App = () => {
     fetch(endpoint, requestConfig)
       .then(res => res.json())
       .then(data => {
-        const name = data.stats?.site_name || 'Erikanoelvi\'s Blog';
+        const name = data.stats?.site_name || 'Undefined\'s Blog';
         const desc = (data.stats?.site_description || 'A modern blog platform for the DWP Subject.').slice(0, 120);
         setSiteMeta({ name, description: desc });
         document.title = name;
