@@ -22,63 +22,43 @@ const Users = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
 
+  // Get CSRF token helper
+  const getCSRFToken = () => {
+    try {
+      return decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || '');
+    } catch (e) {
+      return '';
+    }
+  };
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         setLoading(true);
+        setError('');
+
+        const csrfToken = getCSRFToken();
         const response = await fetch('/api/users', {
           credentials: 'include',
           headers: {
             'Accept': 'application/json',
+            'X-XSRF-TOKEN': csrfToken,
           }
         });
 
         if (!response.ok) {
-          throw new Error('Failed to fetch users');
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
         }
 
         const data = await response.json();
+        console.log('Users API response:', data);
         const usersData = Array.isArray(data.data) ? data.data : Array.isArray(data) ? data : [];
         setUsers(usersData);
         setFilteredUsers(usersData);
       } catch (err) {
         console.error('Error fetching users:', err);
-        setError('Failed to load users');
-        // Set some mock data for demonstration
-        const mockUsers = [
-          {
-            id: 1,
-            name: 'John Doe',
-            email: 'john@example.com',
-            role: 'admin',
-            posts_count: 15,
-            total_views: 2340,
-            total_likes: 156,
-            created_at: '2025-01-15T00:00:00Z'
-          },
-          {
-            id: 2,
-            name: 'Jane Smith',
-            email: 'jane@example.com',
-            role: 'user',
-            posts_count: 8,
-            total_views: 1120,
-            total_likes: 89,
-            created_at: '2025-02-20T00:00:00Z'
-          },
-          {
-            id: 3,
-            name: 'Mike Johnson',
-            email: 'mike@example.com',
-            role: 'user',
-            posts_count: 12,
-            total_views: 1890,
-            total_likes: 134,
-            created_at: '2025-01-30T00:00:00Z'
-          }
-        ];
-        setUsers(mockUsers);
-        setFilteredUsers(mockUsers);
+        setError(`Failed to load users: ${err.message}`);
       } finally {
         setLoading(false);
       }

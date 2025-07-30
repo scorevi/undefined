@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Post;
 
@@ -16,8 +17,14 @@ class UserDashboardController extends Controller
         if (!$user || $user->role !== 'user') {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
+
+        // Get site settings from database
+        $siteSettings = DB::table('settings')->pluck('value', 'key')->toArray();
+
         // Replace with actual data from your models
         $stats = [
+            'site_name' => $siteSettings['site_name'] ?? 'Erikanoelvi\'s Blog',
+            'site_description' => $siteSettings['site_description'] ?? 'A modern blog platform for the DWP Subject.',
             'profile_views' => 125,
             'completed_tasks' => 8,
             'active_hours' => 24,

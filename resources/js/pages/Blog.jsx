@@ -434,6 +434,24 @@ const Blog = () => {
 
                 {/* Post Content */}
                 <div style={fbStyles.postContent}>
+                  {/* Category Badge */}
+                  {post.category && (
+                    <div style={{
+                      marginBottom: '12px',
+                      padding: '4px 12px',
+                      backgroundColor: '#1877f2',
+                      color: 'white',
+                      borderRadius: '16px',
+                      display: 'inline-block',
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px'
+                    }}>
+                      {post.category}
+                    </div>
+                  )}
+
                   <Link to={`/blog/post/${post.id}`} style={fbStyles.postTitle}>
                     {post.title}
                   </Link>

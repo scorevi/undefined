@@ -29,33 +29,39 @@ class PostSeeder extends Seeder
         $posts = [
             [
                 'title' => 'Welcome to Our Blog',
-                'content' => 'This is the first post on our blog. We\'re excited to share our thoughts and ideas with you. Stay tuned for more interesting content!',
+                'content' => 'This is the first post on our blog. We\'re excited to share our thoughts and ideas with you. Stay tuned for more interesting content! Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
                 'category' => 'General',
-                'views' => 25,
+                'views' => 125,
             ],
             [
                 'title' => 'Getting Started with Laravel',
-                'content' => 'Laravel is a powerful PHP framework that makes web development a breeze. In this post, we\'ll explore the basics of Laravel and how to build amazing applications with it.',
+                'content' => 'Laravel is a powerful PHP framework that makes web development a breeze. In this post, we\'ll explore the basics of Laravel and how to build amazing applications with it. From routing to Eloquent ORM, Laravel provides all the tools you need.',
                 'category' => 'Technology',
-                'views' => 42,
+                'views' => 242,
             ],
             [
                 'title' => 'The Future of Web Development',
-                'content' => 'Web development is constantly evolving. From new frameworks to innovative design patterns, let\'s explore what the future holds for web developers.',
+                'content' => 'Web development is constantly evolving. From new frameworks to innovative design patterns, let\'s explore what the future holds for web developers. We\'ll discuss emerging technologies and trends that are shaping the industry.',
                 'category' => 'Technology',
-                'views' => 38,
+                'views' => 188,
             ],
             [
                 'title' => 'Building Responsive Designs',
-                'content' => 'Creating websites that look great on all devices is crucial in today\'s mobile-first world. Learn the best practices for responsive web design.',
+                'content' => 'Creating websites that look great on all devices is crucial in today\'s mobile-first world. Learn the best practices for responsive web design, including CSS Grid, Flexbox, and media queries.',
                 'category' => 'Design',
-                'views' => 31,
+                'views' => 156,
             ],
             [
                 'title' => 'JavaScript Best Practices',
-                'content' => 'Writing clean, maintainable JavaScript code is essential for any web developer. Here are some best practices to follow in your next project.',
+                'content' => 'Writing clean, maintainable JavaScript code is essential for any web developer. Here are some best practices to follow in your next project, including ES6+ features, async/await, and proper error handling.',
                 'category' => 'Technology',
-                'views' => 56,
+                'views' => 298,
+            ],
+            [
+                'title' => 'Modern CSS Techniques',
+                'content' => 'Explore the latest CSS features and techniques that can improve your web development workflow. From CSS custom properties to container queries, modern CSS offers powerful tools for styling.',
+                'category' => 'Design',
+                'views' => 167,
             ],
         ];
 

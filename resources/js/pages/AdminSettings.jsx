@@ -173,6 +173,22 @@ const AdminSettings = () => {
       }
 
       setFeedback('Site settings updated successfully!');
+
+      // Update the browser title immediately
+      if (siteName) {
+        document.title = siteName;
+      }
+
+      // Update the meta description
+      if (siteDescription) {
+        let meta = document.querySelector('meta[name="description"]');
+        if (!meta) {
+          meta = document.createElement('meta');
+          meta.name = 'description';
+          document.head.appendChild(meta);
+        }
+        meta.content = siteDescription.slice(0, 120);
+      }
     } catch (err) {
       console.error('Site settings update error:', err);
       setError(err.message || 'Failed to update site settings');

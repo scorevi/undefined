@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FBLayout from '../components/FBLayout';
-import { 
-  FaArrowLeft, 
-  FaImage, 
-  FaTimes, 
-  FaPlus, 
+import {
+  FaArrowLeft,
+  FaImage,
+  FaTimes,
+  FaPlus,
   FaNewspaper,
   FaEdit,
   FaEye
@@ -14,6 +14,7 @@ import {
 const AdminNewPost = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [category, setCategory] = useState('General');
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -59,6 +60,7 @@ const AdminNewPost = () => {
       const formData = new FormData();
       formData.append('title', title);
       formData.append('content', content);
+      formData.append('category', category);
       if (image) formData.append('image', image);
       const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
       const response = await fetch('/api/posts', {
@@ -74,6 +76,7 @@ const AdminNewPost = () => {
         setSuccess('Post created successfully!');
         setTitle('');
         setContent('');
+        setCategory('General');
         setImage(null);
         setImagePreview(null);
         setTimeout(() => navigate('/admin/posts'), 1200);
@@ -324,7 +327,7 @@ const AdminNewPost = () => {
           100% { transform: rotate(360deg); }
         }
       `}</style>
-      
+
       <div style={fbStyles.container}>
         {/* Header */}
         <div style={fbStyles.header}>
@@ -367,6 +370,28 @@ const AdminNewPost = () => {
               />
             </div>
 
+            {/* Category Field */}
+            <div style={fbStyles.formGroup}>
+              <label style={fbStyles.label}>Category</label>
+              <select
+                style={fbStyles.input}
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                disabled={loading}
+                onFocus={(e) => e.target.style.borderColor = '#1877f2'}
+                onBlur={(e) => e.target.style.borderColor = '#e4e6ea'}
+              >
+                <option value="General">General</option>
+                <option value="Technology">Technology</option>
+                <option value="Design">Design</option>
+                <option value="Programming">Programming</option>
+                <option value="Tutorial">Tutorial</option>
+                <option value="News">News</option>
+                <option value="Opinion">Opinion</option>
+                <option value="Review">Review</option>
+              </select>
+            </div>
+
             {/* Content Field */}
             <div style={fbStyles.formGroup}>
               <label style={fbStyles.label}>Post Content</label>
@@ -397,11 +422,11 @@ const AdminNewPost = () => {
                   id="image-upload"
                   style={fbStyles.imageInput}
                 />
-                
+
                 {!imagePreview ? (
                   <>
-                    <label 
-                      htmlFor="image-upload" 
+                    <label
+                      htmlFor="image-upload"
                       style={fbStyles.imageUploadButton}
                       onMouseEnter={(e) => e.target.style.backgroundColor = '#166fe5'}
                       onMouseLeave={(e) => e.target.style.backgroundColor = '#1877f2'}
@@ -494,7 +519,21 @@ const AdminNewPost = () => {
             </h3>
             <div style={fbStyles.previewContent}>
               {title.trim() && (
-                <h2 style={fbStyles.previewPostTitle}>{title}</h2>
+                <>
+                  <h2 style={fbStyles.previewPostTitle}>{title}</h2>
+                  <div style={{
+                    marginBottom: '16px',
+                    padding: '4px 12px',
+                    backgroundColor: '#1877f2',
+                    color: 'white',
+                    borderRadius: '16px',
+                    display: 'inline-block',
+                    fontSize: '14px',
+                    fontWeight: '500'
+                  }}>
+                    {category}
+                  </div>
+                </>
               )}
               {imagePreview && (
                 <img

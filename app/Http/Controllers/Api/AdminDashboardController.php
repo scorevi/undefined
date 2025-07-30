@@ -18,9 +18,12 @@ class AdminDashboardController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
+        // Get site settings from database
+        $siteSettings = DB::table('settings')->pluck('value', 'key')->toArray();
+
         $stats = [
-            'site_name' => config('app.name', 'Laravel'),
-            'site_description' => 'A modern blog platform for the DWP Subject.',
+            'site_name' => $siteSettings['site_name'] ?? config('app.name', 'Laravel'),
+            'site_description' => $siteSettings['site_description'] ?? 'A modern blog platform for the DWP Subject.',
             'total_posts' => Post::count(),
             'published_posts' => Post::where('status', 'published')->count(),
             'draft_posts' => Post::where('status', 'draft')->count(),
