@@ -11,11 +11,20 @@ export default function Navbar() {
   const handleLogout = async () => {
     let logoutSuccess = false;
     try {
+      // First get CSRF cookie
+      await fetch('/sanctum/csrf-cookie', {
+        credentials: 'include',
+      });
+
+      // Get CSRF token from cookie
+      const csrfCookie = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='));
+      const csrfToken = csrfCookie ? decodeURIComponent(csrfCookie.split('=')[1]) : '';
+
       // Try user logout endpoint first
       let response = await fetch('/api/user/logout', {
         method: 'POST',
         headers: {
-          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+          'X-XSRF-TOKEN': csrfToken,
           'Accept': 'application/json',
         },
         credentials: 'include',
@@ -25,7 +34,7 @@ export default function Navbar() {
         response = await fetch('/api/logout', {
           method: 'POST',
           headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+            'X-XSRF-TOKEN': csrfToken,
             'Accept': 'application/json',
           },
           credentials: 'include',
@@ -45,7 +54,8 @@ export default function Navbar() {
     }, 100);
 
     if (!logoutSuccess) {
-      alert('Logout may not have completed cleanly. Please refresh or clear cookies if you encounter issues.');
+      console.warn('Logout API call failed, but local session has been cleared');
+      // Note: We still navigate and clear local state even if server logout fails for better UX
     }
   };
 
