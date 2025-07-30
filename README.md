@@ -1,242 +1,85 @@
 # ScoreVI - Blog Platform
 
-A modern blog platform built with Laravel, React, and Docker by Erika, Noelle, and Khyle.
+A modern blog platform built with Laravel, React, and Docker.
 
-## Features
-
-- **User Authentication**: Registration, login, and user management
-- **Blog Posts**: Create, edit, and delete blog posts with categories
-- **Comments System**: Users can comment on posts
-- **Like System**: Users can like posts and comments
-- **Admin Dashboard**: Administrative interface for content management
-- **Responsive Design**: Mobile-friendly interface with Tailwind CSS
-- **File Uploads**: Image upload support for posts
-- **Docker Support**: Easy deployment with Docker containers
-
-## 🐳 Docker Usage
+## 🚀 Quick Start
 
 ### Prerequisites
-
 - Docker and Docker Compose
-- Git (for cloning the repository)
+- Git
 
-### Quick Start (Recommended)
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/scorevi/undefined.git
-   cd undefined
-   ```
-
-2. **Start the complete application stack**
-   ```bash
-   docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-   ```
-
-3. **Access the application**
-   - Website: http://localhost:8000
-   - Admin Dashboard: http://localhost:8000/admin
-
-### Using Docker Hub Image
-
-Our Docker image is available on Docker Hub as `seancaintic/undefined-app`:
+### Run the Application
 
 ```bash
-# Pull the latest image
-docker pull seancaintic/undefined-app:latest
-
-# Or pull a specific version
-docker pull seancaintic/undefined-app:v1.0.0
+git clone https://github.com/scorevi/undefined.git
+cd undefined
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
-**Note**: The Docker Hub image contains only the Laravel application. For a complete working setup with web server, database, and caching, use the Docker Compose method above.
-
-### Automated Docker Builds
-
-This repository includes GitHub Actions that automatically build and push Docker images to Docker Hub:
-- **Triggers**: On push to `master` branch and on new tags
-- **Images**: `seancaintic/undefined-app:latest` and version tags
-- **Platforms**: Supports both AMD64 and ARM64 architectures
-
-### Alternative Development Setup
-
-1. **Start development environment**
-   ```bash
-   # Windows
-   start-all.bat
-   
-   # Linux/Mac
-   ./docker-setup.sh
-   ```
-
-2. **Access the application**
-   - Website: http://localhost:8000
-   - Admin Dashboard: http://localhost:8000/admin
+**Access**: http://localhost:8000
 
 ### Stop Services
-
 ```bash
-# Stop all Docker services
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml down
-
-# Or for development setup
-docker-compose down
 ```
 
-## Development Setup
-
-### Manual Development Setup
-
-1. **Environment Configuration**
-   ```bash
-   cp .env.example .env
-   ```
-
-2. **Start Docker containers**
-   ```bash
-   docker-compose up -d
-   ```
-
-3. **Install dependencies and setup**
-   ```bash
-   docker-compose exec app bash
-   composer install
-   npm install
-   php artisan key:generate
-   php artisan migrate --seed
-   php artisan storage:link
-   npm run dev
-   ```
-
-## Production Deployment
-
-### Prerequisites
-
-- Docker and Docker Compose
-- Domain name (optional)
-- SSL certificate (recommended)
-
-### Production Setup
-
-1. **Prepare environment file**
-   ```bash
-   cp .env.production .env
-   ```
-   
-2. **Update environment variables**
-   - Set `APP_KEY` using `php artisan key:generate`
-   - Configure database credentials
-   - Set your domain in `APP_URL`
-   - Configure mail settings if needed
-
-3. **Deploy to production**
-   ```bash
-   # Windows
-   deploy-production.bat
-   
-   # Linux/Mac
-   chmod +x deploy-production.sh
-   ./deploy-production.sh
-   ```
-
-4. **Access your application**
-   - Production site will be available at http://localhost (or your configured domain)
-
-### Manual Production Deployment
+## 🐳 Docker Hub
 
 ```bash
-# Stop development containers
-docker-compose down
-
-# Start production containers
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
-
-# Setup Laravel for production
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml exec app bash -c "
-    php artisan config:cache &&
-    php artisan route:cache &&
-    php artisan view:cache &&
-    php artisan migrate --force &&
-    php artisan storage:link
-"
-
-# Build production assets
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml exec app bash -c "
-    npm ci --only=production &&
-    npm run build
-"
+# Pull from Docker Hub
+docker pull seancaintic/undefined-app:latest
 ```
 
-## Project Structure
+*Note: Docker Hub image requires full stack setup above for web server and database.*
 
-```
-├── app/                    # Laravel application code
-│   ├── Console/           # Artisan commands
-│   ├── Http/              # Controllers and middleware
-│   └── Models/            # Eloquent models
-├── database/              # Database migrations and seeders
-├── docker/                # Docker configuration files
-├── resources/             # Frontend assets and views
-│   ├── js/               # React components
-│   └── css/              # Stylesheets
-├── routes/                # Laravel routes
-├── public/                # Public web assets
-└── storage/               # File storage
-```
+## ✨ Features
 
-## Available Commands
+- User Authentication & Management
+- Blog Posts with Categories
+- Comments & Like System  
+- Admin Dashboard
+- Responsive Design (Tailwind CSS)
+- File Upload Support
 
-### Laravel Artisan Commands
+## 🛠️ Development
 
 ```bash
-# Clean up non-admin posts (with confirmation)
-docker-compose exec app php artisan posts:cleanup-non-admin --dry-run
-docker-compose exec app php artisan posts:cleanup-non-admin
+# Alternative setup
+start-all.bat  # Windows
+./docker-setup.sh  # Linux/Mac
 
-# Generate application key
-docker-compose exec app php artisan key:generate
-
-# Run database migrations
-docker-compose exec app php artisan migrate
-
-# Clear application caches
-docker-compose exec app php artisan cache:clear
-docker-compose exec app php artisan config:clear
-docker-compose exec app php artisan route:clear
-docker-compose exec app php artisan view:clear
+# Manual setup
+cp .env.example .env
+docker-compose up -d
+docker-compose exec app bash
+composer install && npm install
+php artisan key:generate && php artisan migrate --seed
 ```
 
-### Development Commands
+## 📁 Project Structure
+
+```
+├── app/           # Laravel application
+├── resources/js/  # React components  
+├── docker/        # Docker configuration
+└── database/      # Migrations & seeders
+```
+
+## 🔧 Key Commands
 
 ```bash
-# Install PHP dependencies
-docker-compose exec app composer install
+# Laravel
+php artisan posts:cleanup-non-admin
+php artisan cache:clear
 
-# Install Node.js dependencies
-docker-compose exec app npm install
-
-# Build assets for development
-docker-compose exec app npm run dev
-
-# Build assets for production
-docker-compose exec app npm run build
-
-# Watch for changes (development)
-docker-compose exec app npm run dev
+# Assets
+npm run dev    # Development
+npm run build  # Production
 ```
 
-## Environment Variables
+---
 
-Key environment variables for production:
-
-```env
-APP_NAME=ScoreVI
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=https://your-domain.com
-
-DB_CONNECTION=mysql
-DB_HOST=db
+**Team**: Erika, Noelle, and Khyle | **License**: MIT
 DB_DATABASE=laravel
 DB_USERNAME=laravel
 DB_PASSWORD=secure_password
