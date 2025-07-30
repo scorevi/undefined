@@ -49,6 +49,49 @@ const AdminEditPostPage = () => {
     setImagePreview(null);
   };
 
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
+      return;
+    }
+
+    setSaving(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        setError('Authentication token not found. Please login again.');
+        setSaving(false);
+        return;
+      }
+
+      const response = await fetch(`/api/posts/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        const errorMsg = data.errors ? Object.values(data.errors).flat().join(', ') : (data.error || data.message || 'Failed to delete post');
+        setError(errorMsg);
+      } else if (!data.success) {
+        setError(data.error || data.message || 'Failed to delete post');
+      } else {
+        setSuccess('Post deleted successfully!');
+        setTimeout(() => navigate('/admin/posts'), 1000);
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -60,14 +103,12 @@ const AdminEditPostPage = () => {
       return;
     }
     try {
-      // Get CSRF cookie
-      await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
-
-      // Get CSRF token from cookie
-      const csrfToken = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('XSRF-TOKEN='))
-        ?.split('=')[1];
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        setError('Authentication token not found. Please login again.');
+        setSaving(false);
+        return;
+      }
 
       const formData = new FormData();
       formData.append('title', title);
@@ -81,10 +122,9 @@ const AdminEditPostPage = () => {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`,
           'X-Requested-With': 'XMLHttpRequest',
-          ...(csrfToken && { 'X-XSRF-TOKEN': decodeURIComponent(csrfToken) }),
         },
-        credentials: 'include',
         body: formData,
       });
       const data = await response.json();
@@ -101,39 +141,6 @@ const AdminEditPostPage = () => {
       setError('Network error. Please try again.');
     } finally {
       setSaving(false);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this post?')) return;
-    try {
-      // Get CSRF cookie
-      await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
-
-      // Get CSRF token from cookie
-      const csrfToken = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('XSRF-TOKEN='))
-        ?.split('=')[1];
-
-      const res = await fetch(`/api/posts/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
-          ...(csrfToken && { 'X-XSRF-TOKEN': decodeURIComponent(csrfToken) }),
-        },
-        credentials: 'include',
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        const errorMsg = data.errors ? Object.values(data.errors).flat().join(', ') : (data.error || data.message || 'Failed to delete post');
-        setError(errorMsg);
-      } else {
-        navigate('/admin/posts');
-      }
-    } catch {
-      setError('Network error. Failed to delete post.');
     }
   };
 

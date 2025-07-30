@@ -111,7 +111,15 @@ class PostController extends Controller
         // Only admins can set is_featured
         $isFeatured = false;
         if ($user->role === 'admin' && isset($validated['is_featured'])) {
-            $isFeatured = $validated['is_featured'];
+            // Convert string to boolean properly
+            $isFeatured = filter_var($validated['is_featured'], FILTER_VALIDATE_BOOLEAN);
+            // Log for debugging
+            \Log::info('Post creation - is_featured value', [
+                'user_role' => $user->role,
+                'is_featured_input' => $validated['is_featured'],
+                'is_featured_final' => $isFeatured,
+                'has_image' => $request->hasFile('image')
+            ]);
         }
 
         $post = Post::create([
@@ -121,6 +129,13 @@ class PostController extends Controller
             'category' => $validated['category'] ?? 'news',
             'is_featured' => $isFeatured,
             'image' => $imagePath,
+        ]);
+
+        // Log the created post for debugging
+        \Log::info('Post created', [
+            'post_id' => $post->id,
+            'is_featured' => $post->is_featured,
+            'has_image' => $post->image ? true : false
         ]);
 
         $post->load('user');
@@ -177,7 +192,8 @@ class PostController extends Controller
         }
         // Only admins can set is_featured
         if (isset($validated['is_featured']) && $user->role === 'admin') {
-            $post->is_featured = $validated['is_featured'];
+            // Convert string to boolean properly
+            $post->is_featured = filter_var($validated['is_featured'], FILTER_VALIDATE_BOOLEAN);
         }
         $post->save();
         $post->load('user');

@@ -37,14 +37,12 @@ const AdminNewPost = () => {
       return;
     }
     try {
-      // Get CSRF cookie
-      await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
-
-      // Get CSRF token from cookie
-      const csrfToken = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('XSRF-TOKEN='))
-        ?.split('=')[1];
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        setError('Authentication token not found. Please login again.');
+        setLoading(false);
+        return;
+      }
 
       const formData = new FormData();
       formData.append('title', title);
@@ -53,14 +51,22 @@ const AdminNewPost = () => {
       formData.append('is_featured', isFeatured ? '1' : '0');
       if (image) formData.append('image', image);
 
+      // Debug logging
+      console.log('Creating post with:', {
+        title,
+        category,
+        isFeatured,
+        is_featured_value: isFeatured ? '1' : '0',
+        hasImage: !!image
+      });
+
       const response = await fetch('/api/posts', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`,
           'X-Requested-With': 'XMLHttpRequest',
-          ...(csrfToken && { 'X-XSRF-TOKEN': decodeURIComponent(csrfToken) }),
         },
-        credentials: 'include',
         body: formData,
       });
       const data = await response.json();
