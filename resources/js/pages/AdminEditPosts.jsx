@@ -31,7 +31,7 @@ const AdminEditPosts = () => {
       const token = localStorage.getItem('auth_token');
       const res = await fetch(`/api/posts/${id}`, {
         method: 'DELETE',
-        headers: { 
+        headers: {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json',
         },
