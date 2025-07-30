@@ -12,16 +12,15 @@ import {
   FaChartBar,
   FaUser,
   FaSignOutAlt,
-  FaBell,
-  FaSearch,
+  FaBars,
   FaBookOpen
 } from 'react-icons/fa';
 
-const FBLayout = ({ children, showSidebar = true, showAdminActions = false }) => {
+const FBLayout = ({ children, showAdminActions = false }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [showNotifications, setShowNotifications] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(true);
 
   const handleLogout = async () => {
     try {
@@ -79,22 +78,6 @@ const FBLayout = ({ children, showSidebar = true, showAdminActions = false }) =>
       fontSize: '20px',
       fontWeight: '700',
     },
-    searchBar: {
-      display: 'flex',
-      alignItems: 'center',
-      backgroundColor: '#f0f2f5',
-      borderRadius: '20px',
-      padding: '8px 12px',
-      gap: '8px',
-      minWidth: '240px',
-    },
-    searchInput: {
-      border: 'none',
-      backgroundColor: 'transparent',
-      outline: 'none',
-      fontSize: '15px',
-      flex: '1',
-    },
     headerRight: {
       display: 'flex',
       alignItems: 'center',
@@ -131,7 +114,7 @@ const FBLayout = ({ children, showSidebar = true, showAdminActions = false }) =>
     sidebar: {
       position: 'fixed',
       top: '56px',
-      left: 0,
+      left: showSidebar ? '0' : '-280px',
       width: '280px',
       height: 'calc(100vh - 56px)',
       backgroundColor: '#ffffff',
@@ -139,6 +122,7 @@ const FBLayout = ({ children, showSidebar = true, showAdminActions = false }) =>
       padding: '16px 0',
       overflowY: 'auto',
       zIndex: 999,
+      transition: 'left 0.3s ease-in-out',
     },
     sidebarSection: {
       marginBottom: '24px',
@@ -178,6 +162,7 @@ const FBLayout = ({ children, showSidebar = true, showAdminActions = false }) =>
       flex: '1',
       padding: '20px',
       maxWidth: showSidebar ? 'calc(100vw - 280px)' : '100vw',
+      transition: 'margin-left 0.3s ease-in-out, max-width 0.3s ease-in-out',
     },
     quickActions: {
       position: 'fixed',
@@ -248,31 +233,22 @@ const FBLayout = ({ children, showSidebar = true, showAdminActions = false }) =>
       {/* Header */}
       <header style={styles.header}>
         <div style={styles.headerLeft}>
+          <div
+            style={styles.headerIcon}
+            onClick={() => setShowSidebar(!showSidebar)}
+            onMouseEnter={(e) => e.target.style.backgroundColor = '#d8dadf'}
+            onMouseLeave={(e) => e.target.style.backgroundColor = '#e4e6ea'}
+          >
+            <FaBars />
+          </div>
+
           <Link to="/home" style={styles.logo}>
             <FaBookOpen />
             Blog Site
           </Link>
-
-          <div style={styles.searchBar}>
-            <FaSearch style={{ color: '#65676b', fontSize: '16px' }} />
-            <input
-              type="text"
-              placeholder="Search..."
-              style={styles.searchInput}
-            />
-          </div>
         </div>
 
         <div style={styles.headerRight}>
-          <div
-            style={styles.headerIcon}
-            onClick={() => setShowNotifications(!showNotifications)}
-            onMouseEnter={(e) => e.target.style.backgroundColor = '#d8dadf'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = '#e4e6ea'}
-          >
-            <FaBell />
-          </div>
-
           <div
             style={styles.userMenu}
             onClick={() => navigate('/profile')}
