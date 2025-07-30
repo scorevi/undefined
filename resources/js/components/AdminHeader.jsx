@@ -10,7 +10,7 @@ const AdminHeader = ({ title = "Admin Dashboard", showBackButton = false, backTo
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem('auth_token');
-      
+
       if (token) {
         const response = await fetch('/api/logout', {
           method: 'POST',
@@ -46,8 +46,8 @@ const AdminHeader = ({ title = "Admin Dashboard", showBackButton = false, backTo
           Admin Dashboard
         </Link>
         {showBackButton && (
-          <button 
-            onClick={() => navigate(backTo)} 
+          <button
+            onClick={() => navigate(backTo)}
             className="admin-back-btn"
           >
             ← {backText}

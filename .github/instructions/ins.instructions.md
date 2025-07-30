@@ -2,7 +2,7 @@
 applyTo: '**'
 ---
 
-Number one golden rule: Under any circumstances, ALWAYS study the existing codebase before making any SORT of changes. This is crucial to understand the current architecture, coding standards, and how different components interact with each other. Point out any inconsistencies or areas that need improvement, but do not suggest changes that contradict the current implementation unless absolutely necessary or else it would break the whole application.
+Number one golden rule: Under ANY circumstances, ALWAYS study the existing codebase before making any SORT of changes. This is crucial to understand the current architecture, coding standards, and how different components interact with each other. Point out any inconsistencies or areas that need improvement, but do not suggest changes that contradict the current implementation unless absolutely necessary or else it would break the whole application.
 
 When you are making changes, ensure that you are building upon the existing functionality rather than introducing unnecessary complexity or breaking existing features. Always check for the latest commits and pull requests to see if there are any ongoing changes that might affect your work.
 
