@@ -70,8 +70,7 @@ const Posts = ({ refresh }) => {
         const params = new URLSearchParams({
           page: page,
           per_page: 10,
-          sort_by: sortBy,
-          sort_order: sortOrder
+          sort: sortOrder === 'asc' ? 'oldest' : (sortBy === 'views' ? 'views' : sortBy === 'likes' ? 'likes' : 'created_at')
         });
 
         if (selectedCategory && selectedCategory !== 'all') {
@@ -108,8 +107,7 @@ const Posts = ({ refresh }) => {
       const params = new URLSearchParams({
         page: nextPage,
         per_page: 10,
-        sort_by: sortBy,
-        sort_order: sortOrder
+        sort: sortOrder === 'asc' ? 'oldest' : (sortBy === 'views' ? 'views' : sortBy === 'likes' ? 'likes' : 'created_at')
       });
 
       if (selectedCategory && selectedCategory !== 'all') {
@@ -312,14 +310,14 @@ const Posts = ({ refresh }) => {
                     Oldest
                   </span>
                   <span
-                    className={`most-views ${sortBy === 'views' ? 'active' : ''}`}
+                    className={`most-views ${sortBy === 'views' && sortOrder === 'desc' ? 'active' : ''}`}
                     onClick={() => {setSortBy('views'); setSortOrder('desc'); document.querySelector('.dropdown').style.display = 'none';}}
                     style={{display: 'block', padding: '4px 8px', cursor: 'pointer', borderBottom: '1px solid #eee'}}
                   >
                     Most viewed
                   </span>
                   <span
-                    className={`most-liked ${sortBy === 'likes' ? 'active' : ''}`}
+                    className={`most-liked ${sortBy === 'likes' && sortOrder === 'desc' ? 'active' : ''}`}
                     onClick={() => {setSortBy('likes'); setSortOrder('desc'); document.querySelector('.dropdown').style.display = 'none';}}
                     style={{display: 'block', padding: '4px 8px', cursor: 'pointer'}}
                   >
