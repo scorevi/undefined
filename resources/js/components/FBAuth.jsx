@@ -52,20 +52,22 @@ const FBAuth = ({ mode = 'login', userType = 'user' }) => {
 
       if (userType === 'admin') {
         if (mode === 'login') {
-          endpoint = '/api/login';
+          // Get CSRF cookie first for admin login
+          await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
+          endpoint = '/api/login';  // Admin login endpoint (in api.php)
           redirectPath = '/admin';
         } else {
-          endpoint = '/api/register';
+          endpoint = '/api/register';  // Admin registration endpoint (in api.php)
           redirectPath = '/admin';
         }
       } else {
         if (mode === 'login') {
           // Get CSRF cookie first for user login
           await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
-          endpoint = '/login';
+          endpoint = '/login';  // User login endpoint (in web.php)
           redirectPath = '/blog';
         } else {
-          endpoint = '/api/user/register';
+          endpoint = '/api/user/register';  // User registration endpoint (in api.php)
           redirectPath = '/blog';
         }
       }
@@ -75,16 +77,15 @@ const FBAuth = ({ mode = 'login', userType = 'user' }) => {
         'Accept': 'application/json',
       };
 
-      // Handle CSRF tokens differently for admin vs user
-      if (userType === 'admin') {
-        headers['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-      } else if (mode === 'login') {
+      // Handle CSRF tokens - use XSRF-TOKEN for both admin and user login
+      if (mode === 'login') {
         const xsrfToken = (() => {
           const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
           return match ? decodeURIComponent(match[1]) : '';
         })();
         headers['X-XSRF-TOKEN'] = xsrfToken;
       } else {
+        // For registration, use standard CSRF token
         headers['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
       }
 
