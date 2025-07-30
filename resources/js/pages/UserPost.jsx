@@ -759,34 +759,38 @@ const UserPost = () => {
               onClick={(e) => e.stopPropagation()}
             />
 
-            {/* Close button */}
+            {/* Close button - positioned consistently in top-right */}
             <button
               onClick={closeImageViewer}
               style={{
-                position: 'absolute',
-                top: '-10px',
-                right: '-10px',
-                width: '40px',
-                height: '40px',
+                position: 'fixed',
+                top: '20px',
+                right: '20px',
+                width: '44px',
+                height: '44px',
                 borderRadius: '50%',
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                border: 'none',
-                fontSize: '20px',
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                border: '2px solid rgba(255, 255, 255, 0.3)',
+                color: 'white',
+                fontSize: '24px',
                 fontWeight: 'bold',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-                transition: 'all 0.2s'
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
+                transition: 'all 0.2s ease',
+                zIndex: 1001
               }}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = 'white';
+                e.target.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
                 e.target.style.transform = 'scale(1.1)';
+                e.target.style.borderColor = 'rgba(255, 255, 255, 0.5)';
               }}
               onMouseLeave={(e) => {
-                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+                e.target.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
                 e.target.style.transform = 'scale(1)';
+                e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)';
               }}
             >
               ×
