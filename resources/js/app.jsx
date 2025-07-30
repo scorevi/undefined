@@ -21,11 +21,11 @@ import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 // Removed: import UserDashboard from './components/UserDashboard';
 
-// Protected Route Wrapper for regular users
+// Protected Route Wrapper for regular users (also allows admins)
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
-  if (user.role !== 'user') return <Navigate to="/" replace />;
+  if (user.role !== 'user' && user.role !== 'admin') return <Navigate to="/" replace />;
   return children;
 };
 

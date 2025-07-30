@@ -1,0 +1,84 @@
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 8px;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.role-badge-icon {
+  display: flex;
+  align-items: center;
+  font-size: 0.7rem;
+}
+
+.role-badge-text {
+  display: flex;
+  align-items: center;
+}
+
+/* Admin badge - Gold/Yellow theme */
+.role-badge-admin {
+  background-color: #fbbf24;
+  color: #92400e;
+  border: 1px solid #f59e0b;
+}
+
+.role-badge-admin .role-badge-icon {
+  color: #d97706;
+}
+
+/* Moderator badge - Blue theme */
+.role-badge-moderator {
+  background-color: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #3b82f6;
+}
+
+.role-badge-moderator .role-badge-icon {
+  color: #2563eb;
+}
+
+/* User badge - Gray theme */
+.role-badge-user {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.role-badge-user .role-badge-icon {
+  color: #6b7280;
+}
+
+/* Default badge - Neutral theme */
+.role-badge-default {
+  background-color: #e5e7eb;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.role-badge-default .role-badge-icon {
+  color: #6b7280;
+}
+
+/* Hover effects */
+.role-badge:hover {
+  transform: translateY(-1px);
+  transition: transform 0.2s ease;
+}
+
+/* Small variant for compact spaces */
+.role-badge-small {
+  padding: 1px 4px;
+  font-size: 0.65rem;
+  gap: 2px;
+}
+
+.role-badge-small .role-badge-icon {
+  font-size: 0.6rem;
+}

@@ -96,9 +96,18 @@ const AdminDashboard = () => {
         }
     };
 
-    const handleViewPost = (postId) => {
-        // Open the post in a new tab
-        window.open(`/blog/post/${postId}`, '_blank');
+    const handleViewPost = (e, postId) => {
+        console.log('View button clicked! Post ID:', postId);
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Simple alert to test if the function is called
+        alert(`Viewing post ID: ${postId}`);
+
+        // Try navigation instead of window.open for now
+        const url = `/blog/post/${postId}`;
+        console.log('Navigating to:', url);
+        navigate(url);
     };
 
     const handleEditPost = (postId) => {
@@ -271,13 +280,15 @@ const AdminDashboard = () => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <button
-                                        onClick={() => handleViewPost(post.id)}
+                                        type="button"
+                                        onClick={(e) => handleViewPost(e, post.id)}
                                         className="view-btn"
                                         style={{marginRight: '8px'}}
                                     >
                                         View
                                     </button>
                                     <button
+                                        type="button"
                                         onClick={() => handleEditPost(post.id)}
                                         className="edit-btn"
                                         style={{marginRight: '8px'}}
@@ -285,6 +296,7 @@ const AdminDashboard = () => {
                                         Edit
                                     </button>
                                     <button
+                                        type="button"
                                         onClick={() => handleDeletePost(post.id, post.title)}
                                         className="delete-btn"
                                     >

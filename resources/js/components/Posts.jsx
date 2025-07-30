@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaHeart, FaComment, FaSort, FaChevronRight } from 'react-icons/fa';
+import RoleBadge from './RoleBadge';
 import './styles/posts.css';
 
 function getPostImageUrl(image) {
@@ -212,7 +213,10 @@ const Posts = ({ refresh }) => {
                     <p className="featured-post-content">{post.content.length > 120 ? post.content.slice(0, 120) + '...' : post.content}</p>
                     <div className="featured-post-meta">
                       <div className="meta-left">
-                        <span className="author">👤 {post.user?.name || 'Unknown'}</span>
+                        <div style={{display: 'flex', alignItems: 'center'}}>
+                          <span className="author">👤 {post.user?.name || 'Unknown'}</span>
+                          <RoleBadge role={post.user?.role} className="role-badge-small" />
+                        </div>
                         <span className="date">📅 {new Date(post.created_at).toLocaleDateString()}</span>
                       </div>
                       <div className="meta-right">
@@ -365,7 +369,10 @@ const Posts = ({ refresh }) => {
 
                   </div>
                   <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4,flexWrap:'wrap'}}>
-                    <span style={{color:'#888',fontSize:'0.92rem'}}>👤 {post.user?.name || 'Unknown'}</span>
+                    <div style={{display: 'flex', alignItems: 'center'}}>
+                      <span style={{color:'#888',fontSize:'0.92rem'}}>👤 {post.user?.name || 'Unknown'}</span>
+                      <RoleBadge role={post.user?.role} className="role-badge-small" />
+                    </div>
                     <span style={{color:'#bbb',fontSize:'0.9rem'}}>📅 {new Date(post.created_at).toLocaleDateString()}</span>
                     {post.views !== undefined && (
                       <span style={{color:'#bbb',fontSize:'0.9rem'}}>👁️ {post.views} views</span>

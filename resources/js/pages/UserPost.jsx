@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { FaHeart, FaComment } from 'react-icons/fa';
 import { FaPencil, FaTrash } from 'react-icons/fa6';
 import Navbar from '../components/NavBar';
+import RoleBadge from '../components/RoleBadge';
 import { useAuth } from '../authContext';
 import './styles/userpost.css';
 
@@ -471,7 +472,10 @@ const UserPost = () => {
               className="author-img"
             />
             <div style={{display: 'flex', flexDirection: 'column'}}>
-              <span className="author-name">{post.user?.name || post.user?.email || 'Unknown'}</span>
+              <div style={{display: 'flex', alignItems: 'center'}}>
+                <span className="author-name">{post.user?.name || post.user?.email || 'Unknown'}</span>
+                <RoleBadge role={post.user?.role} />
+              </div>
               <span className="post-date">Posted at {new Date(post.created_at).toLocaleDateString()}</span>
             </div>
           </div>
@@ -667,7 +671,10 @@ const UserPost = () => {
                 <div style={{flex:1}}>
                   <div className="comment-top">
                     <div className='comment-details'>
-                      <span className='comment-name'>{comment.user?.name || comment.user?.email || 'Anonymous'}</span>
+                      <div style={{display: 'flex', alignItems: 'center'}}>
+                        <span className='comment-name'>{comment.user?.name || comment.user?.email || 'Anonymous'}</span>
+                        <RoleBadge role={comment.user?.role} className="role-badge-small" />
+                      </div>
                       <span className='comment-date'>At {new Date(comment.created_at).toLocaleString()}</span>
                     </div>
 

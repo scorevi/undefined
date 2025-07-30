@@ -40,6 +40,7 @@ class AdminDashboardController extends Controller
                         'views' => $post->views,
                         'status' => $post->status ?? 'published',
                         'author' => $post->user->name,
+                        'author_role' => $post->user->role,
                         'created_at' => $post->created_at->format('Y-m-d H:i:s')
                     ];
                 }),
