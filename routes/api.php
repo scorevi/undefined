@@ -19,7 +19,7 @@ Route::middleware(['api'])->group(function () {
 });
 
 // Authentication Routes - moved to use proper API middleware
-Route::middleware(['api'])->group(function () {
+Route::middleware(['web'])->group(function () {
     Route::post('/user/login', [UserAuthController::class, 'login'])->name('user.login.post');
     Route::post('/user/register', [UserAuthController::class, 'register'])->name('user.register.post');
 

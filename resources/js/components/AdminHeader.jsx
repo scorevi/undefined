@@ -21,21 +21,20 @@ const AdminHeader = ({ title = "Admin Dashboard", showBackButton = false, backTo
           }
         });
 
-        const data = await response.json();
-        if (data.success) {
+        if (response.ok) {
           localStorage.removeItem('auth_token');
-          logout();
-          window.location.href = '/';
         }
-      } else {
-        logout();
-        window.location.href = '/';
       }
     } catch (error) {
       console.error('Admin Logout error:', error);
+    } finally {
+      // Always clear tokens and user state
       localStorage.removeItem('auth_token');
       logout();
-      window.location.href = '/';
+      // Use a small delay to ensure state is cleared before navigation
+      setTimeout(() => {
+        navigate('/', { replace: true });
+      }, 100);
     }
   };
 

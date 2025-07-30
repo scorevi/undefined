@@ -35,8 +35,15 @@ export default function Navbar() {
     } catch (err) {
       logoutSuccess = false;
     }
-    logout(); // Always clear local user state
-    window.location.href = '/';
+
+    // Always clear local user state
+    logout();
+
+    // Use a small delay to ensure state is cleared before navigation
+    setTimeout(() => {
+      navigate('/', { replace: true });
+    }, 100);
+
     if (!logoutSuccess) {
       alert('Logout may not have completed cleanly. Please refresh or clear cookies if you encounter issues.');
     }

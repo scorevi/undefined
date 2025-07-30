@@ -5,6 +5,20 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\UserAuthController;
 
+// Test session route
+Route::get('/test-session', function(\Illuminate\Http\Request $request) {
+    if (!$request->session()->isStarted()) {
+        $request->session()->start();
+    }
+
+    $request->session()->put('test', 'Session is working!');
+    return response()->json([
+        'session_id' => $request->session()->getId(),
+        'test_value' => $request->session()->get('test'),
+        'all_session_data' => $request->session()->all()
+    ]);
+});
+
 // Sanctum SPA login/logout
 Route::post('/login', [UserAuthController::class, 'login']);
 Route::post('/logout', function (\Illuminate\Http\Request $request) {

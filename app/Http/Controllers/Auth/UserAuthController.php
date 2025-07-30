@@ -11,6 +11,11 @@ class UserAuthController extends Controller
 {
     public function register(Request $request)
     {
+        // Ensure session is started
+        if (!$request->session()->isStarted()) {
+            $request->session()->start();
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -25,12 +30,19 @@ class UserAuthController extends Controller
         ]);
 
         Auth::login($user);
+        $request->session()->regenerate();
         return response()->json(['success' => true, 'user' => $user, 'redirect' => '/dashboard']);
     }
 
     public function login(Request $request)
     {
+        // Ensure session is started
+        if (!$request->session()->isStarted()) {
+            $request->session()->start();
+        }
+
         Auth::logout(); // Always clear any existing session first
+
         $credentials = $request->only(['email', 'password']);
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();

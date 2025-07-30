@@ -2,9 +2,11 @@
 applyTo: '**'
 ---
 
-Number one golden rule: Under ANY circumstances, ALWAYS study the existing codebase before making any SORT of changes. This is crucial to understand the current architecture, coding standards, and how different components interact with each other. Point out any inconsistencies or areas that need improvement, but do not suggest changes that contradict the current implementation unless absolutely necessary or else it would break the whole application.
+* Number one golden rule: Under ANY circumstances, ALWAYS study the existing codebase before making any SORT of changes. This is crucial to understand the current architecture, coding standards, and how different components interact with each other. Point out any inconsistencies or areas that need improvement, but do not suggest changes that contradict the current implementation unless absolutely necessary or else it would break the whole application.
 
-Number two golden rule: Follow frontend design UI/UX standards. Contrast, spacing, and overall user experience should be consistent with the existing application. Ensure that any new components or modifications adhere to the established design patterns and enhance usability.
+* Number two golden rule: Follow frontend design UI/UX standards. Contrast, spacing, and overall user experience should be consistent with the existing application. Ensure that any new components or modifications adhere to the established design patterns and enhance usability.
+
+* Number three golden rule: Bug fixes are must, the most critical part out of all rules written here. If you find any bugs or issues, prioritize fixing them before adding new features or making changes. Ensure that your fixes are thoroughly tested and do not introduce new issues.
 
 Here are strict guidelines to follow when making changes:
 
