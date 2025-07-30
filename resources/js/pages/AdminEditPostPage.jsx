@@ -164,12 +164,78 @@ const AdminEditPostPage = () => {
           <textarea className="w-full border rounded px-3 py-2" rows={8} value={content} onChange={e=>setContent(e.target.value)} disabled={saving} required />
         </div>
         <div className="mb-4">
-          <label className="block font-medium mb-1">Image</label>
-          {imagePreview && <img src={imagePreview} alt="Preview" style={{maxWidth:180,maxHeight:180,marginBottom:8,borderRadius:8}} />}
-          <div style={{marginBottom:8}}>
-            <input type="file" accept="image/*" onChange={handleImageChange} disabled={saving} />
-            {imagePreview && <button type="button" onClick={handleRemoveImage} style={{marginLeft:8,color:'#dc2626',background:'none',border:'none',cursor:'pointer'}}>Remove Image</button>}
+          <label className="block font-medium mb-2">Image</label>
+          
+          {/* Current Image Preview */}
+          {imagePreview && (
+            <div className="mb-3">
+              <img 
+                src={imagePreview} 
+                alt="Current image" 
+                style={{
+                  maxWidth: '200px',
+                  maxHeight: '200px',
+                  borderRadius: '8px',
+                  border: '2px solid #e5e7eb'
+                }} 
+              />
+            </div>
+          )}
+          
+          {/* Image Upload Area */}
+          <div style={{
+            border: '2px dashed #d1d5db',
+            borderRadius: '8px',
+            padding: '16px',
+            textAlign: 'center',
+            backgroundColor: imagePreview ? '#f9fafb' : '#fafafa',
+            transition: 'all 0.2s ease'
+          }}>
+            <input 
+              type="file" 
+              accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" 
+              onChange={handleImageChange} 
+              disabled={saving}
+              style={{
+                width: '100%',
+                padding: '8px',
+                border: '1px solid #d1d5db',
+                borderRadius: '4px',
+                backgroundColor: '#fff'
+              }}
+            />
+            <div style={{
+              marginTop: '8px',
+              fontSize: '0.875rem',
+              color: '#6b7280'
+            }}>
+              {imagePreview ? 'Choose a new image to replace the current one' : 'Choose an image file (JPEG, PNG, GIF, WEBP)'}
+              <br />
+              Maximum file size: 50MB
+            </div>
           </div>
+          
+          {/* Remove Image Button */}
+          {imagePreview && (
+            <button 
+              type="button" 
+              onClick={handleRemoveImage}
+              disabled={saving}
+              style={{
+                marginTop: '8px',
+                padding: '6px 12px',
+                backgroundColor: '#fee2e2',
+                color: '#dc2626',
+                border: '1px solid #fecaca',
+                borderRadius: '4px',
+                fontSize: '0.875rem',
+                cursor: saving ? 'not-allowed' : 'pointer',
+                opacity: saving ? 0.6 : 1
+              }}
+            >
+              Remove Current Image
+            </button>
+          )}
         </div>
         <div className="mb-4">
           <label className="block font-medium mb-1">Author</label>

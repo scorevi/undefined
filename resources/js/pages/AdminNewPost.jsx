@@ -105,9 +105,81 @@ const AdminNewPost = () => {
           <textarea className="w-full border rounded px-3 py-2" rows={6} value={content} onChange={e=>setContent(e.target.value)} disabled={loading} required />
         </div>
         <div className="mb-4">
-          <label className="block font-medium mb-1">Image (optional)</label>
-          <input type="file" accept="image/*" onChange={handleImageChange} disabled={loading} />
-          {imagePreview && <img src={imagePreview} alt="Preview" style={{maxWidth:180,maxHeight:180,marginTop:8,borderRadius:8}} />}
+          <label className="block font-medium mb-2">Image (optional)</label>
+          
+          {/* Image Preview */}
+          {imagePreview && (
+            <div className="mb-3">
+              <img 
+                src={imagePreview} 
+                alt="Image preview" 
+                style={{
+                  maxWidth: '200px',
+                  maxHeight: '200px',
+                  borderRadius: '8px',
+                  border: '2px solid #e5e7eb'
+                }} 
+              />
+            </div>
+          )}
+          
+          {/* Image Upload Area */}
+          <div style={{
+            border: '2px dashed #d1d5db',
+            borderRadius: '8px',
+            padding: '16px',
+            textAlign: 'center',
+            backgroundColor: imagePreview ? '#f9fafb' : '#fafafa',
+            transition: 'all 0.2s ease'
+          }}>
+            <input 
+              type="file" 
+              accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" 
+              onChange={handleImageChange} 
+              disabled={loading}
+              style={{
+                width: '100%',
+                padding: '8px',
+                border: '1px solid #d1d5db',
+                borderRadius: '4px',
+                backgroundColor: '#fff'
+              }}
+            />
+            <div style={{
+              marginTop: '8px',
+              fontSize: '0.875rem',
+              color: '#6b7280'
+            }}>
+              {imagePreview ? 'Image selected successfully' : 'Choose an image file (JPEG, PNG, GIF, WEBP)'}
+              <br />
+              Maximum file size: 50MB
+            </div>
+          </div>
+          
+          {/* Remove Image Button */}
+          {imagePreview && (
+            <button 
+              type="button" 
+              onClick={() => {
+                setImage(null);
+                setImagePreview(null);
+              }}
+              disabled={loading}
+              style={{
+                marginTop: '8px',
+                padding: '6px 12px',
+                backgroundColor: '#fee2e2',
+                color: '#dc2626',
+                border: '1px solid #fecaca',
+                borderRadius: '4px',
+                fontSize: '0.875rem',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                opacity: loading ? 0.6 : 1
+              }}
+            >
+              Remove Image
+            </button>
+          )}
         </div>
         {error && <div style={{color:'#dc2626',marginBottom:8}}>{error}</div>}
         {success && <div style={{color:'#22c55e',marginBottom:8}}>{success}</div>}
