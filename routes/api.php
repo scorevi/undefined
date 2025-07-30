@@ -21,6 +21,9 @@ Route::get('/posts/categories', [PostController::class, 'categories']);
 Route::middleware(['api', 'web'])->group(function () {
     Route::post('/user/login', [UserAuthController::class, 'login'])->name('user.login.post');
     Route::post('/user/register', [UserAuthController::class, 'register'])->name('user.register.post');
+    Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('admin.login.post');
+    Route::post('/admin/register', [AdminAuthController::class, 'register'])->name('admin.register.post');
+    // Legacy routes for backward compatibility
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
     Route::post('/register', [AdminAuthController::class, 'register'])->name('register.post');
 });
@@ -50,7 +53,8 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/user/dashboard', [UserDashboardController::class, '__invoke']);
     Route::post('/posts/{post}/like', [LikeController::class, 'like']);
-    Route::post('/posts/{post}/unlike', [LikeController::class, 'unlike']);
+    Route::delete('/posts/{post}/like', [LikeController::class, 'unlike']);
+    Route::post('/posts/{post}/unlike', [LikeController::class, 'unlike']); // Legacy route
 });
 
 // Logout routes (with session middleware)
@@ -73,7 +77,8 @@ Route::middleware(['web'])->group(function () {
 // Blog Post API Routes
 Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/{id}', [PostController::class, 'show']);
-Route::get('/posts/{post}/like-status', [LikeController::class, 'status']);
+Route::get('/posts/{post}/like/status', [LikeController::class, 'status']);
+Route::get('/posts/{post}/like-status', [LikeController::class, 'status']); // Legacy route
 Route::get('/posts/trending', [PostController::class, 'trending']);
 
 // Comments API

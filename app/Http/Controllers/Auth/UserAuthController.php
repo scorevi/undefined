@@ -16,6 +16,19 @@ class UserAuthController extends Controller
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:8|confirmed',
+            ], [
+                'name.required' => 'Full name is required.',
+                'name.string' => 'Full name must be a valid text string.',
+                'name.max' => 'Full name cannot exceed 255 characters.',
+                'email.required' => 'Email address is required.',
+                'email.string' => 'Email address must be a valid text string.',
+                'email.email' => 'Please enter a valid email address.',
+                'email.max' => 'Email address cannot exceed 255 characters.',
+                'email.unique' => 'This email address is already registered. Please use a different email or try logging in.',
+                'password.required' => 'Password is required.',
+                'password.string' => 'Password must be a valid text string.',
+                'password.min' => 'Password must be at least 8 characters long.',
+                'password.confirmed' => 'Password confirmation does not match. Please ensure both password fields are identical.',
             ]);
 
             $user = User::create([
@@ -33,12 +46,12 @@ class UserAuthController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation failed.',
+                'message' => 'User registration validation failed. Please check the provided information.',
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
             \Log::error('Registration error: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Registration failed. Please try again.'], 500);
+            return response()->json(['success' => false, 'message' => 'Registration failed due to a server error. Please try again.'], 500);
         }
     }
 
@@ -49,6 +62,11 @@ class UserAuthController extends Controller
             $validated = $request->validate([
                 'email' => 'required|email',
                 'password' => 'required|min:1',
+            ], [
+                'email.required' => 'Email address is required.',
+                'email.email' => 'Please enter a valid email address.',
+                'password.required' => 'Password is required.',
+                'password.min' => 'Password cannot be empty.',
             ]);
 
             $credentials = $request->only(['email', 'password']);
@@ -57,16 +75,28 @@ class UserAuthController extends Controller
 
                 if ($user->role !== 'user') {
                     Auth::logout();
-                    return response()->json(['success' => false, 'message' => 'You do not have user access.'], 403);
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Access denied. This login is for regular users only. Please use the admin login if you have admin privileges.'
+                    ], 403);
                 }
 
                 return response()->json(['success' => true, 'user' => $user, 'redirect' => '/dashboard']);
             }
 
-            return response()->json(['success' => false, 'message' => 'Invalid credentials'], 401);
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid email or password. Please check your credentials and try again.'
+            ], 401);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Login validation failed. Please check the provided information.',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
             \Log::error('Login error: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Login failed. Please try again.'], 500);
+            return response()->json(['success' => false, 'message' => 'Login failed due to a server error. Please try again.'], 500);
         }
     }
 }

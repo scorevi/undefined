@@ -17,21 +17,24 @@ class AdminController extends Controller
     {
         $user = Auth::user();
         if (!$user || $user->role !== 'admin') {
-            return response()->json(['error' => 'Unauthorized access.'], 401);
+            return response()->json([
+                'success' => false,
+                'error' => 'Administrator access required. Please log in with an administrator account.'
+            ], 401);
         }
 
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'email' => 'required|email|unique:users,email,' . $user->id
         ], [
-            'email.required' => 'Email address is required.',
-            'email.email' => 'Please enter a valid email address.',
-            'email.unique' => 'This email address is already in use.'
+            'email.required' => 'Administrator email address is required.',
+            'email.email' => 'Please enter a valid administrator email address.',
+            'email.unique' => 'This email address is already in use by another account. Please choose a different email address.'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation failed.',
+                'message' => 'Administrator email update validation failed. Please check the provided email address.',
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -41,7 +44,7 @@ class AdminController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Email updated successfully.'
+            'message' => 'Administrator email updated successfully.'
         ]);
     }
 
@@ -50,22 +53,25 @@ class AdminController extends Controller
     {
         $user = Auth::user();
         if (!$user || $user->role !== 'admin') {
-            return response()->json(['error' => 'Unauthorized access.'], 401);
+            return response()->json([
+                'success' => false,
+                'error' => 'Administrator access required. Please log in with an administrator account.'
+            ], 401);
         }
 
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'current_password' => 'required',
             'new_password' => 'required|min:8',
         ], [
-            'current_password.required' => 'Current password is required.',
-            'new_password.required' => 'New password is required.',
-            'new_password.min' => 'New password must be at least 8 characters.'
+            'current_password.required' => 'Current administrator password is required to change your password.',
+            'new_password.required' => 'New administrator password is required.',
+            'new_password.min' => 'New administrator password must be at least 8 characters long.'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation failed.',
+                'message' => 'Administrator password update validation failed. Please check the provided password information.',
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -73,7 +79,7 @@ class AdminController extends Controller
         if (!Hash::check($request->input('current_password'), $user->password)) {
             return response()->json([
                 'success' => false,
-                'error' => 'Current password is incorrect. Please try again.'
+                'error' => 'Current administrator password is incorrect. Please enter your current password correctly.'
             ], 422);
         }
 
@@ -82,7 +88,7 @@ class AdminController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Password updated successfully.'
+            'message' => 'Administrator password updated successfully.'
         ]);
     }
 
@@ -91,7 +97,10 @@ class AdminController extends Controller
     {
         $user = Auth::user();
         if (!$user || $user->role !== 'admin') {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json([
+                'success' => false,
+                'error' => 'Administrator access required. Please log in with an administrator account.'
+            ], 401);
         }
 
         $settings = DB::table('settings')->pluck('value', 'key')->toArray();
@@ -107,34 +116,46 @@ class AdminController extends Controller
     {
         $user = Auth::user();
         if (!$user || $user->role !== 'admin') {
-            return response()->json(['error' => 'Unauthorized access.'], 401);
+            return response()->json([
+                'success' => false,
+                'error' => 'Administrator access required. Please log in with an administrator account.'
+            ], 401);
         }
 
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'site_name' => 'nullable|string|max:255',
             'site_description' => 'nullable|string|max:1000',
         ], [
+            'site_name.string' => 'Site name must be a valid text string.',
             'site_name.max' => 'Site name cannot exceed 255 characters.',
+            'site_description.string' => 'Site description must be a valid text string.',
             'site_description.max' => 'Site description cannot exceed 1000 characters.'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation failed.',
+                'message' => 'Site settings validation failed. Please check the provided information.',
                 'errors' => $validator->errors()
             ], 422);
         }
 
         // Store in a settings table (create if not exists)
-        DB::table('settings')->updateOrInsert(
-            ['key' => 'site_name'],
-            ['value' => $request->input('site_name', '')]
-        );
-        DB::table('settings')->updateOrInsert(
-            ['key' => 'site_description'],
-            ['value' => $request->input('site_description', '')]
-        );
+        if ($request->has('site_name')) {
+            $value = $request->input('site_name');
+            DB::table('settings')->updateOrInsert(
+                ['key' => 'site_name'],
+                ['value' => $value === null ? '' : $value]
+            );
+        }
+
+        if ($request->has('site_description')) {
+            $value = $request->input('site_description');
+            DB::table('settings')->updateOrInsert(
+                ['key' => 'site_description'],
+                ['value' => $value === null ? '' : $value]
+            );
+        }
 
         return response()->json([
             'success' => true,

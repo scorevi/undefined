@@ -62,7 +62,10 @@ class PostController extends Controller
     {
         $post = Post::with('user')->find($id);
         if (!$post) {
-            return response()->json(['error' => 'Post not found'], 404);
+            return response()->json([
+                'success' => false,
+                'error' => 'The requested post does not exist or has been removed.'
+            ], 404);
         }
         // Unique view tracking by IP in the database
         $ip = $request->ip();
@@ -71,7 +74,10 @@ class PostController extends Controller
             $post->increment('views');
             DB::table('post_views')->insert(['post_id' => $id, 'ip' => $ip, 'created_at' => now(), 'updated_at' => now()]);
         }
-        return response()->json($post);
+        return response()->json([
+            'success' => true,
+            'data' => $post
+        ]);
     }
 
     // Create a new post
@@ -79,12 +85,18 @@ class PostController extends Controller
     {
         $user = Auth::user();
         if (!$user) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json([
+                'success' => false,
+                'error' => 'Authentication required. Please log in to create posts.'
+            ], 401);
         }
 
         // Only admin users can create posts
         if ($user->role !== 'admin') {
-            return response()->json(['error' => 'Only admin users can create posts'], 403);
+            return response()->json([
+                'success' => false,
+                'error' => 'Only administrators can create posts. Please contact an admin if you need to publish content.'
+            ], 403);
         }
         try {
             $validated = $request->validate([
@@ -93,11 +105,24 @@ class PostController extends Controller
                 'category' => 'required|string|in:news,review,podcast,opinion,lifestyle',
                 'is_featured' => 'sometimes|boolean',
                 'image' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp|max:51200', // 50MB
+            ], [
+                'title.required' => 'Post title is required.',
+                'title.string' => 'Post title must be a valid text string.',
+                'title.max' => 'Post title cannot exceed 255 characters.',
+                'content.required' => 'Post content is required.',
+                'content.string' => 'Post content must be a valid text string.',
+                'category.required' => 'Post category is required.',
+                'category.string' => 'Post category must be a valid text string.',
+                'category.in' => 'Post category must be one of: news, review, podcast, opinion, lifestyle.',
+                'is_featured.boolean' => 'Featured status must be true or false.',
+                'image.file' => 'Image must be a valid file.',
+                'image.mimes' => 'Image must be a JPEG, JPG, PNG, GIF, or WEBP file.',
+                'image.max' => 'Image size cannot exceed 50MB.',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
-                'error' => 'Validation failed',
+                'error' => 'Post creation validation failed. Please check the provided data.',
                 'errors' => $e->errors()
             ], 422);
         }
@@ -108,7 +133,10 @@ class PostController extends Controller
             // Double-check MIME type server-side
             $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
             if (!in_array($file->getMimeType(), $allowedMimes)) {
-                return response()->json(['error' => 'Only JPEG, PNG, GIF, or WEBP images are allowed.'], 422);
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Invalid image file type. Only JPEG, PNG, GIF, or WEBP images are allowed.'
+                ], 422);
             }
             $imagePath = $file->store('posts', 'public');
         }
@@ -137,9 +165,26 @@ class PostController extends Controller
     public function update(Request $request, $id)
     {
         $user = Auth::user();
-        $post = Post::findOrFail($id);
-        if (!$user || ($user->id !== $post->user_id && $user->role !== 'admin')) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Authentication required. Please log in to update posts.'
+            ], 401);
+        }
+
+        $post = Post::find($id);
+        if (!$post) {
+            return response()->json([
+                'success' => false,
+                'error' => 'The post you are trying to update does not exist.'
+            ], 404);
+        }
+
+        if ($user->id !== $post->user_id && $user->role !== 'admin') {
+            return response()->json([
+                'success' => false,
+                'error' => 'You can only update your own posts unless you are an admin.'
+            ], 403);
         }
 
         try {
@@ -149,11 +194,23 @@ class PostController extends Controller
                 'category' => 'sometimes|string|in:news,review,podcast,opinion,lifestyle',
                 'is_featured' => 'sometimes|boolean',
                 'image' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp|max:51200', // 50MB
+            ], [
+                'title.required' => 'Post title is required.',
+                'title.string' => 'Post title must be a valid text string.',
+                'title.max' => 'Post title cannot exceed 255 characters.',
+                'content.required' => 'Post content is required.',
+                'content.string' => 'Post content must be a valid text string.',
+                'category.string' => 'Post category must be a valid text string.',
+                'category.in' => 'Post category must be one of: news, review, podcast, opinion, lifestyle.',
+                'is_featured.boolean' => 'Featured status must be true or false.',
+                'image.file' => 'Image must be a valid file.',
+                'image.mimes' => 'Image must be a JPEG, JPG, PNG, GIF, or WEBP file.',
+                'image.max' => 'Image size cannot exceed 50MB.',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
-                'error' => 'Validation failed',
+                'error' => 'Post update validation failed. Please check the provided data.',
                 'errors' => $e->errors()
             ], 422);
         }
@@ -200,9 +257,26 @@ class PostController extends Controller
     public function destroy($id)
     {
         $user = Auth::user();
-        $post = Post::findOrFail($id);
-        if (!$user || ($user->id !== $post->user_id && $user->role !== 'admin')) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Authentication required. Please log in to delete posts.'
+            ], 401);
+        }
+
+        $post = Post::find($id);
+        if (!$post) {
+            return response()->json([
+                'success' => false,
+                'error' => 'The post you are trying to delete does not exist.'
+            ], 404);
+        }
+
+        if ($user->id !== $post->user_id && $user->role !== 'admin') {
+            return response()->json([
+                'success' => false,
+                'error' => 'You can only delete your own posts unless you are an admin.'
+            ], 403);
         }
 
         // Delete associated image if exists
