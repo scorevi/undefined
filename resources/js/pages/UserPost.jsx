@@ -24,6 +24,8 @@ const UserPost = () => {
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
   const [editImage, setEditImage] = useState(null);
+  const [editImagePreview, setEditImagePreview] = useState(null);
+  const [dragActive, setDragActive] = useState(false);
   const [editError, setEditError] = useState('');
   const [editLoading, setEditLoading] = useState(false);
   const [comments, setComments] = useState([]);
@@ -81,13 +83,78 @@ const UserPost = () => {
     setEditTitle(post.title);
     setEditContent(post.content);
     setEditImage(null);
+    setEditImagePreview(null);
     setEditError('');
     setEditing(true);
+  };
+
+  // Image upload handlers
+  const handleImageChange = (file) => {
+    if (!file) {
+      setEditImage(null);
+      setEditImagePreview(null);
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      setEditError('Only image files are allowed.');
+      return;
+    }
+
+    if (file.size > 50 * 1024 * 1024) { // 50MB limit
+      setEditError('Image size must be less than 50MB.');
+      return;
+    }
+
+    setEditError('');
+    setEditImage(file);
+    setEditImagePreview(URL.createObjectURL(file));
+  };
+
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      handleImageChange(files[0]);
+    }
+  };
+
+  const removeEditImage = () => {
+    setEditImage(null);
+    setEditImagePreview(null);
+    if (editImagePreview) {
+      URL.revokeObjectURL(editImagePreview);
+    }
   };
 
   const cancelEdit = () => {
     setEditing(false);
     setEditError('');
+    if (editImagePreview) {
+      URL.revokeObjectURL(editImagePreview);
+    }
+    setEditImage(null);
+    setEditImagePreview(null);
   };
 
   const handleEditSave = async () => {
@@ -417,7 +484,126 @@ const UserPost = () => {
 
               <textarea className="edit-content" value={editContent} onChange={e=>setEditContent(e.target.value)} required rows={6} />
 
-              <input className="edit-file" type="file" accept="image/*" onChange={e=>setEditImage(e.target.files[0])} />
+              {/* Image Upload Section */}
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem', color: '#374151' }}>
+                  Post Image
+                </label>
+
+                {/* Current Image Display */}
+                {post.image && !editImagePreview && (
+                  <div style={{ marginBottom: '1rem' }}>
+                    <div style={{ fontSize: '0.9rem', color: '#6b7280', marginBottom: '0.5rem' }}>Current image:</div>
+                    <div style={{ position: 'relative', display: 'inline-block' }}>
+                      <img
+                        src={getPostImageUrl(post.image)}
+                        alt="Current post image"
+                        style={{
+                          maxWidth: '200px',
+                          maxHeight: '150px',
+                          borderRadius: '8px',
+                          objectFit: 'cover',
+                          border: '2px solid #e5e7eb'
+                        }}
+                      />
+                      <div style={{
+                        fontSize: '0.8rem',
+                        color: '#6b7280',
+                        marginTop: '0.25rem',
+                        textAlign: 'center'
+                      }}>
+                        Upload a new image to replace this one
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Drag and Drop Area */}
+                <div
+                  onDragEnter={handleDragEnter}
+                  onDragLeave={handleDragLeave}
+                  onDragOver={handleDragOver}
+                  onDrop={handleDrop}
+                  style={{
+                    border: dragActive ? '3px dashed #3b82f6' : '2px dashed #d1d5db',
+                    borderRadius: '12px',
+                    padding: '2rem',
+                    textAlign: 'center',
+                    backgroundColor: dragActive ? '#eff6ff' : '#f9fafb',
+                    transition: 'all 0.2s ease',
+                    cursor: 'pointer',
+                    position: 'relative'
+                  }}
+                  onClick={() => document.getElementById('edit-file-input').click()}
+                >
+                  <input
+                    id="edit-file-input"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageChange(e.target.files[0])}
+                    style={{ display: 'none' }}
+                  />
+
+                  {editImagePreview ? (
+                    <div>
+                      <img
+                        src={editImagePreview}
+                        alt="Preview"
+                        style={{
+                          maxWidth: '200px',
+                          maxHeight: '150px',
+                          borderRadius: '8px',
+                          objectFit: 'cover',
+                          marginBottom: '1rem'
+                        }}
+                      />
+                      <div style={{ fontSize: '0.9rem', color: '#374151', marginBottom: '0.5rem' }}>
+                        New image selected
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeEditImage();
+                        }}
+                        style={{
+                          backgroundColor: '#ef4444',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '6px',
+                          padding: '0.5rem 1rem',
+                          fontSize: '0.875rem',
+                          cursor: 'pointer',
+                          marginTop: '0.5rem'
+                        }}
+                      >
+                        Remove Image
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <div style={{ fontSize: '3rem', marginBottom: '1rem', color: dragActive ? '#3b82f6' : '#9ca3af' }}>
+                        📸
+                      </div>
+                      <div style={{
+                        fontSize: '1.1rem',
+                        fontWeight: '600',
+                        color: dragActive ? '#1d4ed8' : '#374151',
+                        marginBottom: '0.5rem'
+                      }}>
+                        {dragActive ? 'Drop your image here!' : 'Upload a new image'}
+                      </div>
+                      <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                        Drag and drop an image here, or click to browse
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.5rem' }}>
+                        Supports: JPG, PNG, GIF (Max: 50MB)
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {editError && <div className="user-error-message">{editError}</div>}
 
               <div className="edit-btns">
