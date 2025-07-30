@@ -188,13 +188,24 @@ const AdminSettings = () => {
       minHeight: '100vh',
       backgroundColor: '#f0f2f5',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+      justifyContent: 'center',
+      alignItems: 'flex-start',
+      padding: '20px',
+    },
+    settingsWrapper: {
+      display: 'flex',
+      backgroundColor: '#ffffff',
+      borderRadius: '8px',
+      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+      overflow: 'hidden',
+      maxWidth: '1200px',
+      width: '100%',
     },
     sidebar: {
       width: '280px',
       backgroundColor: '#ffffff',
       borderRight: '1px solid #e4e6ea',
       padding: '20px 0',
-      boxShadow: '0 0 0 1px rgba(0, 0, 0, 0.06)',
     },
     sidebarHeader: {
       padding: '0 20px 20px',
@@ -394,9 +405,11 @@ const AdminSettings = () => {
             100% { transform: rotate(360deg); }
           }
         `}</style>
-        <div style={styles.loading}>
-          <div style={styles.spinner}></div>
-          <p>Loading settings...</p>
+        <div style={styles.settingsWrapper}>
+          <div style={styles.loading}>
+            <div style={styles.spinner}></div>
+            <p>Loading settings...</p>
+          </div>
         </div>
       </div>
     );
@@ -548,23 +561,6 @@ const AdminSettings = () => {
     </div>
   );
 
-  if (loading) {
-    return (
-      <div style={styles.container}>
-        <style>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
-        <div style={styles.loading}>
-          <div style={styles.spinner}></div>
-          <p>Loading settings...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div style={styles.container}>
       <style>{`
@@ -574,8 +570,9 @@ const AdminSettings = () => {
         }
       `}</style>
 
-      {/* Sidebar Navigation */}
-      <div style={styles.sidebar}>
+      <div style={styles.settingsWrapper}>
+        {/* Sidebar Navigation */}
+        <div style={styles.sidebar}>
         <div style={styles.sidebarHeader}>
           <h1 style={styles.sidebarTitle}>Settings</h1>
           <p style={styles.sidebarSubtitle}>Manage your account and site</p>
@@ -651,6 +648,7 @@ const AdminSettings = () => {
             {error}
           </div>
         )}
+        </div>
       </div>
     </div>
   );

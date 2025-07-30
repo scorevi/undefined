@@ -210,9 +210,11 @@ const FBLayout = ({ children, showSidebar = true, showAdminActions = false }) =>
     },
   };
 
-  const mainNavItems = [
-    { path: '/', icon: FaHome, label: 'Home' },
+  const mainNavItems = user?.role === 'admin' ? [
+    { path: '/home', icon: FaHome, label: 'Home' },
     { path: '/users', icon: FaUsers, label: 'Users' },
+    { path: '/blog', icon: FaNewspaper, label: 'Blog' },
+  ] : [
     { path: '/blog', icon: FaNewspaper, label: 'Blog' },
   ];
 
@@ -246,7 +248,7 @@ const FBLayout = ({ children, showSidebar = true, showAdminActions = false }) =>
       {/* Header */}
       <header style={styles.header}>
         <div style={styles.headerLeft}>
-          <Link to="/" style={styles.logo}>
+          <Link to="/home" style={styles.logo}>
             <FaBookOpen />
             Blog Site
           </Link>

@@ -72,6 +72,9 @@ Route::get('/posts/{id}', [PostController::class, 'show']);
 Route::get('/posts/{post}/like-status', [LikeController::class, 'status']);
 Route::get('/posts/trending', [PostController::class, 'trending']);
 
+// Users API Routes
+Route::get('/users', [UserDashboardController::class, 'users']);
+
 // Comments API
 Route::get('/posts/{post}/comments', [CommentController::class, 'index']);
 Route::post('/posts/{post}/comments', [CommentController::class, 'store'])->middleware(['web', 'auth']);

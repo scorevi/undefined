@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Models\Post;
 
 class UserDashboardController extends Controller
 {
@@ -30,5 +32,43 @@ class UserDashboardController extends Controller
             'user' => $user,
             'stats' => $stats
         ]);
+    }
+
+    public function users(Request $request)
+    {
+        try {
+            $users = User::withCount(['posts'])
+                ->withSum('posts', 'views')
+                ->with(['posts' => function($query) {
+                    $query->withCount('likes');
+                }])
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->map(function($user) {
+                    return [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'role' => $user->role,
+                        'avatar' => $user->avatar,
+                        'posts_count' => $user->posts_count,
+                        'total_views' => $user->posts_sum_views ?? 0,
+                        'total_likes' => $user->posts->sum(function($post) {
+                            return $post->likes_count;
+                        }),
+                        'created_at' => $user->created_at,
+                    ];
+                });
+
+            return response()->json([
+                'data' => $users,
+                'success' => true
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to fetch users',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }

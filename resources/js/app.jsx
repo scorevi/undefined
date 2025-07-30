@@ -3,7 +3,10 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import Welcome from './pages/Welcome';
+import Home from './pages/Home';
 import Main from './pages/Main';
+import Blog from './pages/Blog';
+import Users from './pages/Users';
 import UserPost from './pages/UserPost';
 import Footer from './components/Footer';
 import Login from './components/UserLogin';
@@ -21,11 +24,10 @@ import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 // Removed: import UserDashboard from './components/UserDashboard';
 
-// Protected Route Wrapper for regular users
+// Protected Route Wrapper for regular users and admins
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
-  if (user.role !== 'user') return <Navigate to="/" replace />;
   return children;
 };
 
@@ -62,7 +64,7 @@ const PublicRoute = ({ children }) => {
   const { user } = useAuth();
   console.log('PublicRoute user:', user);
   if (user) {
-    if (user.role === 'admin') return <Navigate to="/admin" replace />;
+    if (user.role === 'admin') return <Navigate to="/home" replace />;
     if (user.role === 'user') return <Navigate to="/blog" replace />;
   }
   return children;
@@ -105,11 +107,14 @@ const App = () => {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <Routes>
             <Route path="/" element={<PublicRoute><Welcome /></PublicRoute>} />
+            <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+            <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
+            <Route path="/blog" element={<ProtectedRoute><Blog /></ProtectedRoute>} />
+            <Route path="/feed" element={<ProtectedRoute><Main /></ProtectedRoute>} />
             <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
             <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
             <Route path="/admin/login" element={<PublicRoute><AdminLogin /></PublicRoute>} />
             <Route path="/admin/signup" element={<PublicRoute><AdminSignup /></PublicRoute>} />
-          <Route path="/blog" element={<ProtectedRoute><Main /></ProtectedRoute>} />
           <Route path="/blog/post/:id" element={<ProtectedRoute><UserPost /></ProtectedRoute>} />
           <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
             <Route path="/admin/posts/new" element={<AdminRoute><AdminNewPost /></AdminRoute>} />
