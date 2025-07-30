@@ -23,13 +23,18 @@ const AdminEditPostPage = () => {
     setError('');
     fetch(`/api/posts/${id}`)
       .then(res => res.json())
-      .then(data => {
-        setPost(data);
-        setTitle(data.title || '');
-        setContent(data.content || '');
-        setCategory(data.category || 'news');
-        setIsFeatured(data.is_featured || false);
-        setImagePreview(data.image ? `/storage/${data.image}` : null);
+      .then(response => {
+        if (response.success && response.data) {
+          const data = response.data;
+          setPost(data);
+          setTitle(data.title || '');
+          setContent(data.content || '');
+          setCategory(data.category || 'news');
+          setIsFeatured(data.is_featured || false);
+          setImagePreview(data.image ? `/storage/${data.image}` : null);
+        } else {
+          setError(response.error || 'Failed to load post');
+        }
         setLoading(false);
       })
       .catch(() => {

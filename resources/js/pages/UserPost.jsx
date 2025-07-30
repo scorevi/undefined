@@ -229,9 +229,13 @@ const UserPost = () => {
       try {
         const response = await fetch(`/api/posts/${id}`);
         if (!response.ok) throw new Error('Post not found');
-        const data = await response.json();
-        setPost(data);
-        document.title = data.title;
+        const apiResponse = await response.json();
+        if (apiResponse.success && apiResponse.data) {
+          setPost(apiResponse.data);
+          document.title = apiResponse.data.title;
+        } else {
+          throw new Error(apiResponse.error || 'Failed to load post');
+        }
       } catch (err) {
         setError('Could not load post.');
       } finally {

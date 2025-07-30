@@ -1,7 +1,7 @@
 @font-face {
     font-family: "Nunito";
     src: local("Nunito"),
-    url("/resources/js/Typeface/Nunito/Nunito-VariableFont_wght.ttf");
+    url("../Typeface/Nunito/Nunito-VariableFont_wght.ttf");
 }
 
 html, body {
@@ -22,7 +22,7 @@ body {
 }
 
 .auth-container {
-  background-color: #ffffff; 
+  background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 2rem;

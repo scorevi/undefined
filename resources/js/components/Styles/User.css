@@ -2,7 +2,7 @@
 @font-face {
     font-family: "Nunito";
     src: local("Nunito"),
-    url("/resources/js/Typeface/Nunito/Nunito-VariableFont_wght.ttf");
+    url("../Typeface/Nunito/Nunito-VariableFont_wght.ttf");
 }
 /* User Dashboard Styles */
 html {
@@ -172,12 +172,12 @@ html {
     .user-stats-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .user-auth-container {
         margin: 1rem;
         padding: 1.5rem;
     }
-} 
+}
 
 .user-auth-bg {
     min-height: 100vh;
@@ -196,4 +196,4 @@ html {
     justify-content: center;
     min-height: 100vh;
     width: 100vw;
-} 
+}

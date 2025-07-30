@@ -1,13 +1,13 @@
 @font-face {
     font-family: "Nunito";
     src: local("Nunito"),
-    url("/resources/js/Typeface/Nunito/Nunito-VariableFont_wght.ttf");
+    url("../Typeface/Nunito/Nunito-VariableFont_wght.ttf");
 }
 
 @font-face {
     font-family: "Nunito Bold";
     src: local("Nunito Bold"),
-    url("/resources/js/Typeface/Nunito/static/Nunito-Bold.ttf");
+    url("../Typeface/Nunito/static/Nunito-Bold.ttf");
 }
 
 h2 {

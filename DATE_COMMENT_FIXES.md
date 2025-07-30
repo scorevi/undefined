@@ -6,16 +6,20 @@
 
 **Problem**: The admin edit post form was showing "N/A" for the created date instead of properly formatted dates.
 
-**Root Cause**: The `Post` and `Comment` models were missing proper date casting configuration, causing Laravel to return raw database timestamps instead of Carbon instances.
+**Root Cause**: Two issues were found:
+1. The `Post` and `Comment` models were missing proper date casting configuration
+2. The frontend was incorrectly handling the API response structure
 
 **Solution**:
 - Added proper `casts()` method to `Post` model with datetime casting for `created_at` and `updated_at`
 - Added proper `casts()` method to `Comment` model with datetime casting for `created_at` and `updated_at`
 - Added boolean casting for `is_featured` field in Post model
+- Fixed frontend API response handling to properly access `response.data` instead of treating the entire response as post data
 
 **Files Modified**:
 - `app/Models/Post.php` - Added `casts()` method
 - `app/Models/Comment.php` - Added `casts()` method
+- `resources/js/pages/AdminEditPostPage.jsx` - Fixed API response handling
 
 ### 2. Comment System Authentication Issues
 
@@ -43,6 +47,24 @@ protected function casts(): array
         'is_featured' => 'boolean',
     ];
 }
+```
+
+### Frontend API Response Handling
+```javascript
+// BEFORE (incorrect)
+.then(data => {
+    setPost(data);
+    // data was the entire API response: { success: true, data: {...} }
+})
+
+// AFTER (correct)
+.then(response => {
+    if (response.success && response.data) {
+        const data = response.data;
+        setPost(data);
+        // Now properly accessing the actual post data
+    }
+})
 ```
 
 ### CSRF Cookie Fetching

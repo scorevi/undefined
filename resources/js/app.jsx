@@ -55,44 +55,68 @@ const App = () => {
     if (!user) return; // Only fetch if user is logged in
     NProgress.start();
 
-    // Configure request based on user role
-    const endpoint = user.role === 'admin' ? '/api/admin/dashboard' : '/api/user/dashboard';
-    const requestConfig = {
-      credentials: 'include',
-      headers: {}
+    const fetchDashboard = async () => {
+      try {
+        // Configure request based on user role
+        const endpoint = user.role === 'admin' ? '/api/admin/dashboard' : '/api/user/dashboard';
+        const requestConfig = {
+          credentials: 'include',
+          headers: {}
+        };
+
+        // Admin uses Bearer token, users use session auth
+        if (user.role === 'admin') {
+          const token = localStorage.getItem('auth_token');
+          if (token) {
+            requestConfig.headers['Authorization'] = `Bearer ${token}`;
+          }
+        } else {
+          // For regular users, first ensure CSRF cookie is available
+          await fetch('/sanctum/csrf-cookie', {
+            credentials: 'include',
+          });
+
+          // Then get the CSRF token
+          const csrfCookie = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='));
+          if (csrfCookie) {
+            const csrfToken = decodeURIComponent(csrfCookie.split('=')[1]);
+            requestConfig.headers['X-XSRF-TOKEN'] = csrfToken;
+          }
+        }
+
+        console.log('Making dashboard request to:', endpoint);
+        console.log('Request config:', requestConfig);
+        console.log('User from context:', user);
+
+        const response = await fetch(endpoint, requestConfig);
+        const data = await response.json();
+
+        console.log('Dashboard response status:', response.status);
+        console.log('Dashboard response data:', data);
+
+        if (response.ok) {
+          const name = data.stats?.site_name || 'Undefined\'s Blog';
+          const desc = (data.stats?.site_description || 'A modern blog platform for the DWP Subject.').slice(0, 120);
+          setSiteMeta({ name, description: desc });
+          document.title = name;
+          let meta = document.querySelector('meta[name="description"]');
+          if (!meta) {
+            meta = document.createElement('meta');
+            meta.name = 'description';
+            document.head.appendChild(meta);
+          }
+          meta.content = desc;
+        } else {
+          console.error('Dashboard fetch failed:', response.status, data);
+        }
+      } catch (error) {
+        console.error('Dashboard fetch error:', error);
+      } finally {
+        NProgress.done();
+      }
     };
 
-    // Admin uses Bearer token, users use session auth
-    if (user.role === 'admin') {
-      const token = localStorage.getItem('auth_token');
-      if (token) {
-        requestConfig.headers['Authorization'] = `Bearer ${token}`;
-      }
-    } else {
-      // For regular users, include CSRF token for session authentication
-      const csrfToken = decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || '');
-      if (csrfToken) {
-        requestConfig.headers['X-XSRF-TOKEN'] = csrfToken;
-      }
-    }
-
-    fetch(endpoint, requestConfig)
-      .then(res => res.json())
-      .then(data => {
-        const name = data.stats?.site_name || 'Undefined\'s Blog';
-        const desc = (data.stats?.site_description || 'A modern blog platform for the DWP Subject.').slice(0, 120);
-        setSiteMeta({ name, description: desc });
-        document.title = name;
-        let meta = document.querySelector('meta[name="description"]');
-        if (!meta) {
-          meta = document.createElement('meta');
-          meta.name = 'description';
-          document.head.appendChild(meta);
-        }
-        meta.content = desc;
-        NProgress.done();
-      })
-      .catch(() => NProgress.done());
+    fetchDashboard();
   }, [location, user]);
 
   return (
