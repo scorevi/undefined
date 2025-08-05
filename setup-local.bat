@@ -4,17 +4,13 @@ echo    Local Development Setup
 echo ==========================================
 
 echo.
-echo [1/6] Copying environment file...
-if not exist .env (
-    copy .env.local .env
-    echo ✓ .env file created from .env.local
-) else (
-    echo ✓ .env file already exists
-)
+echo [1/6] Setting up environment file for local development...
+copy .env.local .env
+echo ✓ .env file updated for local development (using SQLite)
 
 echo.
 echo [2/6] Installing PHP dependencies...
-composer install --no-interaction --prefer-dist --optimize-autoloader
+php composer.phar install --no-interaction --prefer-dist --optimize-autoloader
 if %errorlevel% neq 0 (
     echo ❌ Composer install failed
     pause
@@ -40,7 +36,7 @@ echo ✓ Application key generated
 echo.
 echo [5/6] Setting up database...
 if not exist "database\database.sqlite" (
-    type nul > "database\database.sqlite"
+    echo. > "database\database.sqlite"
     echo ✓ SQLite database file created
 )
 
