@@ -1,14 +1,14 @@
 # Development Environment Setup
 
-This project supports both **Docker** and **Local** development environments. Choose the approach that best fits your workflow.
+This project is configured for **Local Development** with SQLite as the database for simplicity and portability.
 
-## 🐳 Docker Development (Recommended)
-
-Docker provides a consistent development environment across all platforms and handles all dependencies automatically.
+## � Local Development Setup
 
 ### Prerequisites
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Windows/Mac/Linux)
-- Git
+- **PHP 8.2+** with extensions: `sqlite3`, `mbstring`, `openssl`, `pdo`, `tokenizer`, `xml`, `ctype`, `json`, `bcmath`
+- **Composer** (PHP package manager)
+- **Node.js 18+** and **npm**
+- **Git**
 
 ### Quick Setup
 ```bash
@@ -16,47 +16,22 @@ Docker provides a consistent development environment across all platforms and ha
 git clone https://github.com/scorevi/undefined.git
 cd undefined
 
-# Run the Docker setup script
-./setup-docker.bat    # Windows
+# Run the local setup script
+./setup-local.bat    # Windows
 # or
-./setup-docker.sh     # Linux/Mac
+./setup-local.sh     # Linux/Mac
 
-# Start development environment
-./start-docker.bat    # Windows
-# or
-docker-compose up -d  # All platforms
+# Start development servers
+./start-dev.bat      # Windows (starts both Laravel and Vite)
+# or manually:
+php artisan serve    # Terminal 1 (Laravel backend)
+npm run dev          # Terminal 2 (Vite frontend)
 ```
 
 ### Access Points
 - **Frontend (Vite + React)**: http://localhost:5173
 - **Backend API (Laravel)**: http://localhost:8000
-- **Database (MySQL)**: localhost:3306
-
-### Docker Commands
-```bash
-# Start all services
-docker-compose up -d
-
-# Stop all services
-docker-compose down
-
-# View logs
-docker-compose logs -f
-
-# Access container shell
-docker-compose exec app bash
-
-# Run Laravel commands
-docker-compose exec app php artisan migrate
-docker-compose exec app php artisan tinker
-
-# Rebuild containers (after dependency changes)
-docker-compose up -d --build
-```
-
----
-
-## 💻 Local Development
+- **Database**: SQLite file at `database/database.sqlite`
 
 Local development gives you direct control over all services and dependencies.
 
@@ -78,9 +53,10 @@ cd undefined
 ./setup-local.sh      # Linux/Mac
 
 # Start development servers
-./start-all.bat       # Windows
-# or
-npm run start:local   # All platforms
+./start-dev.bat      # Windows (starts both Laravel and Vite)
+# or manually:
+php artisan serve    # Terminal 1 (Laravel backend)
+npm run dev          # Terminal 2 (Vite frontend)
 ```
 
 ### Manual Setup (Alternative)
@@ -111,11 +87,6 @@ php artisan serve
 npm run dev
 ```
 
-### Access Points
-- **Frontend (Vite + React)**: http://localhost:5173
-- **Backend API (Laravel)**: http://localhost:8000
-- **Database (SQLite)**: `database/database.sqlite`
-
 ---
 
 ## 🔧 Development Workflow
@@ -128,59 +99,29 @@ npm run dev
 ├── routes/             # API and web routes
 ├── database/           # Migrations, seeders, SQLite file
 ├── public/             # Public assets and compiled files
-├── docker/             # Docker configuration files
 └── .env.*              # Environment configuration files
 ```
 
 ### Key Configuration Files
 - **`.env.local`** - Local development environment variables
-- **`.env.docker`** - Docker development environment variables
-- **`vite.config.js`** - Vite configuration (auto-detects environment)
-- **`docker-compose.yml`** - Docker services configuration
+- **`vite.config.js`** - Vite configuration for frontend build
+- **`composer.json`** - PHP dependencies
+- **`package.json`** - Node.js dependencies
 
 ### Making Changes
-1. **Backend (Laravel/PHP)**: Edit files in `app/`, `routes/`, etc. - auto-reloaded
-2. **Frontend (React)**: Edit files in `resources/js/` - hot module replacement
-3. **Styles**: Edit `resources/css/app.css` - auto-compiled
+1. **Backend (Laravel/PHP)**: Edit files in `app/`, `routes/`, etc. - auto-reloaded with `php artisan serve`
+2. **Frontend (React)**: Edit files in `resources/js/` - hot module replacement with `npm run dev`
+3. **Styles**: Edit `resources/css/app.css` - auto-compiled with Tailwind CSS
 4. **Database**: Create migrations with `php artisan make:migration`
 
 ### Environment Variables
 The project automatically detects whether you're running in Docker or locally and adjusts configuration accordingly:
 
 - **Vite Dev Server**: Binds to `0.0.0.0:5173` in Docker, `localhost:5173` locally
-- **Database**: Uses MySQL in Docker, SQLite locally (configurable)
-- **API Proxy**: Routes `/api` requests to appropriate backend URL
-
----
-
-## 🚀 Switching Between Environments
-
-You can easily switch between Docker and local development:
-
-### From Local to Docker
-```bash
-# Stop local servers (Ctrl+C in terminals)
-# Copy Docker environment
-copy .env.docker .env        # Windows
-cp .env.docker .env          # Linux/Mac
-
-# Start Docker
-docker-compose up -d
-```
-
-### From Docker to Local
-```bash
-# Stop Docker
-docker-compose down
-
-# Copy local environment
-copy .env.local .env         # Windows
-cp .env.local .env           # Linux/Mac
-
-# Start local servers
-./start-all.bat              # Windows
-php artisan serve & npm run dev  # Linux/Mac
-```
+### Environment Configuration
+- **Database**: Uses SQLite for local development (portable and simple)
+- **Hot Reload**: Both backend and frontend support hot reloading
+- **API Proxy**: Vite automatically proxies `/api` requests to Laravel backend
 
 ---
 
@@ -201,13 +142,17 @@ npx vite
 ```
 
 **Database connection errors**
-- **Docker**: Wait for database container to be ready (~30 seconds after first start)
-- **Local**: Ensure SQLite file exists or MySQL is running
+- Ensure SQLite file exists: `database/database.sqlite`
+- Run migrations: `php artisan migrate --seed`
+- Check `.env` file uses correct database configuration
 
 **Port conflicts**
 - **5173**: Vite dev server port
 - **8000**: Laravel backend port
-- **3306**: MySQL port (Docker only)
+
+**Composer not found**
+- Use local composer: `php composer.phar install`
+- Or install Composer globally: https://getcomposer.org/
 
 Change ports in `.env` files if needed.
 
@@ -235,11 +180,22 @@ docker-compose exec app tail -f storage/logs/laravel.log  # Docker
 
 ## 📦 Production Deployment
 
-For production deployment, use the production Docker configuration:
+For production deployment:
 
 ```bash
-# Build for production
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+# Build frontend assets
+npm run build
+
+# Optimize backend
+composer install --optimize-autoloader --no-dev
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# Set up production environment
+cp .env.production .env
+php artisan key:generate
+php artisan migrate --force
 ```
 
-This disables development features like hot reloading and enables production optimizations.
+This disables development features and enables production optimizations.
